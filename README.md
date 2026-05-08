@@ -25,8 +25,11 @@ cp .env.example .env
 Run the development server:
 
 ```bash
+# default port: 2757
 pnpm run dev
 ```
+
+The server can be visited at [http://localhost:2757/](http://localhost:2757/) by default.
 
 ## Building
 
@@ -46,4 +49,10 @@ Load the production app at port 3000:
 
 ```bash
 node build
+```
+
+Load the production app at an arbitrary port such as 4000
+
+```bash
+PORT=4000 node build
 ```
