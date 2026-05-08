@@ -19,6 +19,19 @@ body {
 	height: 100%;
 }
 
+html {
+	--gradient-saturated: hsl(
+		var(--bulma-primary-h),
+		calc(var(--bulma-primary-s) + 10%),
+		calc(var(--bulma-soft-l) + 20% * sign(var(--bulma-active-border-l-delta)))
+	);
+	background-image: radial-gradient(
+		circle at 80% 50%,
+		transparent 65%,
+		var(--gradient-saturated) 150%
+	);
+}
+
 body {
 	display: flex;
 	flex-direction: column;

@@ -56,6 +56,11 @@
 		</ul>
 	</div>
 </footer>
+<div class="looping-squares">
+	{#each [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as index}
+		<div class="square" style={`--offset-base: ${index}`}></div>
+	{/each}
+</div>
 
 <style>
 	.discord-link {
@@ -105,5 +110,66 @@
 				content: unset;
 			}
 		}
+	}
+
+	.looping-squares {
+		position: absolute;
+		inset: 0;
+		overflow: clip;
+		z-index: -1;
+	}
+
+	.square {
+		--offset: calc(var(--offset-base));
+		--size: calc(240px * var(--offset));
+		width: var(--size);
+		height: var(--size);
+		border: 4px solid
+			hsl(
+				var(--bulma-primary-h) calc(var(--bulma-primary-s) - 10%)
+					calc(var(--bulma-soft-l) + 15% * sign(var(--bulma-active-border-l-delta))) /
+					min(calc(0.125 * var(--offset) / 2), 0.25)
+			);
+		position: absolute;
+		translate: 25% -45%;
+		right: 30%;
+		top: 45%;
+		z-index: 100;
+
+		--initial-rotation: 0.08turn;
+		rotate: var(--initial-rotation);
+
+		animation:
+			spin 40s linear infinite,
+			zoom 12s linear infinite;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.square {
+			animation: unset;
+		}
+	}
+
+	@keyframes spin {
+		from {
+			rotate: calc(var(--initial-rotation) + 0turn);
+		}
+		to {
+			rotate: calc(var(--initial-rotation) - 0.25turn);
+		}
+	}
+
+	@keyframes zoom {
+		from {
+			--offset: calc(var(--offset-base));
+		}
+		to {
+			--offset: calc(var(--offset-base) + 1);
+		}
+	}
+
+	@property --offset {
+		syntax: '<number>';
+		initial-value: 0;
+		inherits: false;
 	}
 </style>
