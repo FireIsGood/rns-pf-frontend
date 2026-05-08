@@ -1,2 +1,184 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+	import { areaMap, difficultyMap, type AreaName, type Difficulty, type Lobby } from '$lib';
+	import { onMount } from 'svelte';
+	import AreaIcon from './area-icon.svelte';
+	import LobbyDisplay from './lobby-display.svelte';
+	import lockIcon from '$lib/assets/Lock Icon.png';
+	import unlockIcon from '$lib/assets/Unlock Icon.png';
+	import modIcon from '$lib/assets/Mod Icon.png';
+	import noModIcon from '$lib/assets/No Mod Icon.png';
+	import unknownIcon from '$lib/assets/Unknown Icon.png';
+	import cuteIcon from '$lib/assets/difficulties/Cute.png';
+	import normalIcon from '$lib/assets/difficulties/Normal.png';
+	import hardIcon from '$lib/assets/difficulties/Hard.png';
+	import lunarIcon from '$lib/assets/difficulties/Lunar.png';
+	import { PUBLIC_API_ENDPOINT } from '$env/static/public';
+	import { connectStream } from '$lib/stream-api';
+
+	onMount(async () => {
+		const fetchLobbies: Lobby[] = await fetch(`${PUBLIC_API_ENDPOINT}/lobbies`).then((res) =>
+			res.json()
+		);
+		lobbies = fetchLobbies;
+		// connectStream((chunk) => {
+		// 	console.log(chunk);
+		// 	if (chunk.size === 0) return;
+		// 	lobbies = chunk.data;
+		// });
+	});
+
+	let lobbies: Lobby[] = $state([]);
+
+	const allAreas: AreaName[] = [
+		'Random',
+		'ScholarsNest',
+		'KingsArsenal',
+		'RedDarkhouse',
+		'ChurchmouseStreets',
+		'EmeraldLakeside',
+		'DarkhouseDepths',
+		'SubterraSanctum',
+		'AtelierAurum',
+		'ExRandom',
+		'TrueRandom',
+		'ChaoticRandom',
+		'Toybox'
+	];
+
+	const allDifficulties: Difficulty[] = ['Cute', 'Normal', 'Hard', 'Lunar'];
+	const difficultyIconMap: Record<Difficulty, string> = {
+		Cute: cuteIcon,
+		Normal: normalIcon,
+		Hard: hardIcon,
+		Lunar: lunarIcon
+	};
+
+	let destinationFilter: AreaName | 'Any' = $state('Any');
+	let difficultyFilter: Difficulty | 'Any' = $state('Any');
+	let passwordFilter: boolean | 'Any' = $state('Any');
+	let modFilter: boolean | 'Any' = $state('Any');
+
+	let lobbiesFiltered = $derived(
+		lobbies
+			.filter(
+				(l) =>
+					(destinationFilter === 'Any' || destinationFilter === areaMap[l.stage_first]) &&
+					(difficultyFilter === 'Any' || difficultyFilter === difficultyMap[l.difficulty]) &&
+					(passwordFilter === 'Any' || passwordFilter === l.password_locked) &&
+					(modFilter === 'Any' || modFilter === l.modded)
+			)
+			.toSorted(
+				(l1, l2) =>
+					(l2.difficulty - l1.difficulty) * 1000 + // Higher difficulty > Lower difficulty
+					(+l1.password_locked - +l2.password_locked) * 100 + // No password > Password
+					(+l1.modded - +l2.modded) * 10 + // No mod > Mod
+					(+(+l2.id < +l1.id) * 2 - 1) // Lower ID > Higher ID
+			)
+	);
+</script>
+
+{#snippet filterButton(iconSrc: string, highlighted: boolean, callback: () => void)}
+	<button class="button p-1" class:highlighted onclick={callback}
+		><img src={iconSrc} alt="" class="image is-1by1 is-24x24" /></button
+	>
+{/snippet}
+
+<section class="container section columns">
+	<div class="column is-narrow">
+		<div class="box">
+			<p class="subtitle has-text-centered">Filter Lobbies</p>
+			<div class="mb-1 has-text-centered is-size-7">Destination</div>
+			<fieldset class="filter-group" style="--group-count: 14">
+				<button
+					class="button py-1 px-0"
+					class:highlighted={destinationFilter === 'Any'}
+					onclick={() => {
+						destinationFilter = 'Any';
+					}}
+				>
+					<AreaIcon area="Unknown" class="image is-1by1 is-24x24" /></button
+				>
+				{#each allAreas as destination}
+					<button
+						class="button py-1 px-0"
+						class:highlighted={destinationFilter === destination}
+						onclick={() => {
+							destinationFilter = destination;
+						}}
+					>
+						<AreaIcon area={destination} class="image is-1by1 is-24x24" /></button
+					>
+				{/each}
+			</fieldset>
+			<div class="mb-1 has-text-centered is-size-7">Difficulty</div>
+			<fieldset class="filter-group">
+				{@render filterButton(unknownIcon, difficultyFilter === 'Any', () => {
+					difficultyFilter = 'Any';
+				})}
+				{#each allDifficulties as difficulty}
+					{@render filterButton(
+						difficultyIconMap[difficulty],
+						difficultyFilter === difficulty,
+						() => {
+							difficultyFilter = difficulty;
+						}
+					)}
+				{/each}
+			</fieldset>
+			<div class="mb-1 has-text-centered is-size-7">Password Locked</div>
+			<fieldset class="filter-group">
+				{@render filterButton(unknownIcon, passwordFilter === 'Any', () => {
+					passwordFilter = 'Any';
+				})}
+				{@render filterButton(lockIcon, passwordFilter === true, () => {
+					passwordFilter = true;
+				})}
+				{@render filterButton(unlockIcon, passwordFilter === false, () => {
+					passwordFilter = false;
+				})}
+			</fieldset>
+			<div class="mb-1 has-text-centered is-size-7">Using Mods</div>
+			<fieldset class="filter-group">
+				{@render filterButton(unknownIcon, modFilter === 'Any', () => {
+					modFilter = 'Any';
+				})}
+				{@render filterButton(modIcon, modFilter === true, () => {
+					modFilter = true;
+				})}
+				{@render filterButton(noModIcon, modFilter === false, () => {
+					modFilter = false;
+				})}
+			</fieldset>
+		</div>
+	</div>
+	<div class="column">
+		<LobbyDisplay lobbies={lobbiesFiltered} />
+	</div>
+</section>
+
+<style>
+	.filter-group {
+		display: grid;
+		gap: 1px;
+		grid-template-columns: repeat(var(--group-count, auto-fit), minmax(24px, 1fr));
+		&:not(:last-child) {
+			margin-bottom: 0.75rem;
+		}
+
+		& > button:not(:first-child, :last-child) {
+			border-radius: 0;
+		}
+		& > button:first-child {
+			border-top-right-radius: 0;
+			border-bottom-right-radius: 0;
+		}
+		& > button:last-child {
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
+		}
+	}
+
+	.highlighted {
+		--bulma-button-background-l-delta: calc(40% * sign(var(--bulma-active-border-l-delta)));
+	}
+</style>

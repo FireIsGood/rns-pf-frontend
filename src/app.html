@@ -4,6 +4,25 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css" />
+		<script>
+			// This must be inline to stop FOUC
+
+			// Get the theme from local storage, otherwise color scheme preference, otherwise light
+			function getInitialTheme() {
+				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+					return localStorage.getItem('theme');
+				}
+				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+					return 'dark';
+				}
+				return 'light';
+			}
+
+			// Set a data attribute for Pico, but don't store it
+			// (users may change their preference between visits)
+			document.documentElement.setAttribute('data-theme', getInitialTheme());
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

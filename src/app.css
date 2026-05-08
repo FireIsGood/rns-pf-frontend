@@ -1,0 +1,29 @@
+/* Bulma customizations */
+:root:root {
+	--bulma-scheme-h: 234;
+
+	--bulma-primary-h: 247deg;
+	--bulma-primary-s: 23%;
+	--bulma-primary-l: 51%;
+
+	--bulma-info-h: 189deg;
+	--bulma-info-s: 65%;
+	--bulma-info-l: 50%;
+
+	--bulma-duration: 100ms;
+	--bulma-body-overflow-y: auto;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+}
+
+.section {
+	--bulma-section-padding-desktop: 1.5rem 0;
+}
