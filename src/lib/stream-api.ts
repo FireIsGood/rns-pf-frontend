@@ -18,7 +18,7 @@ type StreamChunk = {
 };
 
 // Connects a stream. Does not return until the stream breaks somehow.
-export async function connectStream(callback: (chunk: StreamChunk) => void) {
+export async function connectStream(callback: (chunk: StreamChunk | null) => void) {
 	const stream = await fetch(
 		`${PUBLIC_API_ENDPOINT}/lobbies/stream?format=json&modified=true&uncensored=true`
 	).then((response) => {
@@ -37,7 +37,7 @@ export async function connectStream(callback: (chunk: StreamChunk) => void) {
 							let size = bytesToInt(value.slice(4, 6));
 							let payload = new TextDecoder().decode(value.slice(6, 6 + size));
 
-							// Filter heartbeats out
+							// Heartbeats counted as a null payload
 							if (size !== 0) {
 								let parsedPayload = null;
 								try {
@@ -55,6 +55,8 @@ export async function connectStream(callback: (chunk: StreamChunk) => void) {
 
 									callback(chunk);
 								}
+							} else {
+								callback(null);
 							}
 						}
 

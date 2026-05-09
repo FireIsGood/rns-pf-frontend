@@ -23,17 +23,21 @@
 
 	async function initializeLobbies() {
 		connectStream((chunk) => {
-			const shouldNotify = chunk.id !== 1;
-			if (shouldNotify) {
-				const currentIds = new Set(lobbies.map((l) => l.id));
-				const updatedIds = new Set(chunk.data.map((l) => l.id));
-				const diffIds = updatedIds.difference(currentIds);
-				const diffLobbies = chunk.data.filter((l) => diffIds.has(l.id));
+			if (chunk !== null) {
+				const shouldNotify = chunk.id !== 1;
+				if (shouldNotify) {
+					const currentIds = new Set(lobbies.map((l) => l.id));
+					const updatedIds = new Set(chunk.data.map((l) => l.id));
+					const diffIds = updatedIds.difference(currentIds);
+					const diffLobbies = chunk.data.filter((l) => diffIds.has(l.id));
 
-				newLobbies = diffLobbies;
+					newLobbies = diffLobbies;
+				}
+
+				lobbies = chunk.data;
 			}
 
-			lobbies = chunk.data;
+			lastUpdate = new Date().getTime() / 1000;
 		});
 	}
 
@@ -96,6 +100,19 @@
 	}
 
 	let filterModalActive = $state(false);
+	let lastUpdate = $state(0);
+	let intervalId: NodeJS.Timeout;
+	let timeSinceLastUpdate = $state(0);
+	$effect(() => {
+		lastUpdate; // To cause this to be called when adjusted
+
+		timeSinceLastUpdate = 0;
+
+		intervalId = setInterval(() => (timeSinceLastUpdate += 1), 1000);
+		return () => {
+			clearInterval(intervalId);
+		};
+	});
 </script>
 
 {#snippet filterButton(iconSrc: string, highlighted: boolean, callback: () => void)}
@@ -183,6 +200,21 @@
 			</div>
 		</div>
 		<Notifications {newLobbies} />
+		<div class="is-flex is-size-7 is-gap-1 is-justify-content-space-between px-2">
+			<p>
+				Connection: {#if timeSinceLastUpdate < 30}<span
+						class="has-text-success has-text-weight-semibold">Yeah</span
+					>{:else if timeSinceLastUpdate < 60}<span
+						class="has-text-warning has-text-weight-semibold">Uh oh</span
+					>{:else}<span class="has-text-danger has-text-weight-semibold">It's cooked.</span> (reload the
+					page!){/if}
+			</p>
+			<p>
+				synchronized <span class="is-family-code has-text-weight-semibold"
+					>{timeSinceLastUpdate}</span
+				>s ago
+			</p>
+		</div>
 	</div>
 	<div class="column">
 		<LobbyDisplay lobbies={lobbiesFiltered} totalLobbies={lobbies.length} />
