@@ -45,14 +45,18 @@
 				</a>
 			</div>
 			<div class="navbar-menu" class:is-active={navbarBurgerActive}>
-				<span class="navbar-item ml-auto"
+				<span class="navbar-item ml-auto is-flex is-justify-content-center"
 					><a
 						href="https://discord.com/invite/mns"
 						target="_blank"
-						class="discord-link button is-info is-soft"><DiscordIcon /> mino_dev Discord</a
+						class="discord-link button is-info is-soft is-flex-grow-1"
+						><DiscordIcon /> mino_dev Discord</a
 					></span
 				>
-				<span class="navbar-item is-size-4 is-line-height-1"><ThemeToggle /></span>
+				<div class="navbar-item is-flex is-align-items-center is-justify-content-center">
+					<div class="is-size-6 has-text-weight-medium is-hidden-desktop">Toggle theme</div>
+					<span class="is-size-4 is-flex"><ThemeToggle /></span>
+				</div>
 			</div>
 		</div>
 	</nav>
