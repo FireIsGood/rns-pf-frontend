@@ -16,6 +16,10 @@ class Tracking {
 		}
 
 		this.trackingNames = newTracking;
+
+		// Sync silent notify
+		const storedNotify = localStorage.getItem('silentNotify') === 'true';
+		this.silentNotify = storedNotify ?? false;
 	}
 
 	async addTracking(lobbyName: string) {

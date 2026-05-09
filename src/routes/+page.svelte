@@ -94,74 +94,76 @@
 
 <section class="container section columns">
 	<div class="sidebar-options column is-narrow">
-		<div class="box">
-			<p class="subtitle has-text-centered">Filter Lobbies</p>
-			<div class="mb-1 has-text-centered is-size-7">Destination</div>
-			<fieldset class="filter-group" style="--group-count: 14">
-				<button
-					class="button py-1 px-0 is-flex-grow-1"
-					class:highlighted={destinationFilter === 'Any'}
-					onclick={() => {
-						destinationFilter = 'Any';
-					}}
-				>
-					<AreaIcon area="Unknown" class="image is-1by1 is-24x24" /></button
-				>
-				{#each allAreas as destination}
+		<div class="card">
+			<header class="card-header">
+				<p class="card-header-title">Filter Lobbies</p>
+			</header>
+			<div class="card-content">
+				<div class="mb-1 has-text-centered is-size-7">Destination</div>
+				<fieldset class="filter-group" style="--group-count: 14">
 					<button
 						class="button py-1 px-0 is-flex-grow-1"
-						class:highlighted={destinationFilter === destination}
+						class:highlighted={destinationFilter === 'Any'}
 						onclick={() => {
-							destinationFilter = destination;
+							destinationFilter = 'Any';
 						}}
 					>
-						<AreaIcon area={destination} class="image is-1by1 is-24x24" /></button
+						<AreaIcon area="Unknown" class="image is-1by1 is-24x24" /></button
 					>
-				{/each}
-			</fieldset>
-			<div class="mb-1 has-text-centered is-size-7">Difficulty</div>
-			<fieldset class="filter-group">
-				{@render filterButton(unknownIcon, difficultyFilter === 'Any', () => {
-					difficultyFilter = 'Any';
-				})}
-				{#each allDifficulties as difficulty}
-					{@render filterButton(
-						difficultyIconMap[difficulty],
-						difficultyFilter === difficulty,
-						() => {
-							difficultyFilter = difficulty;
-						}
-					)}
-				{/each}
-			</fieldset>
-			<div class="mb-1 has-text-centered is-size-7">Password Locked</div>
-			<fieldset class="filter-group">
-				{@render filterButton(unknownIcon, passwordFilter === 'Any', () => {
-					passwordFilter = 'Any';
-				})}
-				{@render filterButton(lockIcon, passwordFilter === true, () => {
-					passwordFilter = true;
-				})}
-				{@render filterButton(unlockIcon, passwordFilter === false, () => {
-					passwordFilter = false;
-				})}
-			</fieldset>
-			<div class="mb-1 has-text-centered is-size-7">Using Mods</div>
-			<fieldset class="filter-group">
-				{@render filterButton(unknownIcon, modFilter === 'Any', () => {
-					modFilter = 'Any';
-				})}
-				{@render filterButton(modIcon, modFilter === true, () => {
-					modFilter = true;
-				})}
-				{@render filterButton(noModIcon, modFilter === false, () => {
-					modFilter = false;
-				})}
-			</fieldset>
+					{#each allAreas as destination}
+						<button
+							class="button py-1 px-0 is-flex-grow-1"
+							class:highlighted={destinationFilter === destination}
+							onclick={() => {
+								destinationFilter = destination;
+							}}
+						>
+							<AreaIcon area={destination} class="image is-1by1 is-24x24" /></button
+						>
+					{/each}
+				</fieldset>
+				<div class="mb-1 has-text-centered is-size-7">Difficulty</div>
+				<fieldset class="filter-group">
+					{@render filterButton(unknownIcon, difficultyFilter === 'Any', () => {
+						difficultyFilter = 'Any';
+					})}
+					{#each allDifficulties as difficulty}
+						{@render filterButton(
+							difficultyIconMap[difficulty],
+							difficultyFilter === difficulty,
+							() => {
+								difficultyFilter = difficulty;
+							}
+						)}
+					{/each}
+				</fieldset>
+				<div class="mb-1 has-text-centered is-size-7">Password Locked</div>
+				<fieldset class="filter-group">
+					{@render filterButton(unknownIcon, passwordFilter === 'Any', () => {
+						passwordFilter = 'Any';
+					})}
+					{@render filterButton(lockIcon, passwordFilter === true, () => {
+						passwordFilter = true;
+					})}
+					{@render filterButton(unlockIcon, passwordFilter === false, () => {
+						passwordFilter = false;
+					})}
+				</fieldset>
+				<div class="mb-1 has-text-centered is-size-7">Using Mods</div>
+				<fieldset class="filter-group">
+					{@render filterButton(unknownIcon, modFilter === 'Any', () => {
+						modFilter = 'Any';
+					})}
+					{@render filterButton(modIcon, modFilter === true, () => {
+						modFilter = true;
+					})}
+					{@render filterButton(noModIcon, modFilter === false, () => {
+						modFilter = false;
+					})}
+				</fieldset>
+			</div>
 		</div>
-		<div class="box">
-			<Notifications {newLobbies} />
-		</div>
+		<Notifications {newLobbies} />
 	</div>
 	<div class="column">
 		<LobbyDisplay lobbies={lobbiesFiltered} />

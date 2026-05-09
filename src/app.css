@@ -40,3 +40,7 @@ body {
 .section {
 	--bulma-section-padding-desktop: 1.5rem 0;
 }
+
+.card {
+	--bulma-card-content-padding: 0.75rem 1rem 1rem;
+}

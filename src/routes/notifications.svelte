@@ -3,6 +3,8 @@
 	import { tracking } from '$lib/util.svelte';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
+	import GearIcon from '$lib/assets/gear.svelte';
+	import XIcon from '$lib/assets/x.svelte';
 
 	let { newLobbies }: { newLobbies: Lobby[] } = $props();
 
@@ -48,34 +50,77 @@
 			}
 		}
 	});
+
+	let notificationModalActive = $state(false);
+
+	// Has to be done outside of the module due to binding
+	$effect(() => {
+		localStorage.setItem('silentNotify', tracking.silentNotify.toString());
+	});
 </script>
 
-<p class="subtitle has-text-centered">Notifications</p>
-<div class="tags">
-	{#each tracking.trackingNames.toSorted((a, b) => a.localeCompare(b)) as name (name)}
-		<span
-			class="tag tracking-tag has-background-info-soft"
-			transition:fly={{ duration: 200, x: 20 }}
-			animate:flip={{ duration: 200 }}
+<div class="card">
+	<header class="card-header">
+		<p class="card-header-title">Notifications</p>
+		<button
+			class="button card-header-icon is-size-5"
+			aria-label="collapse"
+			onclick={() => (notificationModalActive = true)}
 		>
-			<span>{name}</span>
-			<button
-				class="delete-button has-text-danger has-text-weight-bold"
-				onclick={() => removeTracking(name)}>&times;</button
-			>
-		</span>
-	{/each}
+			<GearIcon />
+		</button>
+	</header>
+	<div class="card-content">
+		<div class="tags">
+			{#each tracking.trackingNames.toSorted((a, b) => a.localeCompare(b)) as name (name)}
+				<span
+					class="tag tracking-tag has-background-info-soft"
+					transition:fly={{ duration: 200, x: 20 }}
+					animate:flip={{ duration: 200 }}
+				>
+					<span>{name}</span>
+					<button
+						class="delete-button has-text-danger has-text-weight-bold"
+						onclick={() => removeTracking(name)}>&times;</button
+					>
+				</span>
+			{/each}
+		</div>
+		<fieldset class="field has-addons">
+			<div class="control">
+				<input type="text" placeholder="Lobby name" class="input" bind:value={trackingFormValue} />
+			</div>
+			<div class="control">
+				<button class="button is-primary is-soft" onclick={() => addTracking(trackingFormValue)}
+					>Add Tracking</button
+				>
+			</div>
+		</fieldset>
+	</div>
 </div>
-<fieldset class="field has-addons">
-	<div class="control">
-		<input type="text" placeholder="Lobby name" class="input" bind:value={trackingFormValue} />
+
+<div class="modal" class:is-active={notificationModalActive}>
+	<div class="modal-background"></div>
+	<div class="modal-content">
+		<div class="card">
+			<header class="card-header">
+				<p class="card-header-title">Notification Options</p>
+				<button
+					class="button card-header-icon is-size-5"
+					aria-label="close"
+					onclick={() => (notificationModalActive = false)}
+				>
+					<XIcon />
+				</button>
+			</header>
+			<div class="card-content">
+				<label class="checkbox"
+					><input type="checkbox" bind:checked={tracking.silentNotify} /> Silent notifications</label
+				>
+			</div>
+		</div>
 	</div>
-	<div class="control">
-		<button class="button is-primary is-soft" onclick={() => addTracking(trackingFormValue)}
-			>Add Tracking</button
-		>
-	</div>
-</fieldset>
+</div>
 
 <style>
 	.tracking-tag {
@@ -88,5 +133,25 @@
 		font-size: 1.25em;
 		padding-inline: 0.25rem;
 		margin-inline: -0.25rem;
+	}
+
+	.modal {
+		opacity: 0;
+		transition:
+			opacity 200ms,
+			display 200ms allow-discrete;
+	}
+	.modal.is-active {
+		opacity: 1;
+		animation: fade-in 400ms;
+	}
+
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 </style>
