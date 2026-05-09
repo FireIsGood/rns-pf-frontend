@@ -163,7 +163,7 @@
 
 <style>
 	.lobby-listing {
-		padding-top: 1.25rem;
+		padding-top: 1rem;
 	}
 
 	.lobby-list {
@@ -364,7 +364,7 @@
 			transform: rotate(45deg);
 			border-width: 0;
 			scale: 0.5 0;
-			animation: dialog-line-in 200ms 100ms forwards;
+			animation: dialog-line-in 200ms 100ms linear forwards;
 		}
 	}
 
