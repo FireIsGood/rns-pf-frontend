@@ -131,7 +131,7 @@
 	}
 
 	.looping-squares {
-		position: absolute;
+		position: fixed;
 		inset: 0;
 		overflow: clip;
 		z-index: -1;

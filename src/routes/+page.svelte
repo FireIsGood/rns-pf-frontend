@@ -134,7 +134,7 @@
 	>
 {/snippet}
 
-<section class="container section columns">
+<section class="container section columns is-desktop">
 	<div class="sidebar-options column is-narrow">
 		<div class="card">
 			<header class="card-header">
@@ -263,7 +263,7 @@
 </div>
 
 <style>
-	@media print, screen and (min-width: 769px) {
+	@media print, screen and (min-width: 1024px) {
 		.sidebar-options {
 			max-width: 28rem;
 		}

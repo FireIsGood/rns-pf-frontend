@@ -89,7 +89,7 @@
 			{/each}
 		</div>
 		<fieldset class="field has-addons">
-			<div class="control">
+			<div class="control is-flex-grow-1">
 				<input type="text" placeholder="Lobby name" class="input" bind:value={trackingFormValue} />
 			</div>
 			<div class="control">

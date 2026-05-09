@@ -226,6 +226,8 @@
 
 	.lobby-card-main {
 		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
 		align-items: center;
 		gap: 1rem;
 		grid-template-columns: 4rem 8rem 1fr 1fr 1fr;

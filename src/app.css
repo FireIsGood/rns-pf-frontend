@@ -29,6 +29,7 @@ html {
 		calc(var(--bulma-primary-s) + 10%),
 		calc(var(--bulma-soft-l) + 20% * sign(var(--bulma-active-border-l-delta)))
 	);
+	background-attachment: fixed;
 	background-image: radial-gradient(
 		circle at 80% 50%,
 		transparent 65%,
@@ -43,6 +44,7 @@ body {
 
 .section {
 	--bulma-section-padding-desktop: 1.5rem 0;
+	--bulma-section-padding: 0.5rem 0;
 }
 
 .card {
