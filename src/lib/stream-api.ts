@@ -1,7 +1,7 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import type { Lobby } from '$lib';
 
-function bytesToInt(bytes: Uint8Array<ArrayBuffer>) {
+export function bytesToInt(bytes: Uint8Array<ArrayBuffer>) {
 	let value = 0;
 
 	for (let i = 0; i < bytes.length; i++) {
@@ -34,18 +34,26 @@ export async function connectStream(callback: (chunk: StreamChunk) => void) {
 								let id = bytesToInt(value.slice(0, 4));
 								let size = bytesToInt(value.slice(4, 6));
 								let payload = new TextDecoder().decode(value.slice(6, 6 + size));
-								let parsedPayload = JSON.parse(payload);
-								console.log('ID: ', id);
-								console.log('SIZE: ', size);
-								console.log('PAYLOAD: ', payload);
 
-								const chunk: StreamChunk = {
-									id: id,
-									size: size,
-									data: parsedPayload
-								};
+								// Filter heartbeats out
+								if (size !== 0) {
+									let parsedPayload = null;
+									try {
+										parsedPayload = JSON.parse(payload);
+									} catch (error) {
+										console.error(error);
+									}
 
-								callback(chunk);
+									if (parsedPayload !== null) {
+										const chunk: StreamChunk = {
+											id: id,
+											size: size,
+											data: parsedPayload
+										};
+
+										callback(chunk);
+									}
+								}
 							}
 
 							if (done) {

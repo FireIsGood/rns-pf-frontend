@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import AreaIcon from './area-icon.svelte';
 	import LobbyDisplay from './lobby-display.svelte';
+	import Notifications from './notifications.svelte';
 	import lockIcon from '$lib/assets/Lock Icon.png';
 	import unlockIcon from '$lib/assets/Unlock Icon.png';
 	import modIcon from '$lib/assets/Mod Icon.png';
@@ -12,22 +13,30 @@
 	import normalIcon from '$lib/assets/difficulties/Normal.png';
 	import hardIcon from '$lib/assets/difficulties/Hard.png';
 	import lunarIcon from '$lib/assets/difficulties/Lunar.png';
-	import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 	import { connectStream } from '$lib/stream-api';
 
 	onMount(async () => {
-		const fetchLobbies: Lobby[] = await fetch(`${PUBLIC_API_ENDPOINT}/lobbies`).then((res) =>
-			res.json()
-		);
-		lobbies = fetchLobbies;
-		// connectStream((chunk) => {
-		// 	console.log(chunk);
-		// 	if (chunk.size === 0) return;
-		// 	lobbies = chunk.data;
-		// });
+		initializeLobbies();
 	});
 
+	async function initializeLobbies() {
+		return await connectStream((chunk) => {
+			const shouldNotify = chunk.id !== 1;
+			if (shouldNotify) {
+				const currentIds = new Set(lobbies.map((l) => l.id));
+				const updatedIds = new Set(chunk.data.map((l) => l.id));
+				const diffIds = updatedIds.difference(currentIds);
+				const diffLobbies = chunk.data.filter((l) => diffIds.has(l.id));
+
+				newLobbies = diffLobbies;
+			}
+
+			lobbies = chunk.data;
+		});
+	}
+
 	let lobbies: Lobby[] = $state([]);
+	let newLobbies: Lobby[] = $state([]);
 
 	const allAreas: AreaName[] = [
 		'Random',
@@ -78,19 +87,19 @@
 </script>
 
 {#snippet filterButton(iconSrc: string, highlighted: boolean, callback: () => void)}
-	<button class="button p-1" class:highlighted onclick={callback}
+	<button class="button p-1 is-flex-grow-1" class:highlighted onclick={callback}
 		><img src={iconSrc} alt="" class="image is-1by1 is-24x24" /></button
 	>
 {/snippet}
 
 <section class="container section columns">
-	<div class="column is-narrow">
+	<div class="sidebar-options column is-narrow">
 		<div class="box">
 			<p class="subtitle has-text-centered">Filter Lobbies</p>
 			<div class="mb-1 has-text-centered is-size-7">Destination</div>
 			<fieldset class="filter-group" style="--group-count: 14">
 				<button
-					class="button py-1 px-0"
+					class="button py-1 px-0 is-flex-grow-1"
 					class:highlighted={destinationFilter === 'Any'}
 					onclick={() => {
 						destinationFilter = 'Any';
@@ -100,7 +109,7 @@
 				>
 				{#each allAreas as destination}
 					<button
-						class="button py-1 px-0"
+						class="button py-1 px-0 is-flex-grow-1"
 						class:highlighted={destinationFilter === destination}
 						onclick={() => {
 							destinationFilter = destination;
@@ -150,6 +159,9 @@
 				})}
 			</fieldset>
 		</div>
+		<div class="box">
+			<Notifications {newLobbies} />
+		</div>
 	</div>
 	<div class="column">
 		<LobbyDisplay lobbies={lobbiesFiltered} />
@@ -157,10 +169,16 @@
 </section>
 
 <style>
+	@media print, screen and (min-width: 769px) {
+		.sidebar-options {
+			max-width: 28rem;
+		}
+	}
+
 	.filter-group {
-		display: grid;
+		display: flex;
+		flex-wrap: wrap;
 		gap: 1px;
-		grid-template-columns: repeat(var(--group-count, auto-fit), minmax(24px, 1fr));
 		&:not(:last-child) {
 			margin-bottom: 0.75rem;
 		}

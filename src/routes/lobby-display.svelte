@@ -4,6 +4,7 @@
 	import StageIcon from './start-icon.svelte';
 	import CharacterIcon from './character-icon.svelte';
 	import { flip } from 'svelte/animate';
+	import { tracking } from '$lib/util.svelte';
 
 	let { lobbies }: { lobbies: Lobby[] } = $props();
 </script>
@@ -23,7 +24,8 @@
 			<div
 				class={[
 					'lobby-card card px-4 py-3 has-background-primary-soft',
-					difficultyClassMap[lobby.difficulty]
+					difficultyClassMap[lobby.difficulty],
+					tracking.trackingNames.includes(lobby.name) && 'tracked'
 				]}
 				transition:fly={{ duration: 200, x: 20 }}
 				animate:flip={{ duration: 200 }}
@@ -82,6 +84,33 @@
 			calc(var(--bulma-scheme-main-l) + var(--bulma-active-border-l-delta))
 		);
 		line-height: 1.25;
+		overflow: clip;
+
+		&::after {
+			--bookmark-color: hsl(
+				var(--bulma-info-h),
+				var(--bulma-info-s),
+				calc(var(--bulma-soft-l) + var(--bulma-hover-border-l-delta))
+			);
+			content: '';
+			position: absolute;
+			top: -1px;
+			right: 1rem;
+			width: 1.25rem;
+			border-left: 0.625rem solid var(--bookmark-color);
+			border-right: 0.625rem solid var(--bookmark-color);
+			border-bottom: 0.625rem solid transparent;
+			height: 2rem;
+
+			translate: 0 -100%;
+			transition: translate 100ms;
+		}
+
+		&.tracked {
+			&::after {
+				translate: 0;
+			}
+		}
 	}
 
 	.lobby-difficulty {
