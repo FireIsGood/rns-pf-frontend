@@ -24,7 +24,6 @@ class Tracking {
 
 	async addTracking(lobbyName: string) {
 		this.trackingNames.push(lobbyName);
-		console.log('Tracked', lobbyName);
 
 		this.syncLocalstorage();
 	}
