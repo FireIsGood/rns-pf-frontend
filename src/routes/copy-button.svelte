@@ -2,6 +2,7 @@
 	import CopyIcon from '$lib/assets/copy.svelte';
 	import CheckIcon from '$lib/assets/check.svelte';
 	import { copyText } from '$lib/util.svelte';
+	import { toastManager } from '$lib/toastStore.svelte';
 
 	let { text }: { text: string } = $props();
 
@@ -13,6 +14,7 @@
 	function handleCopy() {
 		copyText(text);
 		copyStatus = 'copied';
+		toastManager.addToast('Copied description to clipboard');
 
 		clearTimeout(copyTimeout);
 		copyTimeout = setTimeout(() => {

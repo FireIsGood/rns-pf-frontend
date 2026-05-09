@@ -5,28 +5,33 @@
 	import { fly } from 'svelte/transition';
 	import GearIcon from '$lib/assets/gear.svelte';
 	import XIcon from '$lib/assets/x.svelte';
+	import { toastManager } from '$lib/toastStore.svelte';
 
 	let { newLobbies }: { newLobbies: Lobby[] } = $props();
 
 	let trackingFormValue: string = $state('');
 
 	async function addTracking(lobbyName: string) {
+		if (lobbyName === '') return;
+
 		if (Notification.permission !== 'granted') {
 			await Notification.requestPermission();
 		}
 
 		trackingFormValue = '';
-		const invalidName = tracking.trackingNames.includes(lobbyName) || lobbyName === '';
-		if (invalidName) {
-			console.log('Already tracking');
+
+		if (tracking.trackingNames.includes(lobbyName)) {
+			toastManager.addToast('Already tracking this lobby name!', 'warn');
 			return;
 		}
 
 		tracking.addTracking(lobbyName);
+		toastManager.addToast(`Tracked ${lobbyName}`, 'success');
 	}
 
 	function removeTracking(lobbyName: string) {
 		tracking.removeTracking(lobbyName);
+		toastManager.addToast(`Untracked ${lobbyName}`, 'success');
 	}
 
 	// Watch for lobby changes

@@ -16,6 +16,7 @@
 	import XIcon from '$lib/assets/x.svelte';
 	import GearIcon from '$lib/assets/gear.svelte';
 	import { connectStream } from '$lib/stream-api';
+	import { toastManager } from '$lib/toastStore.svelte';
 
 	onMount(async () => {
 		initializeLobbies();
@@ -44,14 +45,14 @@
 		});
 
 		if (res instanceof ReadableStream) {
-			console.log('Connected to server');
+			toastManager.addToast('Connected to RnS-PF', 'success');
 			serverStatus = 'connected';
 			jumpy();
 		}
 
 		// Handle a connection error
 		if (res instanceof TypeError) {
-			console.log('Error connecting to server');
+			toastManager.addToast('Error connecting to RnS-PF', 'success');
 			serverStatus = 'disconnected';
 		}
 	}

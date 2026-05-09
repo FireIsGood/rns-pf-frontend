@@ -2,6 +2,7 @@
 	import '../app.css';
 	import DiscordIcon from '$lib/assets/Discord Logo.svelte';
 	import ThemeToggle from './theme-toggle.svelte';
+	import ToastManager from '$lib/ToastManager.svelte.svelte';
 
 	let { children } = $props();
 
@@ -93,6 +94,8 @@
 		<div class="square" style={`--offset-base: ${index}`}></div>
 	{/each}
 </div>
+
+<ToastManager />
 
 <style>
 	.discord-link {
