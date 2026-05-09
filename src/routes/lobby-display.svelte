@@ -7,7 +7,7 @@
 	import CharacterIcon from './character-icon.svelte';
 	import sayaImage from '$lib/assets/saya_shop.gif';
 
-	let { lobbies }: { lobbies: Lobby[] } = $props();
+	let { lobbies, totalLobbies }: { lobbies: Lobby[]; totalLobbies: number } = $props();
 </script>
 
 {#snippet characterIcon(character: number | null, palette: number | null)}
@@ -19,7 +19,9 @@
 {/snippet}
 
 <div class="lobby-listing">
-	<p class="title is-4 has-text-centered">Lobbies ({lobbies.length})</p>
+	<p class="title is-4 has-text-centered">
+		Lobbies ({lobbies.length}{#if lobbies.length !== totalLobbies}/{totalLobbies}{/if})
+	</p>
 	<div class="overlap-children">
 		{#if lobbies.length === 0}
 			<div class="py-4" transition:fly={{ duration: 400, y: 5 }}>

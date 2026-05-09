@@ -185,7 +185,7 @@
 		<Notifications {newLobbies} />
 	</div>
 	<div class="column">
-		<LobbyDisplay lobbies={lobbiesFiltered} />
+		<LobbyDisplay lobbies={lobbiesFiltered} totalLobbies={lobbies.length} />
 	</div>
 </section>
 
