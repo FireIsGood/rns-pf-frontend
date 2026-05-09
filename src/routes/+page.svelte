@@ -35,11 +35,12 @@
 				}
 
 				lobbies = chunk.data;
+			} else {
+				// Heartbeat! Bunny for visual
+				jumpy();
 			}
 
-			// Show user ping happened
 			lastUpdate = new Date().getTime() / 1000;
-			jumpy();
 		});
 	}
 
@@ -212,14 +213,14 @@
 			</div>
 		</div>
 		<Notifications {newLobbies} />
-		<div class="grid is-col-min-2 is-size-7 is-gap-1 px-2">
+		<div class="uptime-text is-size-7 px-2">
 			<p class="cell">
-				Connection: {#if timeSinceLastUpdate < 30}<span
-						class="has-text-success has-text-weight-semibold">Yeah</span
+				connection: {#if timeSinceLastUpdate < 30}<span
+						class="has-text-success has-text-weight-semibold">yeah</span
 					>{:else if timeSinceLastUpdate < 60}<span
-						class="has-text-warning has-text-weight-semibold">Uh oh</span
-					>{:else}<span class="has-text-danger has-text-weight-semibold">It's cooked.</span> (reload the
-					page!){/if}
+						class="has-text-warning has-text-weight-semibold">uh oh</span
+					>{:else}<span class="has-text-danger has-text-weight-semibold">No</span>
+					<br /><em>(reload the page!)</em>{/if}
 			</p>
 			<button class="cell has-text-centered" class:jumping onclick={jumpy}>🐇</button>
 			<p class="cell has-text-right">
@@ -293,6 +294,12 @@
 		--bulma-button-background-l-delta: calc(40% * sign(var(--bulma-active-border-l-delta)));
 	}
 
+	.uptime-text {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		gap: 0.5rem;
+	}
+
 	.jumping {
 		animation: jumpy 250ms linear;
 		user-select: none;
@@ -303,13 +310,13 @@
 			translate: 0 0;
 		}
 		20% {
-			translate: 0 -4px;
+			translate: 0 -2px;
 		}
 		50% {
-			translate: 0 -5px;
+			translate: 0 -3px;
 		}
 		60% {
-			translate: 0 -5px;
+			translate: 0 -3px;
 		}
 		100% {
 			translate: 0 0;
