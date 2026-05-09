@@ -25,7 +25,7 @@
 	<nav class="navbar has-background-primary-soft">
 		<div class="container">
 			<div class="navbar-brand">
-				<a href="/" class="navbar-item">R&amp;S Partyfinder</a>
+				<a href="/" class="navbar-item is-size-4 has-text-weight-semibold">R&amp;S Partyfinder</a>
 				<!-- svelte-ignore a11y_missing_attribute -->
 				<a
 					role="button"
