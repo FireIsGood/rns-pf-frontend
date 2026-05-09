@@ -5,6 +5,7 @@
 	import { tracking, typewriter } from '$lib/util.svelte';
 	import StageIcon from './start-icon.svelte';
 	import CharacterIcon from './character-icon.svelte';
+	import CopyButton from './copy-button.svelte';
 	import sayaImage from '$lib/assets/saya_shop.gif';
 	import spellManifestImage from '$lib/assets/spell_manifest.gif';
 	import { onMount } from 'svelte';
@@ -156,11 +157,14 @@
 					<div class="lobby-card-text">
 						<div class="lobby-name breakable">
 							<div class="lobby-text-label is-size-7 has-text-weight-medium">name</div>
-							<p>{lobby.name}</p>
+							<p class="lobby-name-text">{lobby.name}</p>
 						</div>
-						<div class="breakable">
+						<div class="lobby-description breakable">
 							<div class="lobby-text-label is-size-7 has-text-weight-medium">description</div>
-							<p>{lobby.desc}</p>
+							<p class="lobby-description-text">
+								{lobby.desc}
+							</p>
+							<CopyButton text={lobby.desc} />
 						</div>
 					</div>
 				</div>
@@ -192,7 +196,6 @@
 			var(--bulma-scheme-s),
 			calc(var(--bulma-scheme-main-l) + var(--bulma-active-border-l-delta))
 		);
-		line-height: 1;
 		overflow: clip;
 
 		&::after {
@@ -242,13 +245,36 @@
 
 	.lobby-text-label {
 		position: absolute;
-		top: -0.5rem;
+		top: -0.75rem;
 		opacity: 0.2;
 		user-select: none;
 	}
 
 	.lobby-name {
 		max-width: 16ch;
+	}
+
+	.lobby-description {
+		display: grid;
+		column-gap: 0.5rem;
+		grid-template-areas: 'text copy';
+		align-items: center;
+		position: relative;
+
+		.lobby-text-label,
+		.lobby-description-text {
+			grid-area: text;
+		}
+	}
+
+	.lobby-name-text,
+	.lobby-description-text {
+		overflow: hidden;
+		width: 100%;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
 	}
 
 	@container lobby-card (width < 600px) {
