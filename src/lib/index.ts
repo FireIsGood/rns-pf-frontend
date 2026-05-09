@@ -118,3 +118,7 @@ export const classMap: Record<number, ClassName> = {
 	12: 'Grenadier',
 	13: 'Shadow'
 };
+
+export function pickRandom<T>(list: T[]): T {
+	return list[Math.floor(list.length * Math.random())];
+}

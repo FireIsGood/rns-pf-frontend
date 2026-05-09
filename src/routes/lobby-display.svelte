@@ -1,13 +1,58 @@
 <script lang="ts">
-	import { difficultyClassMap, difficultyMap, type Lobby } from '$lib';
-	import { fly } from 'svelte/transition';
+	import { difficultyClassMap, difficultyMap, pickRandom, type Lobby } from '$lib';
+	import { fade, fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
-	import { tracking } from '$lib/util.svelte';
+	import { tracking, typewriter } from '$lib/util.svelte';
 	import StageIcon from './start-icon.svelte';
 	import CharacterIcon from './character-icon.svelte';
 	import sayaImage from '$lib/assets/saya_shop.gif';
+	import spellManifestImage from '$lib/assets/spell_manifest.gif';
+	import { onMount } from 'svelte';
 
 	let { lobbies, totalLobbies }: { lobbies: Lobby[]; totalLobbies: number } = $props();
+
+	// Spell Manifest
+	let spellManifestQuoteList = [
+		// From voice lines as an enemy and dialog
+		'Terrbily lonely....',
+		'Are you... alone...?',
+		"You're alone....",
+		'Terribly, terribly lonely.....',
+		"You're alone... you're alone...?",
+		"...But don't you know....?",
+		"That's... That's too sad....!",
+		'Rabbits.... lonely rabbits.... they....',
+		'Where are your friends...?',
+		'Terribly lonely.... everyone.....',
+		'You need friends...!'
+	];
+	let spellManifestQuote = $state<string>();
+
+	// Saya
+	let sayaQuoteList = [
+		// From voice lines as enemy and shopkeeper
+		'...Hm...',
+		'Well, well...',
+		'Hello.',
+		'Another puzzle.',
+		'Can your mind grasp these insights?',
+		'Onto the next lesson.'
+	];
+	let sayaQuote = $state<string>();
+
+	let lastLobbyCount = $state(0);
+	onMount(() => {
+		spellManifestQuote = pickRandom(spellManifestQuoteList);
+		sayaQuote = pickRandom(sayaQuoteList);
+	});
+
+	$effect(() => {
+		if (lobbies.length !== lastLobbyCount) {
+			spellManifestQuote = pickRandom(spellManifestQuoteList);
+			sayaQuote = pickRandom(sayaQuoteList);
+		}
+		lastLobbyCount = lobbies.length;
+	});
 </script>
 
 {#snippet characterIcon(character: number | null, palette: number | null)}
@@ -24,14 +69,54 @@
 	</p>
 	<div class="overlap-children">
 		{#if lobbies.length === 0}
-			<div class="py-4" transition:fly={{ duration: 400, y: 5 }}>
-				<div class="saya-stack overlap-children mx-auto mt-6 mb-4">
-					<div class="flight-ring-root">
-						<div class="flight-ring"></div>
+			<div class="overlap-children" transition:fly={{ duration: 400 }}>
+				{#if totalLobbies === 0}
+					<div class="py-4" transition:fly={{ duration: 600, x: 10 }}>
+						<div class="dialog-root" style="--character-color: #ff3651">
+							<div class="dialog-content">
+								<div class="character-stack overlap-children mx-auto mt-6 mb-4">
+									<div class="flight-ring-root">
+										<div class="flight-ring"></div>
+									</div>
+									<img src={spellManifestImage} alt="" class="image spell-manifest-image is-1by1" />
+								</div>
+								<div class="has-text-centered has-text-weight-medium">
+									<p class="pb-1">No lobbies found</p>
+								</div>
+							</div>
+							{#if spellManifestQuote}
+								<div class="dialog-box" in:fade|global={{ duration: 200 }}>
+									<div class="dialog-text" in:typewriter|global={{ speed: 3 }}>
+										{spellManifestQuote}
+									</div>
+								</div>
+							{/if}
+						</div>
 					</div>
-					<img src={sayaImage} alt="" class="image saya-image is-1by1" />
-				</div>
-				<p class="has-text-centered has-text-weight-medium">No lobbies found</p>
+				{:else}
+					<div class="py-4" transition:fly={{ duration: 600, x: -10 }}>
+						<div class="dialog-root" style="--character-color: #6d55ff">
+							<div class="dialog-content">
+								<div class="character-stack overlap-children mx-auto mt-6 mb-4">
+									<div class="flight-ring-root">
+										<div class="flight-ring"></div>
+									</div>
+									<img src={sayaImage} alt="" class="image saya-image is-1by1" />
+								</div>
+								<div class="has-text-centered has-text-weight-medium">
+									<p class="pb-1">No lobbies matched all filters</p>
+								</div>
+							</div>
+							{#if sayaQuote}
+								<div class="dialog-box" in:fade|global={{ duration: 200 }}>
+									<div class="dialog-text" in:typewriter|global={{ speed: 3 }}>
+										{sayaQuote}
+									</div>
+								</div>
+							{/if}
+						</div>
+					</div>
+				{/if}
 			</div>
 		{/if}
 		<div class="lobby-list">
@@ -79,6 +164,10 @@
 <style>
 	.lobby-listing {
 		padding-top: 1.25rem;
+	}
+
+	.lobby-list {
+		height: max-content;
 	}
 
 	.lobby-card {
@@ -190,15 +279,24 @@
 		}
 	}
 
-	.saya-stack {
+	.character-stack {
+		place-items: center;
 		width: fit-content;
-		--character-color: #6d55ff;
+		user-select: none;
+		pointer-events: none;
+		height: 200px;
 	}
 
 	.saya-image {
 		width: 200px;
 		scale: -1 1;
-		translate: -4px 0px;
+		translate: -4px -20px;
+	}
+
+	.spell-manifest-image {
+		width: 165px;
+		scale: -1 1;
+		translate: -0px -2px;
 	}
 
 	.flight-ring-root {
@@ -212,7 +310,6 @@
 	.flight-ring {
 		height: 170px;
 		width: 170px;
-		translate: 0 20px;
 		background-color: color-mix(in srgb, var(--character-color) 100%, #fff 50%);
 		background-blend-mode: screen;
 		opacity: 0.5;
@@ -226,6 +323,62 @@
 		}
 		100% {
 			rotate: 1turn;
+		}
+	}
+
+	.dialog-root {
+		anchor-scope: all;
+	}
+
+	.dialog-content {
+		anchor-name: --dialog;
+		position: relative;
+	}
+
+	.dialog-box {
+		--dialog-background: rgb(from var(--bulma-scheme-main-ter) r g b);
+		--dialog-border: color-mix(in srgb, var(--character-color) 100%, #000 50%);
+		position: absolute;
+		position-anchor: --dialog;
+		position-area: top;
+		background-color: var(--dialog-background);
+		border: 2px solid var(--dialog-border);
+		border-radius: 8px;
+		font-weight: 500;
+		padding: 0.5rem 0.75rem;
+		text-align: center;
+		min-height: 2.5rem;
+		min-width: 2.5rem;
+		max-width: 32ch;
+
+		&::before {
+			content: '';
+			position: absolute;
+			left: 50%;
+			bottom: -12px;
+			width: 24px;
+			height: 24px;
+			background-color: var(--dialog-background);
+			margin-left: -12px;
+			box-shadow: 2px 2px 0px var(--dialog-border);
+			transform: rotate(45deg);
+			border-width: 0;
+			scale: 0.5 0;
+			animation: dialog-line-in 200ms 100ms forwards;
+		}
+	}
+
+	.dialog-text {
+		position: relative;
+		z-index: 1;
+	}
+
+	@keyframes dialog-line-in {
+		from {
+			scale: 0.5 0;
+		}
+		to {
+			scale: 0.5 1;
 		}
 	}
 </style>
