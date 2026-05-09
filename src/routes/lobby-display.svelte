@@ -10,7 +10,7 @@
 </script>
 
 {#snippet characterIcon(character: number | null, palette: number | null)}
-	{#if character}
+	{#if character !== null}
 		<CharacterIcon {character} palette={palette ?? 0} class="image is-1by1 is-32x32" />
 	{:else}
 		<div class="empty-character image is-1by1 is-32x32"></div>
