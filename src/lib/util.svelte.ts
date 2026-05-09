@@ -36,6 +36,8 @@ class Tracking {
 		} else {
 			console.error(`Tried to remove tracking of ${lobbyName} but it was not being tracked.`);
 		}
+
+		this.syncLocalstorage();
 	}
 
 	private syncLocalstorage() {
