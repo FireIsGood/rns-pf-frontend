@@ -102,21 +102,23 @@
 		&::after {
 			--bookmark-color: hsl(
 				var(--bulma-info-h),
-				var(--bulma-info-s),
-				calc(var(--bulma-soft-l) + var(--bulma-hover-border-l-delta))
+				40%,
+				calc(var(--bulma-scheme-main-l) + var(--bulma-active-border-l-delta))
 			);
+
+			--width: 0.6rem;
+
 			content: '';
 			position: absolute;
-			top: -1px;
-			right: 1rem;
-			width: 1.25rem;
-			border-left: 0.625rem solid var(--bookmark-color);
-			border-right: 0.625rem solid var(--bookmark-color);
-			border-bottom: 0.625rem solid transparent;
-			height: 2rem;
+			top: 0;
+			right: 0.75rem;
+			border-left: var(--width) solid var(--bookmark-color);
+			border-right: var(--width) solid var(--bookmark-color);
+			border-bottom: var(--width) solid transparent;
+			height: 1.5rem;
 
 			translate: 0 -100%;
-			transition: translate 100ms;
+			transition: translate 400ms;
 		}
 
 		&.tracked {

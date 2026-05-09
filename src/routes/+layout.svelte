@@ -70,8 +70,18 @@
 
 <style>
 	.discord-link {
+		--bulma-button-h: var(--discord-h);
+		--bulma-button-s: var(--discord-s);
+		--bulma-button-v: var(--discord-v);
+
 		display: inline-flex;
 		gap: 0.5em;
+		border: 1px solid;
+		border-color: hsl(
+			var(--bulma-button-h),
+			var(--bulma-button-s),
+			calc(var(--bulma-scheme-main-l) + var(--bulma-active-border-l-delta))
+		);
 	}
 
 	.footer {
