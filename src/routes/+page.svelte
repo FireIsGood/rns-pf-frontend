@@ -22,7 +22,7 @@
 	});
 
 	async function initializeLobbies() {
-		return await connectStream((chunk) => {
+		connectStream((chunk) => {
 			const shouldNotify = chunk.id !== 1;
 			if (shouldNotify) {
 				const currentIds = new Set(lobbies.map((l) => l.id));
