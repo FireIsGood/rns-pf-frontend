@@ -4,6 +4,8 @@
 	import ThemeToggle from './theme-toggle.svelte';
 
 	let { children } = $props();
+
+	let navbarBurgerActive = $state(false);
 </script>
 
 <svelte:head>
@@ -22,14 +24,32 @@
 	<nav class="navbar has-background-primary-soft">
 		<div class="container">
 			<div class="navbar-brand">
-				<a href="/" class="navbar-item title">R&amp;S Partyfinder</a>
+				<a href="/" class="navbar-item">R&amp;S Partyfinder</a>
+				<!-- svelte-ignore a11y_missing_attribute -->
+				<a
+					role="button"
+					class="navbar-burger"
+					class:is-active={navbarBurgerActive}
+					aria-label="menu"
+					aria-expanded={navbarBurgerActive}
+					tabindex="0"
+					onclick={() => (navbarBurgerActive = !navbarBurgerActive)}
+					onkeydown={(e) => {
+						if (e.key === 'Enter') navbarBurgerActive = !navbarBurgerActive;
+					}}
+				>
+					<span aria-hidden="true"></span>
+					<span aria-hidden="true"></span>
+					<span aria-hidden="true"></span>
+					<span aria-hidden="true"></span>
+				</a>
 			</div>
-			<div class="navbar-end">
-				<span class="navbar-item"
+			<div class="navbar-menu" class:is-active={navbarBurgerActive}>
+				<span class="navbar-item ml-auto"
 					><a
 						href="https://discord.com/invite/mns"
 						target="_blank"
-						class="button is-info is-soft discord-link"><DiscordIcon /> mino_dev Discord</a
+						class="discord-link button is-info is-soft"><DiscordIcon /> mino_dev Discord</a
 					></span
 				>
 				<span class="navbar-item is-size-4 is-line-height-1"><ThemeToggle /></span>
