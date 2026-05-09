@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Lobby } from '$lib';
 	import { tracking } from '$lib/util.svelte';
-	import { onMount } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 
