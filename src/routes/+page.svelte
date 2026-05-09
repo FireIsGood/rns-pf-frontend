@@ -22,7 +22,7 @@
 	});
 
 	async function initializeLobbies() {
-		connectStream((chunk) => {
+		const res = await connectStream((chunk) => {
 			if (chunk !== null) {
 				const shouldNotify = chunk.id !== 1;
 				if (shouldNotify) {
@@ -42,6 +42,18 @@
 
 			lastUpdate = new Date().getTime() / 1000;
 		});
+
+		if (res instanceof ReadableStream) {
+			console.log('Connected to server');
+			serverStatus = 'connected';
+			jumpy();
+		}
+
+		// Handle a connection error
+		if (res instanceof TypeError) {
+			console.log('Error connecting to server');
+			serverStatus = 'disconnected';
+		}
 	}
 
 	let lobbies: Lobby[] = $state([]);
@@ -103,6 +115,9 @@
 	}
 
 	let filterModalActive = $state(false);
+
+	type ServerStatus = 'connected' | 'disconnected' | undefined;
+	let serverStatus: ServerStatus = $state();
 	let lastUpdate = $state(0);
 	let intervalId: NodeJS.Timeout;
 	let timeSinceLastUpdate = $state(0);
@@ -215,12 +230,18 @@
 		<Notifications {newLobbies} />
 		<div class="uptime-text is-size-7 px-2">
 			<p class="cell">
-				connection: {#if timeSinceLastUpdate < 30}<span
-						class="has-text-success has-text-weight-semibold">yeah</span
-					>{:else if timeSinceLastUpdate < 60}<span
-						class="has-text-warning has-text-weight-semibold">uh oh</span
-					>{:else}<span class="has-text-danger has-text-weight-semibold">No</span>
-					<br /><em>(reload the page!)</em>{/if}
+				connection:
+				{#if serverStatus === undefined}
+					<span class="has-text-info has-text-weight-semibold">loading...</span>
+				{:else if serverStatus === 'disconnected' || timeSinceLastUpdate >= 60}
+					<span class="has-text-danger has-text-weight-semibold">No</span>
+					<br />
+					<em>(reload the page!)</em>
+				{:else if timeSinceLastUpdate >= 30}
+					<span class="has-text-warning has-text-weight-semibold">uh oh</span>
+				{:else}
+					<span class="has-text-success has-text-weight-semibold">yeah</span>
+				{/if}
 			</p>
 			<button class="cell has-text-centered" class:jumping onclick={jumpy}>🐇</button>
 			<p class="cell has-text-right">
