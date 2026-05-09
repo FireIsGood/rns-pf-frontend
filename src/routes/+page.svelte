@@ -20,6 +20,7 @@
 
 	onMount(async () => {
 		initializeLobbies();
+		loadFilters();
 	});
 
 	async function initializeLobbies() {
@@ -81,11 +82,35 @@
 		Lunar: lunarIcon
 	};
 
+	// Evil way to persist these to local storage
 	let destinationFilter: AreaName | 'Any' = $state('Any');
 	let difficultyFilter: Difficulty | 'Any' = $state('Any');
 	let passwordFilter: boolean | 'Any' = $state('Any');
 	let modFilter: boolean | 'Any' = $state('Any');
 	let modClientShow: boolean = $state(false);
+
+	function loadFilters() {
+		const filtersRaw = localStorage.getItem('lobbyFilters');
+		if (filtersRaw === null) return;
+
+		const filters = JSON.parse(filtersRaw);
+		destinationFilter = filters['destinationFilter'] ?? 'Any';
+		difficultyFilter = filters['difficultyFilter'] ?? 'Any';
+		passwordFilter = filters['passwordFilter'] ?? 'Any';
+		modFilter = filters['modFilter'] ?? 'Any';
+		modClientShow = filters['modClientShow'] ?? false;
+	}
+
+	$effect(() => {
+		const filters = {
+			destinationFilter,
+			difficultyFilter,
+			passwordFilter,
+			modFilter,
+			modClientShow
+		};
+		localStorage.setItem('lobbyFilters', JSON.stringify(filters));
+	});
 
 	let lobbiesFiltered = $derived(
 		lobbies
