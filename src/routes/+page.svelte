@@ -13,6 +13,8 @@
 	import normalIcon from '$lib/assets/difficulties/Normal.png';
 	import hardIcon from '$lib/assets/difficulties/Hard.png';
 	import lunarIcon from '$lib/assets/difficulties/Lunar.png';
+	import XIcon from '$lib/assets/x.svelte';
+	import GearIcon from '$lib/assets/gear.svelte';
 	import { connectStream } from '$lib/stream-api';
 
 	onMount(async () => {
@@ -66,6 +68,7 @@
 	let difficultyFilter: Difficulty | 'Any' = $state('Any');
 	let passwordFilter: boolean | 'Any' = $state('Any');
 	let modFilter: boolean | 'Any' = $state('Any');
+	let modClientShow: boolean = $state(false);
 
 	let lobbiesFiltered = $derived(
 		lobbies
@@ -74,7 +77,8 @@
 					(destinationFilter === 'Any' || destinationFilter === areaMap[l.stage_first]) &&
 					(difficultyFilter === 'Any' || difficultyFilter === difficultyMap[l.difficulty]) &&
 					(passwordFilter === 'Any' || passwordFilter === l.password_locked) &&
-					(modFilter === 'Any' || modFilter === l.modded)
+					(modFilter === 'Any' || modFilter === l.modded) &&
+					(modClientShow === true || !isClientModified(l.online_version))
 			)
 			.toSorted(
 				(l1, l2) =>
@@ -84,6 +88,14 @@
 					(+(+l2.id < +l1.id) * 2 - 1) // Lower ID > Higher ID
 			)
 	);
+
+	function isClientModified(version: number): boolean {
+		const online_v1 = 300 <= version && version < 500;
+		const online_v2 = 500 <= version && version < 600;
+		return !(online_v1 || online_v2);
+	}
+
+	let filterModalActive = $state(false);
 </script>
 
 {#snippet filterButton(iconSrc: string, highlighted: boolean, callback: () => void)}
@@ -97,6 +109,13 @@
 		<div class="card">
 			<header class="card-header">
 				<p class="card-header-title">Filter Lobbies</p>
+				<button
+					class="button card-header-icon is-size-5"
+					aria-label="collapse"
+					onclick={() => (filterModalActive = true)}
+				>
+					<GearIcon />
+				</button>
 			</header>
 			<div class="card-content">
 				<div class="mb-1 has-text-centered is-size-7">Destination</div>
@@ -169,6 +188,33 @@
 		<LobbyDisplay lobbies={lobbiesFiltered} />
 	</div>
 </section>
+
+<div class="modal" class:is-active={filterModalActive}>
+	<div class="modal-background"></div>
+	<div class="modal-content">
+		<div class="card">
+			<header class="card-header">
+				<p class="card-header-title">Filter Options</p>
+				<button
+					class="button card-header-icon is-size-5"
+					aria-label="close"
+					onclick={() => (filterModalActive = false)}
+				>
+					<XIcon />
+				</button>
+			</header>
+			<div class="card-content">
+				<label class="checkbox pb-1"
+					><input type="checkbox" bind:checked={modClientShow} /> Show modified clients</label
+				>
+				<p class="is-size-7">
+					(Mostly <a href="https://github.com/NotNite/RNSReloaded" target="_blank">RnS Reloaded</a> or
+					other steam versions/betas)
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
 
 <style>
 	@media print, screen and (min-width: 769px) {

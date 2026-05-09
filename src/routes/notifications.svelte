@@ -81,8 +81,10 @@
 					<span>{name}</span>
 					<button
 						class="delete-button has-text-danger has-text-weight-bold"
-						onclick={() => removeTracking(name)}>&times;</button
+						onclick={() => removeTracking(name)}
 					>
+						<XIcon />
+					</button>
 				</span>
 			{/each}
 		</div>
@@ -133,25 +135,5 @@
 		font-size: 1.25em;
 		padding-inline: 0.25rem;
 		margin-inline: -0.25rem;
-	}
-
-	.modal {
-		opacity: 0;
-		transition:
-			opacity 200ms,
-			display 200ms allow-discrete;
-	}
-	.modal.is-active {
-		opacity: 1;
-		animation: fade-in 400ms;
-	}
-
-	@keyframes fade-in {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
 	}
 </style>
