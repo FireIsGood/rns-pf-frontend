@@ -22,8 +22,10 @@
 			</div>
 			<div class="navbar-end">
 				<span class="navbar-item"
-					><a href="https://discord.com/invite/mns" class="button is-info is-soft discord-link"
-						><DiscordIcon /> mino_dev Discord</a
+					><a
+						href="https://discord.com/invite/mns"
+						target="_blank"
+						class="button is-info is-soft discord-link"><DiscordIcon /> mino_dev Discord</a
 					></span
 				>
 				<span class="navbar-item is-size-4 is-line-height-1"><ThemeToggle /></span>
