@@ -51,7 +51,9 @@
 				<strong class="has-text-weight-normal">R&amp;S Partyfinder API</strong> by
 				<strong class="has-text-weight-normal">Functional Lalafell</strong>.
 			</li>
-			<li><a href="/">Source Code</a></li>
+			<li>
+				<a href="https://github.com/FireIsGood/rns-pf-frontend" target="_blank">Source Code</a>
+			</li>
 		</ul>
 		<ul>
 			<li>
