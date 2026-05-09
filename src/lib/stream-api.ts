@@ -19,7 +19,7 @@ type StreamChunk = {
 
 export async function connectStream(callback: (chunk: StreamChunk) => void) {
 	const stream = await fetch(
-		`${PUBLIC_API_ENDPOINT}/lobbies/stream?format=json&uncensored=true`
+		`${PUBLIC_API_ENDPOINT}/lobbies/stream?format=json&modified=true&uncensored=true`
 	).then((response) => {
 		const reader = response.body?.getReader();
 		if (reader === undefined) {
@@ -63,7 +63,6 @@ export async function connectStream(callback: (chunk: StreamChunk) => void) {
 							return;
 						}
 
-						controller.enqueue(value);
 						return pump();
 					});
 				}
