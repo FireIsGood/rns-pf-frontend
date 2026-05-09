@@ -130,30 +130,38 @@
 					transition:fly={{ duration: 400, x: 20 }}
 					animate:flip={{ duration: 400 }}
 				>
-					<StageIcon {lobby} />
-					<div class="lobby-difficulty is-size-5 has-text-primary has-text-weight-semibold">
-						{difficultyMap[lobby.difficulty]}
+					<div class="lobby-card-main">
+						<StageIcon {lobby} />
+						<div class="lobby-difficulty is-size-5 has-text-primary has-text-weight-semibold">
+							{difficultyMap[lobby.difficulty]}
+						</div>
+						<div class="player-list">
+							{@render characterIcon(lobby.char0, lobby.palette0)}
+							{#if lobby.max_players >= 2}
+								{@render characterIcon(lobby.char1, lobby.palette1)}
+							{/if}
+							{#if lobby.max_players >= 3}
+								{@render characterIcon(lobby.char2, lobby.palette2)}
+							{/if}
+							{#if lobby.max_players >= 4}
+								{@render characterIcon(lobby.char3, lobby.palette3)}
+							{/if}
+							<span class="player-spectator-count is-size-7"
+								>({lobby.member_num > lobby.player_num
+									? lobby.member_num - lobby.player_num
+									: 0})</span
+							>
+						</div>
 					</div>
-					<div class="player-list">
-						{@render characterIcon(lobby.char0, lobby.palette0)}
-						{#if lobby.max_players >= 2}
-							{@render characterIcon(lobby.char1, lobby.palette1)}
-						{/if}
-						{#if lobby.max_players >= 3}
-							{@render characterIcon(lobby.char2, lobby.palette2)}
-						{/if}
-						{#if lobby.max_players >= 4}
-							{@render characterIcon(lobby.char3, lobby.palette3)}
-						{/if}
-						<span class="player-spectator-count is-size-7"
-							>({lobby.member_num > lobby.player_num
-								? lobby.member_num - lobby.player_num
-								: 0})</span
-						>
-					</div>
-					<div class="columns is-mobile is-flex-grow-1 is-align-items-center">
-						<div class="column is-4 breakable lobby-name">{lobby.name}</div>
-						<div class="column breakable">{lobby.desc}</div>
+					<div class="lobby-card-text">
+						<div class="lobby-name breakable">
+							<div class="lobby-text-label is-size-7 has-text-weight-medium">name</div>
+							<p>{lobby.name}</p>
+						</div>
+						<div class="breakable">
+							<div class="lobby-text-label is-size-7 has-text-weight-medium">description</div>
+							<p>{lobby.desc}</p>
+						</div>
 					</div>
 				</div>
 			{/each}
@@ -168,24 +176,23 @@
 
 	.lobby-list {
 		height: max-content;
+		container: lobby-card / inline-size;
 	}
 
 	.lobby-card {
 		--bulma-primary-h: var(--difficulty-h);
 
+		display: grid;
+		gap: 1.5rem 1rem;
+		grid-template-columns: auto 1fr;
 		padding: 1rem 1.25rem;
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 1rem;
-		grid-template-columns: 4rem 8rem 1fr 1fr 1fr;
 		border: 1px solid;
 		border-color: hsl(
 			var(--bulma-primary-h),
 			var(--bulma-scheme-s),
 			calc(var(--bulma-scheme-main-l) + var(--bulma-active-border-l-delta))
 		);
-		line-height: 1.25;
+		line-height: 1;
 		overflow: clip;
 
 		&::after {
@@ -214,6 +221,40 @@
 			&::after {
 				translate: 0;
 			}
+		}
+	}
+
+	.lobby-card-main {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		grid-template-columns: 4rem 8rem 1fr 1fr 1fr;
+	}
+
+	.lobby-card-text {
+		position: relative;
+		display: grid;
+		grid-template-columns: 4fr 8fr;
+		align-items: center;
+	}
+
+	.lobby-text-label {
+		position: absolute;
+		top: -0.5rem;
+		opacity: 0.2;
+		user-select: none;
+	}
+
+	.lobby-name {
+		max-width: 16ch;
+	}
+
+	@container lobby-card (width < 600px) {
+		.lobby-card {
+			grid-template-columns: 1fr;
+		}
+		.lobby-text-label {
+			top: -0.75rem;
 		}
 	}
 
@@ -261,10 +302,6 @@
 
 			border-radius: 100%;
 		}
-	}
-
-	.lobby-name {
-		max-width: 16ch;
 	}
 
 	.breakable {
