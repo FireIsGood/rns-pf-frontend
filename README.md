@@ -45,14 +45,4 @@ To preview the build:
 pnpm run preview
 ```
 
-Load the production app at port 3000:
-
-```bash
-node build
-```
-
-Load the production app at an arbitrary port such as 4000
-
-```bash
-PORT=4000 node build
-```
+The site will be built to `/build` and can be statically hosted.
