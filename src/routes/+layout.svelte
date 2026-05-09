@@ -12,6 +12,10 @@
 	<link rel="shortcut icon" href="/favicon.ico" />
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 	<link rel="manifest" href="/site.webmanifest" />
+
+	<title>R&amp;S Party Finder</title>
+	<meta name="name" content="R&S Party Finder" />
+	<meta name="description" content="Look up R&S open lobbies from the browser." />
 </svelte:head>
 
 <header>
