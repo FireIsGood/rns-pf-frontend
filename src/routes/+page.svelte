@@ -25,15 +25,12 @@
 	async function initializeLobbies() {
 		const res = await connectStream((chunk) => {
 			if (chunk !== null) {
-				const shouldNotify = chunk.id !== 1;
-				if (shouldNotify) {
-					const currentIds = new Set(lobbies.map((l) => l.id));
-					const updatedIds = new Set(chunk.data.map((l) => l.id));
-					const diffIds = updatedIds.difference(currentIds);
-					const diffLobbies = chunk.data.filter((l) => diffIds.has(l.id));
+				const currentIds = new Set(lobbies.map((l) => l.id));
+				const updatedIds = new Set(chunk.data.map((l) => l.id));
+				const diffIds = updatedIds.difference(currentIds);
+				const diffLobbies = chunk.data.filter((l) => diffIds.has(l.id));
 
-					newLobbies = diffLobbies;
-				}
+				newLobbies = diffLobbies;
 
 				lobbies = chunk.data;
 			} else {

@@ -37,21 +37,13 @@
 	// Watch for lobby changes
 	$effect(() => {
 		const notifyLobbies = newLobbies.filter((l) => tracking.trackingNames.includes(l.name));
-		if (notifyLobbies.length > 0) {
-			const notOnPage = !document.hasFocus();
-			if (Notification.permission === 'granted' && notOnPage) {
-				for (const lobby of notifyLobbies) {
-					const lobbyNotification = new Notification('Rabbit and Steel Partyfinder', {
-						body: `Lobby: ${lobby.name} (${lobby.desc})`,
-						icon: `/favicon-96x96.png`,
-						silent: tracking.silentNotify
-					});
-
-					// Auto-close when viewing page
-					document.addEventListener('visibilitychange', () => lobbyNotification.close(), {
-						once: true
-					});
-				}
+		if (Notification.permission === 'granted') {
+			for (const lobby of notifyLobbies) {
+				new Notification('Rabbit and Steel Partyfinder', {
+					body: `Lobby: ${lobby.name} (${lobby.desc})`,
+					icon: `/favicon-96x96.png`,
+					silent: tracking.silentNotify
+				});
 			}
 		}
 	});
