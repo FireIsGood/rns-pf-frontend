@@ -114,7 +114,7 @@
 	}
 
 	.lobby-difficulty {
-		min-width: 8ch;
+		min-width: 5.5ch;
 	}
 
 	.cute {
