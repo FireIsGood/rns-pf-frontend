@@ -37,7 +37,9 @@
 				lobbies = chunk.data;
 			}
 
+			// Show user ping happened
 			lastUpdate = new Date().getTime() / 1000;
+			jumpy();
 		});
 	}
 
@@ -113,6 +115,16 @@
 			clearInterval(intervalId);
 		};
 	});
+
+	// Ping indicator
+	let jumping = $state(false);
+	function jumpy() {
+		jumping = false;
+		// Wait a frame so that the animation is canceled
+		requestAnimationFrame(() => {
+			jumping = true;
+		});
+	}
 </script>
 
 {#snippet filterButton(iconSrc: string, highlighted: boolean, callback: () => void)}
@@ -200,8 +212,8 @@
 			</div>
 		</div>
 		<Notifications {newLobbies} />
-		<div class="is-flex is-size-7 is-gap-1 is-justify-content-space-between px-2">
-			<p>
+		<div class="grid is-col-min-2 is-size-7 is-gap-1 px-2">
+			<p class="cell">
 				Connection: {#if timeSinceLastUpdate < 30}<span
 						class="has-text-success has-text-weight-semibold">Yeah</span
 					>{:else if timeSinceLastUpdate < 60}<span
@@ -209,7 +221,8 @@
 					>{:else}<span class="has-text-danger has-text-weight-semibold">It's cooked.</span> (reload the
 					page!){/if}
 			</p>
-			<p>
+			<button class="cell has-text-centered" class:jumping onclick={jumpy}>🐇</button>
+			<p class="cell has-text-right">
 				synchronized <span class="is-family-code has-text-weight-semibold"
 					>{timeSinceLastUpdate}</span
 				>s ago
@@ -278,5 +291,28 @@
 
 	.highlighted {
 		--bulma-button-background-l-delta: calc(40% * sign(var(--bulma-active-border-l-delta)));
+	}
+
+	.jumping {
+		animation: jumpy 250ms linear;
+		user-select: none;
+	}
+
+	@keyframes jumpy {
+		0% {
+			translate: 0 0;
+		}
+		20% {
+			translate: 0 -4px;
+		}
+		50% {
+			translate: 0 -5px;
+		}
+		60% {
+			translate: 0 -5px;
+		}
+		100% {
+			translate: 0 0;
+		}
 	}
 </style>
