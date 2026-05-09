@@ -196,7 +196,6 @@
 			var(--bulma-scheme-s),
 			calc(var(--bulma-scheme-main-l) + var(--bulma-active-border-l-delta))
 		);
-		overflow: clip;
 
 		&::after {
 			--bookmark-color: hsl(
@@ -205,7 +204,7 @@
 				calc(var(--bulma-scheme-main-l) + var(--bulma-active-border-l-delta))
 			);
 
-			--width: 0.6rem;
+			--width: 0.4rem;
 
 			content: '';
 			position: absolute;
@@ -214,15 +213,19 @@
 			border-left: var(--width) solid var(--bookmark-color);
 			border-right: var(--width) solid var(--bookmark-color);
 			border-bottom: var(--width) solid transparent;
-			height: 1.5rem;
+			height: 1.125rem;
 
+			opacity: 0;
 			translate: 0 -100%;
-			transition: translate 400ms;
+			transition:
+				translate 400ms,
+				opacity 400ms;
 		}
 
 		&.tracked {
 			&::after {
 				translate: 0;
+				opacity: 1;
 			}
 		}
 	}

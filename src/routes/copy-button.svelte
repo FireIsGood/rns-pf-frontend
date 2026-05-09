@@ -33,6 +33,8 @@
 
 <style>
 	.copy-button {
+		z-index: 1;
+
 		&:hover {
 			color: hsl(
 				var(--bulma-text-h),
