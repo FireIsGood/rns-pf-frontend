@@ -75,5 +75,3 @@ export async function connectStream(callback: (chunk: StreamChunk) => void) {
 
 	return stream;
 }
-
-export {};
