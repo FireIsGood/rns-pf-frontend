@@ -6,6 +6,7 @@
 	import GearIcon from '$lib/assets/gear.svelte';
 	import XIcon from '$lib/assets/x.svelte';
 	import { toastManager } from '$lib/toastStore.svelte';
+	import { browser } from '$app/environment';
 
 	let { newLobbies }: { newLobbies: Lobby[] } = $props();
 
@@ -90,8 +91,10 @@
 				<input type="text" placeholder="Lobby name" class="input" bind:value={trackingFormValue} />
 			</div>
 			<div class="control">
-				<button class="button is-primary is-soft" onclick={() => addTracking(trackingFormValue)}
-					>Add Tracking</button
+				<button
+					class="button is-primary is-soft"
+					onclick={() => addTracking(trackingFormValue)}
+					disabled={!browser}>Add Tracking</button
 				>
 			</div>
 		</fieldset>

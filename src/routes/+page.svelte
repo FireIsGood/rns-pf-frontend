@@ -17,6 +17,7 @@
 	import GearIcon from '$lib/assets/gear.svelte';
 	import { connectStream } from '$lib/stream-api';
 	import { toastManager } from '$lib/toastStore.svelte';
+	import { browser } from '$app/environment';
 
 	onMount(async () => {
 		initializeLobbies();
@@ -167,7 +168,7 @@
 </script>
 
 {#snippet filterButton(iconSrc: string, highlighted: boolean, callback: () => void)}
-	<button class="button p-1 is-flex-grow-1" class:highlighted onclick={callback}
+	<button class="button p-1 is-flex-grow-1" class:highlighted onclick={callback} disabled={!browser}
 		><img src={iconSrc} alt="" class="image is-1by1 is-24x24" /></button
 	>
 {/snippet}
@@ -194,6 +195,7 @@
 						onclick={() => {
 							destinationFilter = 'Any';
 						}}
+						disabled={!browser}
 					>
 						<AreaIcon area="Unknown" class="image is-1by1 is-24x24" /></button
 					>
@@ -204,6 +206,7 @@
 							onclick={() => {
 								destinationFilter = destination;
 							}}
+							disabled={!browser}
 						>
 							<AreaIcon area={destination} class="image is-1by1 is-24x24" /></button
 						>
