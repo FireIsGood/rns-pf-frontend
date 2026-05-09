@@ -128,14 +128,20 @@
 	.square {
 		--offset: calc(var(--offset-base));
 		--size: calc(240px * var(--offset));
+		--square-color: hsl(
+			var(--bulma-primary-h) calc(var(--bulma-primary-s) - 10%)
+				calc(var(--bulma-soft-l) + 15% * sign(var(--bulma-active-border-l-delta)))
+		);
+		--square-shadow-color: hsl(
+			var(--bulma-primary-h) calc(var(--bulma-primary-s) - 10%)
+				calc(var(--bulma-soft-l) + 50% * sign(var(--bulma-active-border-l-delta))) / 0.25
+		);
+
 		width: var(--size);
 		height: var(--size);
-		border: 4px solid
-			hsl(
-				var(--bulma-primary-h) calc(var(--bulma-primary-s) - 10%)
-					calc(var(--bulma-soft-l) + 15% * sign(var(--bulma-active-border-l-delta))) /
-					min(calc(0.125 * var(--offset) / 2), 0.25)
-			);
+		border: 4px solid var(--square-color);
+		opacity: min(calc(0.125 * (var(--offset) - 0.5)), 0.25);
+
 		position: absolute;
 		translate: 25% -45%;
 		right: 30%;
@@ -144,6 +150,9 @@
 
 		--initial-rotation: 0.08turn;
 		rotate: var(--initial-rotation);
+		box-shadow:
+			0 0 12px -1px var(--square-shadow-color),
+			0 0 12px -1px var(--square-shadow-color) inset;
 
 		animation:
 			spin 40s linear infinite,
@@ -157,7 +166,7 @@
 
 	@keyframes spin {
 		from {
-			rotate: calc(var(--initial-rotation) + 0turn);
+			rotate: var(--initial-rotation);
 		}
 		to {
 			rotate: calc(var(--initial-rotation) - 0.25turn);
