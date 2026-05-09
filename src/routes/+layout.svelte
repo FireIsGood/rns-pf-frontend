@@ -154,22 +154,11 @@
 			0 0 12px -1px var(--square-shadow-color),
 			0 0 12px -1px var(--square-shadow-color) inset;
 
-		animation:
-			spin 40s linear infinite,
-			zoom 12s linear infinite;
+		animation: zoom 24s linear infinite;
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.square {
 			animation: unset;
-		}
-	}
-
-	@keyframes spin {
-		from {
-			rotate: var(--initial-rotation);
-		}
-		to {
-			rotate: calc(var(--initial-rotation) - 0.25turn);
 		}
 	}
 
