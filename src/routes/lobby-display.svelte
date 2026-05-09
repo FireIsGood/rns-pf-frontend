@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { difficultyClassMap, difficultyMap, type Lobby } from '$lib';
 	import { fly } from 'svelte/transition';
-	import StageIcon from './start-icon.svelte';
-	import CharacterIcon from './character-icon.svelte';
 	import { flip } from 'svelte/animate';
 	import { tracking } from '$lib/util.svelte';
+	import StageIcon from './start-icon.svelte';
+	import CharacterIcon from './character-icon.svelte';
+	import sayaImage from '$lib/assets/saya_shop.gif';
 
 	let { lobbies }: { lobbies: Lobby[] } = $props();
 </script>
@@ -18,54 +19,64 @@
 {/snippet}
 
 <div class="lobby-listing">
-	<p class="subtitle has-text-centered">Lobbies ({lobbies.length})</p>
-	<div class="lobby-list">
-		{#each lobbies as lobby (lobby.id)}
-			<div
-				class={[
-					'lobby-card card px-4 py-3 has-background-primary-soft',
-					difficultyClassMap[lobby.difficulty],
-					tracking.trackingNames.includes(lobby.name) && 'tracked'
-				]}
-				transition:fly={{ duration: 200, x: 20 }}
-				animate:flip={{ duration: 200 }}
-			>
-				<StageIcon {lobby} />
-				<div class="lobby-difficulty is-size-5 has-text-primary has-text-weight-semibold">
-					{difficultyMap[lobby.difficulty]}
+	<p class="title is-4 has-text-centered">Lobbies ({lobbies.length})</p>
+	<div class="overlap-children">
+		{#if lobbies.length === 0}
+			<div class="py-4" transition:fly={{ duration: 400, y: 5 }}>
+				<div class="saya-stack overlap-children mx-auto mt-6 mb-4">
+					<div class="flight-ring-root">
+						<div class="flight-ring"></div>
+					</div>
+					<img src={sayaImage} alt="" class="image saya-image is-1by1" />
 				</div>
-				<div class="player-list">
-					{@render characterIcon(lobby.char0, lobby.palette0)}
-					{#if lobby.max_players >= 2}
-						{@render characterIcon(lobby.char1, lobby.palette1)}
-					{/if}
-					{#if lobby.max_players >= 3}
-						{@render characterIcon(lobby.char2, lobby.palette2)}
-					{/if}
-					{#if lobby.max_players >= 4}
-						{@render characterIcon(lobby.char3, lobby.palette3)}
-					{/if}
-					<span class="player-spectator-count is-size-7"
-						>({lobby.member_num > lobby.player_num ? lobby.member_num - lobby.player_num : 0})</span
-					>
-				</div>
-				<div class="columns is-mobile is-flex-grow-1 is-align-items-center">
-					<div class="column is-4 breakable lobby-name">{lobby.name}</div>
-					<div class="column breakable">{lobby.desc}</div>
-				</div>
+				<p class="has-text-centered has-text-weight-medium">No lobbies found</p>
 			</div>
-			<!-- {:else} -->
-			<!-- 	<div class="content py-4 has-text-centered has-text-primary has-text-weight-light"> -->
-			<!-- 		<p class="title is-4">No lobbies found...</p> -->
-			<!-- 		<p class="subtitle is-5">The night calms</p> -->
-			<!-- 	</div> -->
-		{/each}
+		{/if}
+		<div class="lobby-list">
+			{#each lobbies as lobby (lobby.id)}
+				<div
+					class={[
+						'lobby-card card px-4 py-3 has-background-primary-soft',
+						difficultyClassMap[lobby.difficulty],
+						tracking.trackingNames.includes(lobby.name) && 'tracked'
+					]}
+					transition:fly={{ duration: 400, x: 20 }}
+					animate:flip={{ duration: 400 }}
+				>
+					<StageIcon {lobby} />
+					<div class="lobby-difficulty is-size-5 has-text-primary has-text-weight-semibold">
+						{difficultyMap[lobby.difficulty]}
+					</div>
+					<div class="player-list">
+						{@render characterIcon(lobby.char0, lobby.palette0)}
+						{#if lobby.max_players >= 2}
+							{@render characterIcon(lobby.char1, lobby.palette1)}
+						{/if}
+						{#if lobby.max_players >= 3}
+							{@render characterIcon(lobby.char2, lobby.palette2)}
+						{/if}
+						{#if lobby.max_players >= 4}
+							{@render characterIcon(lobby.char3, lobby.palette3)}
+						{/if}
+						<span class="player-spectator-count is-size-7"
+							>({lobby.member_num > lobby.player_num
+								? lobby.member_num - lobby.player_num
+								: 0})</span
+						>
+					</div>
+					<div class="columns is-mobile is-flex-grow-1 is-align-items-center">
+						<div class="column is-4 breakable lobby-name">{lobby.name}</div>
+						<div class="column breakable">{lobby.desc}</div>
+					</div>
+				</div>
+			{/each}
+		</div>
 	</div>
 </div>
 
 <style>
 	.lobby-listing {
-		padding-block: 1.25rem;
+		padding-top: 1.25rem;
 	}
 
 	.lobby-card {
@@ -165,5 +176,52 @@
 
 	.breakable {
 		word-break: break-word;
+	}
+
+	.overlap-children {
+		display: grid;
+
+		> * {
+			grid-area: 1 / -1;
+		}
+	}
+
+	.saya-stack {
+		width: fit-content;
+		--character-color: #6d55ff;
+	}
+
+	.saya-image {
+		width: 200px;
+		scale: -1 1;
+		translate: -4px 0px;
+	}
+
+	.flight-ring-root {
+		width: 200px;
+		height: 200px;
+		position: absolute;
+		display: grid;
+		place-items: center;
+	}
+
+	.flight-ring {
+		height: 170px;
+		width: 170px;
+		translate: 0 20px;
+		background-color: color-mix(in srgb, var(--character-color) 100%, #fff 50%);
+		background-blend-mode: screen;
+		opacity: 0.5;
+		animation: spin 10000ms linear infinite;
+		mask: url('$lib/assets/flight_ring.png') 0 0 / 100% 100%;
+	}
+
+	@keyframes spin {
+		0% {
+			rotate: 0;
+		}
+		100% {
+			rotate: 1turn;
+		}
 	}
 </style>
