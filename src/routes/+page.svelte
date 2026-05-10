@@ -4,6 +4,7 @@
 	import AreaIcon from './area-icon.svelte';
 	import LobbyDisplay from './lobby-display.svelte';
 	import Notifications from './notifications.svelte';
+	import Uptime from './uptime.svelte';
 	import lockIcon from '$lib/assets/Lock Icon.png';
 	import unlockIcon from '$lib/assets/Unlock Icon.png';
 	import modIcon from '$lib/assets/Mod Icon.png';
@@ -18,7 +19,8 @@
 	import { connectStream } from '$lib/stream-api';
 	import { toastManager } from '$lib/toastStore.svelte';
 	import { browser } from '$app/environment';
-	import { appState } from '$lib/util.svelte';
+	import { appState, sendEvent, ServerStatus } from '$lib/util.svelte';
+	import type { uptimeMessage } from './uptime.svelte';
 
 	onMount(async () => {
 		initializeLobbies();
@@ -36,24 +38,23 @@
 				newLobbies = diffLobbies;
 
 				appState.lobbies = chunk.data;
+				sendEvent<uptimeMessage>('uptimeMessage', { type: 'synchronized' });
 			} else {
 				// Heartbeat! Bunny for visual
-				jumpy();
+				sendEvent<uptimeMessage>('uptimeMessage', { type: 'heartbeat' });
 			}
-
-			lastUpdate = new Date().getTime() / 1000;
 		});
 
 		if (res instanceof ReadableStream) {
 			toastManager.addToast('Connected to RnS-PF', 'success');
-			serverStatus = 'connected';
-			jumpy();
+			appState.serverStatus = ServerStatus.CONNECTED;
+			sendEvent<uptimeMessage>('uptimeMessage', { type: 'connected' });
 		}
 
 		// Handle a connection error
 		if (res instanceof TypeError) {
 			toastManager.addToast('Error connecting to RnS-PF', 'warn');
-			serverStatus = 'disconnected';
+			appState.serverStatus = ServerStatus.DISCONNECTED;
 		}
 	}
 
@@ -136,33 +137,6 @@
 		const online_v1 = 300 <= version && version < 500;
 		const online_v2 = 500 <= version && version < 600;
 		return online_v1 || online_v2;
-	}
-
-	// Connection
-	type ServerStatus = 'connected' | 'disconnected' | undefined;
-	let serverStatus: ServerStatus = $state();
-	let lastUpdate = $state(0);
-	let intervalId: NodeJS.Timeout;
-	let timeSinceLastUpdate = $state(0);
-	$effect(() => {
-		lastUpdate; // To cause this to be called when adjusted
-
-		timeSinceLastUpdate = 0;
-
-		intervalId = setInterval(() => (timeSinceLastUpdate += 1), 1000);
-		return () => {
-			clearInterval(intervalId);
-		};
-	});
-
-	// Ping indicator
-	let jumping = $state(false);
-	function jumpy() {
-		jumping = false;
-		// Wait a frame so that the animation is canceled
-		requestAnimationFrame(() => {
-			jumping = true;
-		});
 	}
 
 	let filterModalActive = $state(false);
@@ -255,28 +229,7 @@
 			</div>
 		</div>
 		<Notifications {newLobbies} />
-		<div class="uptime-text is-size-7 px-2">
-			<p class="cell">
-				connection:
-				{#if serverStatus === undefined}
-					<span class="has-text-info has-text-weight-semibold">loading...</span>
-				{:else if serverStatus === 'disconnected' || timeSinceLastUpdate >= 60}
-					<span class="has-text-danger has-text-weight-semibold">No</span>
-					<br />
-					<em>(reload the page!)</em>
-				{:else if timeSinceLastUpdate >= 30}
-					<span class="has-text-warning has-text-weight-semibold">uh oh</span>
-				{:else}
-					<span class="has-text-success has-text-weight-semibold">yeah</span>
-				{/if}
-			</p>
-			<button class="cell has-text-centered" class:jumping onclick={jumpy}>🐇</button>
-			<p class="cell has-text-right">
-				synchronized <span class="is-family-code has-text-weight-semibold"
-					>{timeSinceLastUpdate}</span
-				>s ago
-			</p>
-		</div>
+		<Uptime />
 	</div>
 	<div class="column">
 		<LobbyDisplay />
@@ -340,34 +293,5 @@
 
 	.highlighted {
 		--bulma-button-background-l-delta: calc(40% * sign(var(--bulma-active-border-l-delta)));
-	}
-
-	.uptime-text {
-		display: grid;
-		grid-template-columns: 1fr auto 1fr;
-		gap: 0.5rem;
-	}
-
-	.jumping {
-		animation: jumpy 250ms linear;
-		user-select: none;
-	}
-
-	@keyframes jumpy {
-		0% {
-			translate: 0 0;
-		}
-		20% {
-			translate: 0 -2px;
-		}
-		50% {
-			translate: 0 -3px;
-		}
-		60% {
-			translate: 0 -3px;
-		}
-		100% {
-			translate: 0 0;
-		}
 	}
 </style>

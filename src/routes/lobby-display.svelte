@@ -109,6 +109,9 @@
 								</div>
 								<div class="content has-text-centered has-text-weight-medium">
 									<p>No lobbies matched all filters</p>
+									<button class="button is-primary is-outlined" onclick={() => {}}
+										>Reset filters</button
+									>
 								</div>
 							</div>
 							{#if sayaQuote}

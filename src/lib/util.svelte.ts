@@ -22,14 +22,22 @@ export const appSettings = persistedState<AppSettings>(
 	}
 );
 
+export enum ServerStatus {
+	CONNECTED,
+	DISCONNECTED,
+	PENDING
+}
+
 interface AppState {
 	lobbies: Lobby[];
 	lobbiesFiltered: Lobby[];
+	serverStatus: ServerStatus;
 }
 
 export const appState = $state<AppState>({
 	lobbies: [],
-	lobbiesFiltered: []
+	lobbiesFiltered: [],
+	serverStatus: ServerStatus.PENDING
 });
 
 export function typewriter(node: HTMLElement, { speed = 1 }: { speed?: number }) {
@@ -62,4 +70,11 @@ export async function copyText(text: string) {
 
 export function pickRandom<T>(list: T[]): T {
 	return list[Math.floor(list.length * Math.random())];
+}
+
+export function sendEvent<T>(type: string, eventData: T) {
+	const customEvent = new CustomEvent<T>(type, {
+		detail: eventData
+	});
+	document.dispatchEvent(customEvent);
 }
