@@ -29,12 +29,14 @@ export const appSettings = persistedState<AppSettings>('app', defaultSettings, {
 	}
 });
 
-interface LobbyFilters {
-	destination: AreaName | 'Any';
-	difficulty: Difficulty | 'Any';
-	password: boolean | 'Any';
-	mods: boolean | 'Any';
-}
+type LobbyFilterAny = 'Any';
+
+export type LobbyFilters = {
+	destination: AreaName | LobbyFilterAny;
+	difficulty: Difficulty | LobbyFilterAny;
+	password: boolean | LobbyFilterAny;
+	mods: boolean | LobbyFilterAny;
+};
 
 const defaultFilters: LobbyFilters = {
 	destination: 'Any',

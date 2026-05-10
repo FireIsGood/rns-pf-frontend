@@ -10,6 +10,7 @@
 	import sayaImage from '$lib/assets/saya_shop.gif';
 	import spellManifestImage from '$lib/assets/spell_manifest.gif';
 	import { onMount } from 'svelte';
+	import FilterTags from './filter-tags.svelte';
 
 	let trackingNames = appSettings.current.trackingNames;
 
@@ -80,6 +81,7 @@
 			.length}{#if appState.lobbiesFiltered.length !== appState.lobbies.length}/{appState.lobbies
 				.length}{/if})
 	</p>
+	<FilterTags />
 	<div class="overlap-children">
 		{#if debouncedHydrationComplete && appState.lobbiesFiltered.length === 0}
 			<div class="overlap-children" transition:fly={{ duration: 400, x: -10 }}>
