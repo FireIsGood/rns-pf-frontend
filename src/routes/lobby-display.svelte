@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { difficultyClassMap, difficultyMap, type Lobby } from '$lib';
+	import { difficultyClassMap, difficultyMap } from '$lib';
 	import { appSettings, appState, lobbyFilters, pickRandom } from '$lib/util.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
@@ -42,12 +42,16 @@
 	];
 	let sayaQuote = $state<string>();
 
-	let lastLobbyCount = $state(0);
+	let debouncedHydrationComplete: boolean = $state(false);
 	onMount(() => {
 		spellManifestQuote = pickRandom(spellManifestQuoteList);
 		sayaQuote = pickRandom(sayaQuoteList);
+		setTimeout(() => {
+			debouncedHydrationComplete = true;
+		}, 200);
 	});
 
+	let lastLobbyCount = $state(0);
 	$effect(() => {
 		if (appState.lobbies.length !== lastLobbyCount) {
 			spellManifestQuote = pickRandom(spellManifestQuoteList);
@@ -72,8 +76,8 @@
 				.length}{/if})
 	</p>
 	<div class="overlap-children">
-		{#if appState.lobbiesFiltered.length === 0}
-			<div class="overlap-children" transition:fly={{ duration: 400 }}>
+		{#if debouncedHydrationComplete && appState.lobbiesFiltered.length === 0}
+			<div class="overlap-children" transition:fly={{ duration: 400, x: -10 }}>
 				{#if appState.lobbies.length === 0}
 					<div class="py-4" transition:fly={{ duration: 600, x: 10 }}>
 						<div class="dialog-root" style="--character-color: #ff3651">
@@ -89,7 +93,7 @@
 								</div>
 							</div>
 							{#if spellManifestQuote}
-								<div class="dialog-box" in:fade|global={{ duration: 200 }}>
+								<div class="dialog-box" in:fade|global={{ duration: 200, delay: 200 }}>
 									<div class="dialog-text" in:typewriter|global={{ speed: 3 }}>
 										{spellManifestQuote}
 									</div>
@@ -118,7 +122,7 @@
 								</div>
 							</div>
 							{#if sayaQuote}
-								<div class="dialog-box" in:fade|global={{ duration: 200 }}>
+								<div class="dialog-box" in:fade|global={{ duration: 200, delay: 200 }}>
 									<div class="dialog-text" in:typewriter|global={{ speed: 3 }}>
 										{sayaQuote}
 									</div>
