@@ -199,8 +199,19 @@
 						clients</label
 					>
 					<p class="is-size-7">
-						(Mostly <a href="https://github.com/NotNite/RNSReloaded" target="_blank">RnS Reloaded</a
-						> or other steam versions/betas)
+						Mostly <a href="https://github.com/NotNite/RNSReloaded" target="_blank">RnS Reloaded</a> or
+						other steam versions/betas
+					</p>
+				</div>
+				<div class="field">
+					<label class="checkbox pb-1"
+						><input type="checkbox" bind:checked={appSettings.current.showUncensored} /> Show uncensored
+						lobby names</label
+					>
+					<p class="is-size-7">
+						Example: <strong
+							>{appSettings.current.showUncensored ? 'Rabbit-chat' : 'Rab******at'}</strong
+						>
 					</p>
 				</div>
 				<div class="field">

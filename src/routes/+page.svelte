@@ -1,20 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import LobbyDisplay from './lobby-display.svelte';
 	import Notifications from './notifications.svelte';
 	import Uptime from './uptime.svelte';
 	import { connectStream } from '$lib/stream-api';
 	import { toastManager } from '$lib/toastStore.svelte';
-	import { appState, sendEvent, ServerStatus } from '$lib/util.svelte';
+	import { appSettings, appState, sendEvent, ServerStatus } from '$lib/util.svelte';
 	import type { uptimeMessage } from './uptime.svelte';
 	import Filters from './filters.svelte';
 
-	onMount(() => {
-		initializeLobbies();
-	});
-
 	async function initializeLobbies() {
-		const res = await connectStream((chunk) => {
+		const res = await connectStream({ uncensored: appSettings.current.showUncensored }, (chunk) => {
 			if (chunk === null) {
 				sendEvent<uptimeMessage>('uptimeMessage', { type: 'heartbeat' });
 				return;
@@ -41,6 +36,10 @@
 			sendEvent<uptimeMessage>('uptimeMessage', { type: 'disconnected' });
 		}
 	}
+
+	$effect(() => {
+		initializeLobbies();
+	});
 </script>
 
 <section class="container section columns is-desktop">

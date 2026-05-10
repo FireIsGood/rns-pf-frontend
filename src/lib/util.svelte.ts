@@ -6,25 +6,26 @@ interface AppSettings {
 	trackingNotifySilent: boolean;
 	showClientMods: boolean;
 	saveFilters: boolean;
+	showUncensored: boolean;
 }
 
-export const appSettings = persistedState<AppSettings>(
-	'app',
-	{
-		trackingNames: [],
-		trackingNotifySilent: false,
-		showClientMods: false,
-		saveFilters: false
+const defaultSettings: AppSettings = {
+	trackingNames: [],
+	trackingNotifySilent: false,
+	showClientMods: false,
+	saveFilters: false,
+	showUncensored: false
+};
+
+export const appSettings = persistedState<AppSettings>('app', defaultSettings, {
+	beforeRead: (value) => Object.assign(value, defaultSettings),
+	onWriteError: (err) => {
+		console.error('Failed to write preferences', err);
 	},
-	{
-		onWriteError: (err) => {
-			console.error('Failed to write preferences', err);
-		},
-		onParseError: (err) => {
-			console.error('Failed to parse preferences', err);
-		}
+	onParseError: (err) => {
+		console.error('Failed to parse preferences', err);
 	}
-);
+});
 
 interface LobbyFilters {
 	destination: AreaName | 'Any';

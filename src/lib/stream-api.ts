@@ -17,9 +17,26 @@ type StreamChunk = {
 	data: Lobby[];
 };
 
-export function connectStream(callback: (chunk: StreamChunk | null) => void) {
-	const stream = fetch(
-		`${PUBLIC_API_ENDPOINT}/lobbies/stream?format=json&modified=true&uncensored=true`
+type StreamOptions = {
+	uncensored: boolean;
+};
+
+let currentStream: ReadableStream | null = null;
+let aborter: AbortController | null = null;
+
+export async function connectStream(
+	options: StreamOptions,
+	callback: (chunk: StreamChunk | null) => void
+) {
+	if (currentStream) {
+		await currentStream.cancel('Change in settings');
+		currentStream = null;
+	}
+
+	aborter = new AbortController();
+	const stream = await fetch(
+		`${PUBLIC_API_ENDPOINT}/lobbies/stream?format=json&modified=true&uncensored=${options.uncensored === true ? 'true' : 'false'}`,
+		{ signal: aborter.signal }
 	)
 		.then((response) => {
 			const reader = response.body?.getReader();
@@ -61,7 +78,6 @@ export function connectStream(callback: (chunk: StreamChunk | null) => void) {
 							}
 
 							if (done) {
-								console.log('Connection called a done method');
 								controller.close();
 								return;
 							}
@@ -71,7 +87,7 @@ export function connectStream(callback: (chunk: StreamChunk | null) => void) {
 					}
 				},
 				cancel(reason) {
-					console.log('Connection closed, reason:', reason);
+					aborter?.abort();
 				}
 			});
 		})
@@ -79,7 +95,16 @@ export function connectStream(callback: (chunk: StreamChunk | null) => void) {
 			if (err instanceof TypeError) {
 				return err;
 			}
+			if (aborter?.signal.aborted) {
+				return err;
+			}
 			console.error('Unknown error', err);
+			return err;
 		});
+
+	if (stream instanceof ReadableStream) {
+		currentStream = stream;
+	}
+
 	return stream;
 }
