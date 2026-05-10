@@ -1,4 +1,4 @@
-<script module>
+<script lang="ts" module>
 	export type uptimeMessage = {
 		type: 'synchronized' | 'heartbeat' | 'connected' | 'disconnected';
 	};

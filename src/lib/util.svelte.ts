@@ -1,16 +1,20 @@
-import type { Lobby } from '$lib';
+import type { AreaName, Difficulty, Lobby } from '$lib';
 import { persistedState } from 'svelte-persisted-state';
 
 interface AppSettings {
 	trackingNames: string[];
 	trackingNotifySilent: boolean;
+	showClientMods: boolean;
+	saveFilters: boolean;
 }
 
 export const appSettings = persistedState<AppSettings>(
 	'app',
 	{
 		trackingNames: [],
-		trackingNotifySilent: false
+		trackingNotifySilent: false,
+		showClientMods: false,
+		saveFilters: false
 	},
 	{
 		onWriteError: (err) => {
@@ -21,6 +25,36 @@ export const appSettings = persistedState<AppSettings>(
 		}
 	}
 );
+
+interface LobbyFilters {
+	destination: AreaName | 'Any';
+	difficulty: Difficulty | 'Any';
+	password: boolean | 'Any';
+	mods: boolean | 'Any';
+}
+
+const defaultFilters: LobbyFilters = {
+	destination: 'Any',
+	difficulty: 'Any',
+	password: 'Any',
+	mods: 'Any'
+};
+
+export const lobbyFilters = persistedState<LobbyFilters>('lobbyFilters', defaultFilters, {
+	beforeRead: (value) => {
+		if (appSettings.current.saveFilters === false) {
+			return defaultFilters;
+		}
+
+		return value;
+	},
+	onWriteError: (err) => {
+		console.error('Failed to write filters', err);
+	},
+	onParseError: (err) => {
+		console.error('Failed to parse filters', err);
+	}
+});
 
 export enum ServerStatus {
 	CONNECTED,

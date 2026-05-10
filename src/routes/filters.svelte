@@ -1,3 +1,9 @@
+<script lang="ts" module>
+	export type filterMessage = {
+		type: 'resetAll';
+	};
+</script>
+
 <script lang="ts">
 	import { areaMap, difficultyMap, type AreaName, type Difficulty } from '$lib';
 	import AreaIcon from './area-icon.svelte';
@@ -13,11 +19,24 @@
 	import hardIcon from '$lib/assets/difficulties/Hard.png';
 	import lunarIcon from '$lib/assets/difficulties/Lunar.png';
 	import { browser } from '$app/environment';
-	import { appState } from '$lib/util.svelte';
+	import { appSettings, appState, lobbyFilters } from '$lib/util.svelte';
 	import { onMount } from 'svelte';
 
 	onMount(() => {
-		loadFilters();
+		function handleMessage(e: Event) {
+			if (!(e instanceof CustomEvent)) return;
+			const event: CustomEvent<filterMessage> = e;
+			const eventType = event.detail.type;
+			switch (eventType) {
+				case 'resetAll':
+					break;
+			}
+		}
+		document.addEventListener('filterMessage', handleMessage);
+
+		return () => {
+			document.removeEventListener('filterMessage', handleMessage);
+		};
 	});
 
 	const allAreas: AreaName[] = [
@@ -44,45 +63,18 @@
 		Lunar: lunarIcon
 	};
 
-	// Evil way to persist these to local storage
-	let destinationFilter: AreaName | 'Any' = $state('Any');
-	let difficultyFilter: Difficulty | 'Any' = $state('Any');
-	let passwordFilter: boolean | 'Any' = $state('Any');
-	let modFilter: boolean | 'Any' = $state('Any');
-	let modClientShow: boolean = $state(false);
-
-	function loadFilters() {
-		const filtersRaw = localStorage.getItem('lobbyFilters');
-		if (filtersRaw === null) return;
-
-		const filters = JSON.parse(filtersRaw);
-		destinationFilter = filters['destinationFilter'] ?? 'Any';
-		difficultyFilter = filters['difficultyFilter'] ?? 'Any';
-		passwordFilter = filters['passwordFilter'] ?? 'Any';
-		modFilter = filters['modFilter'] ?? 'Any';
-		modClientShow = filters['modClientShow'] ?? false;
-	}
-
-	$effect(() => {
-		const filters = {
-			destinationFilter,
-			difficultyFilter,
-			passwordFilter,
-			modFilter,
-			modClientShow
-		};
-		localStorage.setItem('lobbyFilters', JSON.stringify(filters));
-	});
-
 	$effect(() => {
 		appState.lobbiesFiltered = appState.lobbies
 			.filter(
 				(l) =>
-					(destinationFilter === 'Any' || destinationFilter === areaMap[l.stage_first]) &&
-					(difficultyFilter === 'Any' || difficultyFilter === difficultyMap[l.difficulty]) &&
-					(passwordFilter === 'Any' || passwordFilter === l.password_locked) &&
-					(modFilter === 'Any' || modFilter === l.modded) &&
-					(modClientShow === true || isClientVanilla(l.online_version))
+					(lobbyFilters.current.destination === 'Any' ||
+						lobbyFilters.current.destination === areaMap[l.stage_first]) &&
+					(lobbyFilters.current.difficulty === 'Any' ||
+						lobbyFilters.current.difficulty === difficultyMap[l.difficulty]) &&
+					(lobbyFilters.current.password === 'Any' ||
+						lobbyFilters.current.password === l.password_locked) &&
+					(lobbyFilters.current.mods === 'Any' || lobbyFilters.current.mods === l.modded) &&
+					(appSettings.current.showClientMods === true || isClientVanilla(l.online_version))
 			)
 			.toSorted(
 				(l1, l2) =>
@@ -123,9 +115,9 @@
 		<fieldset class="filter-group" style="--group-count: 14">
 			<button
 				class="button py-1 px-0 is-flex-grow-1"
-				class:highlighted={destinationFilter === 'Any'}
+				class:highlighted={lobbyFilters.current.destination === 'Any'}
 				onclick={() => {
-					destinationFilter = 'Any';
+					lobbyFilters.current.destination = 'Any';
 				}}
 				disabled={!browser}
 			>
@@ -134,9 +126,9 @@
 			{#each allAreas as destination}
 				<button
 					class="button py-1 px-0 is-flex-grow-1"
-					class:highlighted={destinationFilter === destination}
+					class:highlighted={lobbyFilters.current.destination === destination}
 					onclick={() => {
-						destinationFilter = destination;
+						lobbyFilters.current.destination = destination;
 					}}
 					disabled={!browser}
 				>
@@ -146,41 +138,41 @@
 		</fieldset>
 		<div class="mb-1 has-text-centered is-size-7">Difficulty</div>
 		<fieldset class="filter-group">
-			{@render filterButton(unknownIcon, difficultyFilter === 'Any', () => {
-				difficultyFilter = 'Any';
+			{@render filterButton(unknownIcon, lobbyFilters.current.difficulty === 'Any', () => {
+				lobbyFilters.current.difficulty = 'Any';
 			})}
 			{#each allDifficulties as difficulty}
 				{@render filterButton(
 					difficultyIconMap[difficulty],
-					difficultyFilter === difficulty,
+					lobbyFilters.current.difficulty === difficulty,
 					() => {
-						difficultyFilter = difficulty;
+						lobbyFilters.current.difficulty = difficulty;
 					}
 				)}
 			{/each}
 		</fieldset>
 		<div class="mb-1 has-text-centered is-size-7">Password Locked</div>
 		<fieldset class="filter-group">
-			{@render filterButton(unknownIcon, passwordFilter === 'Any', () => {
-				passwordFilter = 'Any';
+			{@render filterButton(unknownIcon, lobbyFilters.current.password === 'Any', () => {
+				lobbyFilters.current.password = 'Any';
 			})}
-			{@render filterButton(lockIcon, passwordFilter === true, () => {
-				passwordFilter = true;
+			{@render filterButton(lockIcon, lobbyFilters.current.password === true, () => {
+				lobbyFilters.current.password = true;
 			})}
-			{@render filterButton(unlockIcon, passwordFilter === false, () => {
-				passwordFilter = false;
+			{@render filterButton(unlockIcon, lobbyFilters.current.password === false, () => {
+				lobbyFilters.current.password = false;
 			})}
 		</fieldset>
 		<div class="mb-1 has-text-centered is-size-7">Using Mods</div>
 		<fieldset class="filter-group">
-			{@render filterButton(unknownIcon, modFilter === 'Any', () => {
-				modFilter = 'Any';
+			{@render filterButton(unknownIcon, lobbyFilters.current.mods === 'Any', () => {
+				lobbyFilters.current.mods = 'Any';
 			})}
-			{@render filterButton(modIcon, modFilter === true, () => {
-				modFilter = true;
+			{@render filterButton(modIcon, lobbyFilters.current.mods === true, () => {
+				lobbyFilters.current.mods = true;
 			})}
-			{@render filterButton(noModIcon, modFilter === false, () => {
-				modFilter = false;
+			{@render filterButton(noModIcon, lobbyFilters.current.mods === false, () => {
+				lobbyFilters.current.mods = false;
 			})}
 		</fieldset>
 	</div>
@@ -201,13 +193,22 @@
 				</button>
 			</header>
 			<div class="card-content">
-				<label class="checkbox pb-1"
-					><input type="checkbox" bind:checked={modClientShow} /> Show modified clients</label
-				>
-				<p class="is-size-7">
-					(Mostly <a href="https://github.com/NotNite/RNSReloaded" target="_blank">RnS Reloaded</a> or
-					other steam versions/betas)
-				</p>
+				<div class="field">
+					<label class="checkbox pb-1"
+						><input type="checkbox" bind:checked={appSettings.current.showClientMods} /> Show modified
+						clients</label
+					>
+					<p class="is-size-7">
+						(Mostly <a href="https://github.com/NotNite/RNSReloaded" target="_blank">RnS Reloaded</a
+						> or other steam versions/betas)
+					</p>
+				</div>
+				<div class="field">
+					<label class="checkbox pb-1"
+						><input type="checkbox" bind:checked={appSettings.current.saveFilters} /> Save lobby filter
+						settings between sessions</label
+					>
+				</div>
 			</div>
 		</div>
 	</div>

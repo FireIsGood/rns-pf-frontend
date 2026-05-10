@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { difficultyClassMap, difficultyMap, type Lobby } from '$lib';
-	import { appSettings, appState, pickRandom } from '$lib/util.svelte';
+	import { appSettings, appState, lobbyFilters, pickRandom } from '$lib/util.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { typewriter } from '$lib/util.svelte';
@@ -109,8 +109,11 @@
 								</div>
 								<div class="content has-text-centered has-text-weight-medium">
 									<p>No lobbies matched all filters</p>
-									<button class="button is-primary is-outlined" onclick={() => {}}
-										>Reset filters</button
+									<button
+										class="button is-primary is-outlined"
+										onclick={() => {
+											lobbyFilters.reset();
+										}}>Reset filters</button
 									>
 								</div>
 							</div>
