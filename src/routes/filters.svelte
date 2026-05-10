@@ -6,8 +6,8 @@
 
 <script lang="ts">
 	import { areaMap, difficultyMap, type AreaName, type Difficulty } from '$lib';
+	import Modal from './modal.svelte';
 	import AreaIcon from './area-icon.svelte';
-	import XIcon from '$lib/assets/x.svelte';
 	import GearIcon from '$lib/assets/gear.svelte';
 	import lockIcon from '$lib/assets/Lock Icon.png';
 	import unlockIcon from '$lib/assets/Unlock Icon.png';
@@ -178,52 +178,39 @@
 	</div>
 </div>
 
-<div class="modal" class:is-active={filterModalActive}>
-	<div class="modal-background"></div>
-	<div class="modal-content">
-		<div class="card">
-			<header class="card-header">
-				<p class="card-header-title">Filter Options</p>
-				<button
-					class="button card-header-icon is-size-5"
-					aria-label="close"
-					onclick={() => (filterModalActive = false)}
-				>
-					<XIcon />
-				</button>
-			</header>
-			<div class="card-content">
-				<div class="field">
-					<label class="checkbox pb-1"
-						><input type="checkbox" bind:checked={appSettings.current.showClientMods} /> Show modified
-						clients</label
-					>
-					<p class="is-size-7">
-						Mostly <a href="https://github.com/NotNite/RNSReloaded" target="_blank">RnS Reloaded</a> or
-						other steam versions/betas
-					</p>
-				</div>
-				<div class="field">
-					<label class="checkbox pb-1"
-						><input type="checkbox" bind:checked={appSettings.current.showUncensored} /> Show uncensored
-						lobby names</label
-					>
-					<p class="is-size-7">
-						Example: <strong
-							>{appSettings.current.showUncensored ? 'Rabbit-chat' : 'Rab******at'}</strong
-						>
-					</p>
-				</div>
-				<div class="field">
-					<label class="checkbox pb-1"
-						><input type="checkbox" bind:checked={appSettings.current.saveFilters} /> Save lobby filter
-						settings between sessions</label
-					>
-				</div>
-			</div>
+<Modal bind:active={filterModalActive}>
+	{#snippet header()}
+		<p class="card-header-title">Filter Options</p>
+	{/snippet}
+	{#snippet children()}
+		<div class="field">
+			<label class="checkbox pb-1"
+				><input type="checkbox" bind:checked={appSettings.current.showClientMods} /> Show modified clients</label
+			>
+			<p class="is-size-7">
+				Mostly <a href="https://github.com/NotNite/RNSReloaded" target="_blank">RnS Reloaded</a> or other
+				steam versions/betas
+			</p>
 		</div>
-	</div>
-</div>
+		<div class="field">
+			<label class="checkbox pb-1"
+				><input type="checkbox" bind:checked={appSettings.current.showUncensored} /> Show uncensored lobby
+				names</label
+			>
+			<p class="is-size-7">
+				Example: <strong
+					>{appSettings.current.showUncensored ? 'Rabbit-chat' : 'Rab******at'}</strong
+				>
+			</p>
+		</div>
+		<div class="field">
+			<label class="checkbox pb-1"
+				><input type="checkbox" bind:checked={appSettings.current.saveFilters} /> Save lobby filter settings
+				between sessions</label
+			>
+		</div>
+	{/snippet}
+</Modal>
 
 <style>
 	.filter-group {

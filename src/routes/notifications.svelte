@@ -2,6 +2,7 @@
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 	import GearIcon from '$lib/assets/gear.svelte';
+	import Modal from './modal.svelte';
 	import XIcon from '$lib/assets/x.svelte';
 	import { toastManager } from '$lib/toastStore.svelte';
 	import { browser } from '$app/environment';
@@ -99,28 +100,16 @@
 	</div>
 </div>
 
-<div class="modal" class:is-active={notificationModalActive}>
-	<div class="modal-background"></div>
-	<div class="modal-content">
-		<div class="card">
-			<header class="card-header">
-				<p class="card-header-title">Notification Options</p>
-				<button
-					class="button card-header-icon is-size-5"
-					aria-label="close"
-					onclick={() => (notificationModalActive = false)}
-				>
-					<XIcon />
-				</button>
-			</header>
-			<div class="card-content">
-				<label class="checkbox"
-					><input type="checkbox" bind:checked={appSettings.current.trackingNotifySilent} /> Silent notifications</label
-				>
-			</div>
-		</div>
-	</div>
-</div>
+<Modal bind:active={notificationModalActive}>
+	{#snippet header()}
+		<p class="card-header-title">Notification Options</p>
+	{/snippet}
+	{#snippet children()}
+		<label class="checkbox"
+			><input type="checkbox" bind:checked={appSettings.current.trackingNotifySilent} /> Silent notifications</label
+		>
+	{/snippet}
+</Modal>
 
 <style>
 	.tracking-tag {
