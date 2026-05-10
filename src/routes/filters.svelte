@@ -189,7 +189,7 @@
 			>
 			<p class="is-size-7">
 				Mostly <a href="https://github.com/NotNite/RNSReloaded" target="_blank">RnS Reloaded</a> or other
-				steam versions/betas
+				steam versions/betas.
 			</p>
 		</div>
 		<div class="field">
