@@ -31,12 +31,14 @@ export enum ServerStatus {
 interface AppState {
 	lobbies: Lobby[];
 	lobbiesFiltered: Lobby[];
+	newLobbies: Lobby[];
 	serverStatus: ServerStatus;
 }
 
 export const appState = $state<AppState>({
 	lobbies: [],
 	lobbiesFiltered: [],
+	newLobbies: [],
 	serverStatus: ServerStatus.PENDING
 });
 

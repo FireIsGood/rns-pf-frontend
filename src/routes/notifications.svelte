@@ -1,14 +1,11 @@
 <script lang="ts">
-	import type { Lobby } from '$lib';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 	import GearIcon from '$lib/assets/gear.svelte';
 	import XIcon from '$lib/assets/x.svelte';
 	import { toastManager } from '$lib/toastStore.svelte';
 	import { browser } from '$app/environment';
-	import { appSettings } from '$lib/util.svelte';
-
-	let { newLobbies }: { newLobbies: Lobby[] } = $props();
+	import { appSettings, appState } from '$lib/util.svelte';
 
 	let trackingFormValue: string = $state('');
 	let trackingNames = appSettings.current.trackingNames;
@@ -43,7 +40,7 @@
 
 	// Watch for lobby changes
 	$effect(() => {
-		const notifyLobbies = newLobbies.filter((l) => trackingNames.includes(l.name));
+		const notifyLobbies = appState.newLobbies.filter((l) => trackingNames.includes(l.name));
 		if (Notification.permission === 'granted') {
 			for (const lobby of notifyLobbies) {
 				new Notification('Rabbit and Steel Partyfinder', {
