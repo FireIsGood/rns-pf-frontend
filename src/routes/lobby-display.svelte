@@ -76,10 +76,13 @@
 {/snippet}
 
 <div class="lobby-listing">
-	<p class="title is-4 has-text-centered">
-		Lobbies ({appState.lobbiesFiltered
-			.length}{#if appState.lobbiesFiltered.length !== appState.lobbies.length}/{appState.lobbies
-				.length}{/if})
+	<p class="lobby-title title is-4 has-text-centered">
+		<span class="lobby-title-text">Lobbies</span>
+		<span class="lobby-title-count"
+			>({appState.lobbiesFiltered
+				.length}{#if appState.lobbiesFiltered.length !== appState.lobbies.length}/{appState.lobbies
+					.length}{/if})</span
+		>
 	</p>
 	<FilterTags />
 	<div class="overlap-children">
@@ -205,6 +208,23 @@
 	@media (max-width: 1024px) {
 		.lobby-listing {
 			padding-block: 1rem 4rem;
+		}
+	}
+
+	@media (min-width: 1023px) {
+		.lobby-title {
+			display: grid;
+			grid-template-columns: 1fr auto 1fr;
+			grid-template-areas: '. text count';
+			gap: 0.5ch;
+
+			.lobby-title-text {
+				grid-area: text;
+			}
+			.lobby-title-count {
+				grid-area: count;
+				justify-self: flex-start;
+			}
 		}
 	}
 
