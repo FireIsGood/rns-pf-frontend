@@ -30,6 +30,9 @@
 
 			appState.lobbies = chunk.data;
 			sendEvent<uptimeMessage>('uptimeMessage', { type: 'synchronized' });
+		}).catch((err) => {
+			console.error(err);
+			return err;
 		});
 
 		if (res instanceof ReadableStream) {
