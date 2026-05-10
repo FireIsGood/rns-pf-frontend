@@ -13,7 +13,7 @@
 	let timeSinceLastUpdate = $state(0);
 
 	onMount(() => {
-		document.addEventListener('uptimeMessage', (e) => {
+		function handleMessage(e: Event) {
 			if (!(e instanceof CustomEvent)) return;
 			const event: CustomEvent<uptimeMessage> = e;
 			const eventType = event.detail.type;
@@ -31,9 +31,12 @@
 					intervalId = setInterval(() => (timeSinceLastUpdate += 1), 1000);
 					break;
 			}
-		});
+		}
+		document.addEventListener('uptimeMessage', handleMessage);
+
 		return () => {
 			clearInterval(intervalId);
+			document.removeEventListener('uptimeMessage', handleMessage);
 		};
 	});
 

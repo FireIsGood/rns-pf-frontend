@@ -29,20 +29,19 @@
 
 	async function initializeLobbies() {
 		const res = await connectStream((chunk) => {
-			if (chunk !== null) {
-				const currentIds = new Set(appState.lobbies.map((l) => l.id));
-				const updatedIds = new Set(chunk.data.map((l) => l.id));
-				const diffIds = updatedIds.difference(currentIds);
-				const diffLobbies = chunk.data.filter((l) => diffIds.has(l.id));
-
-				newLobbies = diffLobbies;
-
-				appState.lobbies = chunk.data;
-				sendEvent<uptimeMessage>('uptimeMessage', { type: 'synchronized' });
-			} else {
-				// Heartbeat! Bunny for visual
+			if (chunk === null) {
 				sendEvent<uptimeMessage>('uptimeMessage', { type: 'heartbeat' });
+				return;
 			}
+			const currentIds = new Set(appState.lobbies.map((l) => l.id));
+			const updatedIds = new Set(chunk.data.map((l) => l.id));
+			const diffIds = updatedIds.difference(currentIds);
+			const diffLobbies = chunk.data.filter((l) => diffIds.has(l.id));
+
+			newLobbies = diffLobbies;
+
+			appState.lobbies = chunk.data;
+			sendEvent<uptimeMessage>('uptimeMessage', { type: 'synchronized' });
 		});
 
 		if (res instanceof ReadableStream) {
@@ -50,11 +49,10 @@
 			appState.serverStatus = ServerStatus.CONNECTED;
 			sendEvent<uptimeMessage>('uptimeMessage', { type: 'connected' });
 		}
-
-		// Handle a connection error
 		if (res instanceof TypeError) {
 			toastManager.addToast('Error connecting to RnS-PF', 'warn');
 			appState.serverStatus = ServerStatus.DISCONNECTED;
+			sendEvent<uptimeMessage>('uptimeMessage', { type: 'disconnected' });
 		}
 	}
 
