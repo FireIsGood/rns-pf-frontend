@@ -144,6 +144,10 @@
 					transition:fly={{ duration: 400, x: 20 }}
 					animate:flip={{ duration: 400 }}
 				>
+					{#if trackingNames.includes(lobby.name) && 'tracked'}
+						<div class="lobby-card-glow" transition:fade={{ duration: 200 }}></div>
+						<div class="lobby-card-overlay" transition:fade={{ duration: 200 }}></div>
+					{/if}
 					<div class="lobby-card-main">
 						<StageIcon {lobby} />
 						<div class="lobby-difficulty is-size-5 has-text-primary has-text-weight-semibold">
@@ -191,6 +195,61 @@
 		padding-top: 1rem;
 	}
 
+	.lobby-card-glow {
+		pointer-events: none;
+		position: absolute;
+		inset: -2px;
+
+		&::before,
+		&::after {
+			pointer-events: none;
+			content: '';
+			border: 1px solid var(--card-color);
+			position: absolute;
+			inset: 0;
+			border-radius: calc(var(--bulma-card-radius) * 1.125);
+		}
+		&::before {
+			opacity: 0.5;
+			filter: blur(1px);
+		}
+		&::after {
+			opacity: 0.5;
+			filter: blur(4px);
+		}
+	}
+
+	.lobby-card-overlay {
+		pointer-events: none;
+		position: absolute;
+		inset: -2px;
+
+		&::before,
+		&::after {
+			pointer-events: none;
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: calc(var(--bulma-card-radius) * 1.25);
+			background-image: linear-gradient(
+				to bottom right,
+				var(--card-color),
+				rgb(from var(--card-color) r g b / 0.1) 1.5rem,
+				rgb(from var(--card-color) r g b / 0.15) calc(100% - 1.5rem),
+				var(--card-color)
+			);
+		}
+		&::before {
+			opacity: 0.6;
+			filter: blur(2px);
+		}
+		&::after {
+			inset: -4px;
+			opacity: 0.8;
+			filter: blur(8px);
+		}
+	}
+
 	.lobby-list {
 		height: max-content;
 		container: lobby-card / inline-size;
@@ -198,49 +257,23 @@
 
 	.lobby-card {
 		--bulma-primary-h: var(--difficulty-h);
+		--card-color: hsl(
+			var(--bulma-primary-h),
+			calc(var(--bulma-primary-s) + 50%),
+			calc(var(--bulma-primary-l) + 24%)
+		);
+		--border-color: hsl(
+			var(--bulma-primary-h),
+			var(--bulma-scheme-s),
+			calc(var(--bulma-scheme-main-l) + var(--bulma-active-border-l-delta))
+		);
 
 		display: grid;
 		gap: 1.5rem 1rem;
 		grid-template-columns: auto 1fr;
 		padding: 1rem 1.25rem;
 		border: 1px solid;
-		border-color: hsl(
-			var(--bulma-primary-h),
-			var(--bulma-scheme-s),
-			calc(var(--bulma-scheme-main-l) + var(--bulma-active-border-l-delta))
-		);
-
-		&::after {
-			--bookmark-color: hsl(
-				var(--bulma-info-h),
-				40%,
-				calc(var(--bulma-scheme-main-l) + var(--bulma-active-border-l-delta))
-			);
-
-			--width: 0.4rem;
-
-			content: '';
-			position: absolute;
-			top: 0;
-			right: 0.75rem;
-			border-left: var(--width) solid var(--bookmark-color);
-			border-right: var(--width) solid var(--bookmark-color);
-			border-bottom: var(--width) solid transparent;
-			height: 1.125rem;
-
-			opacity: 0;
-			translate: 0 -100%;
-			transition:
-				translate 400ms,
-				opacity 400ms;
-		}
-
-		&.tracked {
-			&::after {
-				translate: 0;
-				opacity: 1;
-			}
-		}
+		border-color: var(--border-color);
 	}
 
 	.lobby-card-main {
