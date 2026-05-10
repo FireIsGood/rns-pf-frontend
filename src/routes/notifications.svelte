@@ -7,6 +7,7 @@
 	import NotificationEnabled from '$lib/assets/bell-ringing.svelte';
 	import NotificationSilent from '$lib/assets/bell.svelte';
 	import NotificationDisabled from '$lib/assets/bell-slash.svelte';
+	import NotificationBackground from '$lib/assets/selection-background.svelte';
 	import { toastManager } from '$lib/toastStore.svelte';
 	import { browser } from '$app/environment';
 	import { appSettings, appState } from '$lib/util.svelte';
@@ -44,20 +45,28 @@
 		toastManager.addToast(`Untracked ${lobbyName}`, 'success');
 	}
 
+	function sendNotification(body: string) {
+		new Notification('Rabbit and Steel Partyfinder', {
+			body: body,
+			icon: `/favicon-96x96.png`,
+			silent: appSettings.current.trackingNotifySilent
+		});
+	}
+
 	// Watch for lobby changes
 	$effect(() => {
 		const notifyLobbies = appState.newLobbies.filter((l) => trackingNames.includes(l.name));
 		if (notificationPermission) {
-			for (const lobby of notifyLobbies) {
-				new Notification('Rabbit and Steel Partyfinder', {
-					body: `Lobby: ${lobby.name} (${lobby.desc})`,
-					icon: `/favicon-96x96.png`,
-					silent: appSettings.current.trackingNotifySilent
-				});
+			if (!appSettings.current.trackingNotifyBackgroundOnly || document.hasFocus()) {
+				for (const lobby of notifyLobbies) {
+					sendNotification(`Lobby: ${lobby.name} (${lobby.desc})`);
+				}
 			}
 		}
 	});
 
+	// Track notification permission status live
+	let notificationPermission: NotificationPermission = $state('default');
 	onMount(() => {
 		notificationPermission = Notification.permission;
 
@@ -69,7 +78,6 @@
 			});
 		}
 	});
-	let notificationPermission: NotificationPermission = $state('default');
 
 	let notificationModalActive = $state(false);
 </script>
@@ -79,11 +87,18 @@
 		<div class="card-header-title is-gap-1">
 			<p>Notifications</p>
 			{#if notificationPermission === 'granted'}
-				<div class="icon has-text-success is-size-6" in:fade={{ duration: 200 }}>
-					{#if appSettings.current.trackingNotifySilent}
-						<NotificationSilent />
-					{:else}
-						<NotificationEnabled />
+				<div in:fade={{ duration: 200 }}>
+					<div class="icon has-text-success is-size-6">
+						{#if appSettings.current.trackingNotifySilent}
+							<NotificationSilent />
+						{:else}
+							<NotificationEnabled />
+						{/if}
+					</div>
+					{#if appSettings.current.trackingNotifyBackgroundOnly}
+						<div class="icon has-text-info">
+							<NotificationBackground />
+						</div>
 					{/if}
 				</div>
 			{:else if notificationPermission === 'denied'}
@@ -156,7 +171,14 @@
 			<label class="checkbox"
 				><input type="checkbox" bind:checked={appSettings.current.trackingNotifySilent} /> Silent notifications</label
 			>
-			<p class="is-size-7">Effects depend on your device</p>
+			<p class="is-size-7">Effects depend on your device.</p>
+		</div>
+		<div class="field">
+			<label class="checkbox"
+				><input type="checkbox" bind:checked={appSettings.current.trackingNotifyBackgroundOnly} /> Notify
+				in only background</label
+			>
+			<p class="is-size-7">Only send notifications if this window is not in focus.</p>
 		</div>
 	{/snippet}
 </Modal>

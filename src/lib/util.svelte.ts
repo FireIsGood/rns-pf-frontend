@@ -4,6 +4,7 @@ import { persistedState } from 'svelte-persisted-state';
 interface AppSettings {
 	trackingNames: string[];
 	trackingNotifySilent: boolean;
+	trackingNotifyBackgroundOnly: boolean;
 	showClientMods: boolean;
 	saveFilters: boolean;
 	showUncensored: boolean;
@@ -12,6 +13,7 @@ interface AppSettings {
 const defaultSettings: AppSettings = {
 	trackingNames: [],
 	trackingNotifySilent: false,
+	trackingNotifyBackgroundOnly: false,
 	showClientMods: false,
 	saveFilters: false,
 	showUncensored: false
