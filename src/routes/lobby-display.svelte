@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { difficultyClassMap, difficultyMap } from '$lib';
-	import { appSettings, appState, lobbyFilters, pickRandom } from '$lib/util.svelte';
+	import { appSettings, appState, lobbyFilters, pickRandom, ServerStatus } from '$lib/util.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { typewriter } from '$lib/util.svelte';
@@ -46,9 +46,14 @@
 	onMount(() => {
 		spellManifestQuote = pickRandom(spellManifestQuoteList);
 		sayaQuote = pickRandom(sayaQuoteList);
-		setTimeout(() => {
-			debouncedHydrationComplete = true;
-		}, 200);
+	});
+
+	$effect(() => {
+		if (appState.serverStatus === ServerStatus.CONNECTED) {
+			setTimeout(() => {
+				debouncedHydrationComplete = true;
+			}, 200);
+		}
 	});
 
 	let lastLobbyCount = $state(0);
