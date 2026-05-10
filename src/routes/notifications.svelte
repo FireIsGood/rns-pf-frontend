@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
 	import { fade, fly } from 'svelte/transition';
-	import GearIcon from '$lib/assets/gear.svelte';
 	import Modal from './modal.svelte';
+	import GearIcon from '$lib/assets/gear.svelte';
+	import CaretUp from '$lib/assets/caret-up.svelte';
 	import XIcon from '$lib/assets/x.svelte';
 	import NotificationEnabled from '$lib/assets/bell-ringing.svelte';
 	import NotificationSilent from '$lib/assets/bell.svelte';
@@ -80,9 +81,11 @@
 	});
 
 	let notificationModalActive = $state(false);
+
+	let collapsed = $state(true);
 </script>
 
-<div class="card">
+<div class="card card-collapsible" class:is-collapsed={collapsed}>
 	<header class="card-header">
 		<div class="card-header-title is-gap-1">
 			<p>Notifications</p>
@@ -147,6 +150,11 @@
 				>
 			</div>
 		</fieldset>
+	</div>
+	<div class="card-footer is-hidden-desktop">
+		<button class="card-footer-item collapse-button" onclick={() => (collapsed = !collapsed)}
+			><span class="collapse-icon"><CaretUp /></span></button
+		>
 	</div>
 </div>
 

@@ -197,7 +197,7 @@
 
 <style>
 	.lobby-listing {
-		padding-top: 1rem;
+		padding-block: 1rem;
 	}
 
 	.lobby-card-glow {

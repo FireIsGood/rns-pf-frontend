@@ -3,6 +3,7 @@
 	import Modal from './modal.svelte';
 	import AreaIcon from './area-icon.svelte';
 	import GearIcon from '$lib/assets/gear.svelte';
+	import CaretUp from '$lib/assets/caret-up.svelte';
 	import lockIcon from '$lib/assets/Lock Icon.png';
 	import unlockIcon from '$lib/assets/Unlock Icon.png';
 	import modIcon from '$lib/assets/Mod Icon.png';
@@ -67,6 +68,8 @@
 		return online_v1 || online_v2;
 	}
 	let filterModalActive = $state(false);
+
+	let collapsed = $state(true);
 </script>
 
 {#snippet filterButton(iconSrc: string, highlighted: boolean, callback: () => void)}
@@ -75,7 +78,7 @@
 	>
 {/snippet}
 
-<div class="card">
+<div class="card card-collapsible" class:is-collapsed={collapsed}>
 	<header class="card-header">
 		<p class="card-header-title">Filter Lobbies</p>
 		<button
@@ -151,6 +154,11 @@
 				lobbyFilters.current.mods = false;
 			})}
 		</fieldset>
+	</div>
+	<div class="card-footer is-hidden-desktop">
+		<button class="card-footer-item collapse-button" onclick={() => (collapsed = !collapsed)}
+			><span class="collapse-icon"><CaretUp /></span></button
+		>
 	</div>
 </div>
 
