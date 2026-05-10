@@ -37,70 +37,59 @@ export async function connectStream(
 	const stream = await fetch(
 		`${PUBLIC_API_ENDPOINT}/lobbies/stream?format=json&modified=true&uncensored=${options.uncensored === true ? 'true' : 'false'}`,
 		{ signal: aborter.signal }
-	)
-		.then((response) => {
-			const reader = response.body?.getReader();
-			if (reader === undefined) {
-				console.error('Unable to get reader');
-				return;
-			}
-			return new ReadableStream({
-				start(controller) {
-					return pump();
-					function pump(): Promise<Function | undefined> | undefined {
-						return reader?.read().then(({ done, value }) => {
-							if (value) {
-								let id = bytesToInt(value.slice(0, 4));
-								let size = bytesToInt(value.slice(4, 6));
-								let payload = new TextDecoder().decode(value.slice(6, 6 + size));
+	).then((response) => {
+		const reader = response.body?.getReader();
+		if (reader === undefined) {
+			console.error('Unable to get reader');
+			return;
+		}
+		return new ReadableStream({
+			start(controller) {
+				return pump();
+				function pump(): Promise<Function | undefined> | undefined {
+					return reader?.read().then(({ done, value }) => {
+						if (value) {
+							let id = bytesToInt(value.slice(0, 4));
+							let size = bytesToInt(value.slice(4, 6));
+							let payload = new TextDecoder().decode(value.slice(6, 6 + size));
 
-								// Heartbeats counted as a null payload
-								if (size !== 0) {
-									let parsedPayload = null;
-									try {
-										parsedPayload = JSON.parse(payload);
-									} catch (error) {
-										console.error(error);
-									}
-
-									if (parsedPayload !== null) {
-										const chunk: StreamChunk = {
-											id: id,
-											size: size,
-											data: parsedPayload
-										};
-
-										callback(chunk);
-									}
-								} else {
-									callback(null);
+							// Heartbeats counted as a null payload
+							if (size !== 0) {
+								let parsedPayload = null;
+								try {
+									parsedPayload = JSON.parse(payload);
+								} catch (error) {
+									console.error(error);
 								}
-							}
 
-							if (done) {
-								controller.close();
-								return;
-							}
+								if (parsedPayload !== null) {
+									const chunk: StreamChunk = {
+										id: id,
+										size: size,
+										data: parsedPayload
+									};
 
-							return pump();
-						});
-					}
-				},
-				cancel(reason) {
-					aborter?.abort();
+									callback(chunk);
+								}
+							} else {
+								callback(null);
+							}
+						}
+
+						if (done) {
+							controller.close();
+							return;
+						}
+
+						return pump();
+					});
 				}
-			});
-		})
-		.catch((err) => {
-			if (err instanceof TypeError) {
-				return err;
+			},
+			cancel(reason) {
+				aborter?.abort();
 			}
-			if (aborter?.signal.aborted) {
-				return err;
-			}
-			console.error('Unknown error', err);
-			return err;
 		});
+	});
 
 	if (stream instanceof ReadableStream) {
 		currentStream = stream;

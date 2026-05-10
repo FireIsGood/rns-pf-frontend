@@ -14,42 +14,41 @@
 	import type { uptimeMessage } from './uptime.svelte';
 	import Filters from './filters.svelte';
 	import { onMount } from 'svelte';
+	import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 
 	async function initializeLobbies() {
-		const res = await connectStream({ uncensored: appSettings.current.showUncensored }, (chunk) => {
-			if (chunk === null) {
-				sendEvent<uptimeMessage>('uptimeMessage', { type: 'heartbeat' });
-				return;
+		try {
+			const res = await connectStream(
+				{ uncensored: appSettings.current.showUncensored },
+				(chunk) => {
+					if (chunk === null) {
+						sendEvent<uptimeMessage>('uptimeMessage', { type: 'heartbeat' });
+						return;
+					}
+					const currentIds = new Set(appState.lobbies.map((l) => l.id));
+					const updatedIds = new Set(chunk.data.map((l) => l.id));
+					const diffIds = updatedIds.difference(currentIds);
+					const diffLobbies = chunk.data.filter((l) => diffIds.has(l.id));
+
+					appState.newLobbies = diffLobbies;
+
+					appState.lobbies = chunk.data;
+					sendEvent<uptimeMessage>('uptimeMessage', { type: 'synchronized' });
+				}
+			);
+
+			if (res instanceof ReadableStream) {
+				toastManager.addToast('Connected to RnS-PF', 'success');
+				appState.serverStatus = ServerStatus.CONNECTED;
+				sendEvent<uptimeMessage>('uptimeMessage', { type: 'connected' });
+			} else {
+				console.error('How the hell did you get here? Please report this to the developers:', res);
 			}
-			const currentIds = new Set(appState.lobbies.map((l) => l.id));
-			const updatedIds = new Set(chunk.data.map((l) => l.id));
-			const diffIds = updatedIds.difference(currentIds);
-			const diffLobbies = chunk.data.filter((l) => diffIds.has(l.id));
-
-			appState.newLobbies = diffLobbies;
-
-			appState.lobbies = chunk.data;
-			sendEvent<uptimeMessage>('uptimeMessage', { type: 'synchronized' });
-		}).catch((err) => {
-			console.error(err);
-			return err;
-		});
-
-		if (res instanceof ReadableStream) {
-			toastManager.addToast('Connected to RnS-PF', 'success');
-			appState.serverStatus = ServerStatus.CONNECTED;
-			sendEvent<uptimeMessage>('uptimeMessage', { type: 'connected' });
-		}
-		if (res instanceof TypeError) {
-			toastManager.addToast('Error connecting to RnS-PF', 'warn');
-			appState.serverStatus = ServerStatus.DISCONNECTED;
-			sendEvent<uptimeMessage>('uptimeMessage', { type: 'disconnected' });
+		} catch (_err) {
+			// It's all screwed up. Reload the page!!
+			location.reload();
 		}
 	}
-
-	$effect(() => {
-		initializeLobbies();
-	});
 
 	onMount(() => {
 		function handleMessage(e: Event) {
@@ -66,6 +65,21 @@
 
 		return () => {
 			document.removeEventListener('streamMessage', handleMessage);
+		};
+	});
+
+	// Automatic restart for server issues
+	onMount(() => {
+		const heartbeat = new EventSource(`${PUBLIC_API_ENDPOINT}/events`);
+
+		heartbeat.onopen = () => {
+			initializeLobbies();
+		};
+
+		heartbeat.onerror = (err) => {
+			console.log('Unable to connect to the API', err);
+			appState.lobbies = [];
+			appState.serverStatus = ServerStatus.DISCONNECTED;
 		};
 	});
 </script>
