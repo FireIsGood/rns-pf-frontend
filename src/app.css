@@ -42,6 +42,10 @@ body {
 	flex-direction: column;
 }
 
+.navbar-burger {
+	--bulma-navbar-burger-color: var(--bulma-primary);
+}
+
 .section {
 	--bulma-section-padding-desktop: 1.5rem 0;
 	--bulma-section-padding: 0.5rem 0;

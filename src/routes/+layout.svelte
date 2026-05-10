@@ -98,6 +98,37 @@
 <ToastManager />
 
 <style>
+	.navbar-menu {
+		overflow: hidden;
+		transition:
+			height 300ms ease-out,
+			padding 300ms ease-out,
+			display 300ms ease-out allow-discrete;
+		interpolate-size: allow-keywords;
+
+		&.is-active {
+			height: auto;
+			padding: 0.5rem 0;
+			animation: scale-in 300ms ease-out;
+		}
+	}
+	@media screen and (max-width: 1023px) {
+		.navbar-menu {
+			height: 0;
+			padding-block: 0;
+		}
+	}
+
+	@keyframes scale-in {
+		from {
+			height: 0;
+			padding-block: 0;
+		}
+		to {
+			height: auto;
+		}
+	}
+
 	.discord-link {
 		--bulma-button-h: var(--discord-h);
 		--bulma-button-s: var(--discord-s);
