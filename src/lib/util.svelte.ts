@@ -18,7 +18,7 @@ const defaultSettings: AppSettings = {
 };
 
 export const appSettings = persistedState<AppSettings>('app', defaultSettings, {
-	beforeRead: (value) => Object.assign(value, defaultSettings),
+	beforeRead: (value) => Object.assign(defaultSettings, value),
 	onWriteError: (err) => {
 		console.error('Failed to write preferences', err);
 	},
