@@ -21,11 +21,10 @@
 			const eventType = event.detail.type;
 
 			switch (eventType) {
-				case 'disconnected':
-					return;
 				case 'heartbeat':
 					jumpy();
 				case 'connected':
+				case 'disconnected':
 				case 'synchronized':
 					timeSinceLastUpdate = 0;
 
