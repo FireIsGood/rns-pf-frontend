@@ -1,9 +1,3 @@
-<script lang="ts" module>
-	export type filterMessage = {
-		type: 'resetAll';
-	};
-</script>
-
 <script lang="ts">
 	import { areaMap, difficultyMap, type AreaName, type Difficulty } from '$lib';
 	import Modal from './modal.svelte';
@@ -20,24 +14,6 @@
 	import lunarIcon from '$lib/assets/difficulties/Lunar.png';
 	import { browser } from '$app/environment';
 	import { appSettings, appState, lobbyFilters } from '$lib/util.svelte';
-	import { onMount } from 'svelte';
-
-	onMount(() => {
-		function handleMessage(e: Event) {
-			if (!(e instanceof CustomEvent)) return;
-			const event: CustomEvent<filterMessage> = e;
-			const eventType = event.detail.type;
-			switch (eventType) {
-				case 'resetAll':
-					break;
-			}
-		}
-		document.addEventListener('filterMessage', handleMessage);
-
-		return () => {
-			document.removeEventListener('filterMessage', handleMessage);
-		};
-	});
 
 	const allAreas: AreaName[] = [
 		'Random',

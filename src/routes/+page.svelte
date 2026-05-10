@@ -1,3 +1,9 @@
+<script lang="ts" module>
+	export type streamMessage = {
+		type: 'reconnect';
+	};
+</script>
+
 <script lang="ts">
 	import LobbyDisplay from './lobby-display.svelte';
 	import Notifications from './notifications.svelte';
@@ -7,6 +13,7 @@
 	import { appSettings, appState, sendEvent, ServerStatus } from '$lib/util.svelte';
 	import type { uptimeMessage } from './uptime.svelte';
 	import Filters from './filters.svelte';
+	import { onMount } from 'svelte';
 
 	async function initializeLobbies() {
 		const res = await connectStream({ uncensored: appSettings.current.showUncensored }, (chunk) => {
@@ -39,6 +46,24 @@
 
 	$effect(() => {
 		initializeLobbies();
+	});
+
+	onMount(() => {
+		function handleMessage(e: Event) {
+			if (!(e instanceof CustomEvent)) return;
+			const event: CustomEvent<streamMessage> = e;
+			const eventType = event.detail.type;
+			switch (eventType) {
+				case 'reconnect':
+					initializeLobbies();
+					break;
+			}
+		}
+		document.addEventListener('streamMessage', handleMessage);
+
+		return () => {
+			document.removeEventListener('streamMessage', handleMessage);
+		};
 	});
 </script>
 

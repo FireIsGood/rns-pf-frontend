@@ -5,8 +5,10 @@
 </script>
 
 <script lang="ts">
-	import { appState, ServerStatus } from '$lib/util.svelte';
+	import { appState, sendEvent, ServerStatus } from '$lib/util.svelte';
 	import { onMount } from 'svelte';
+	import { fly } from 'svelte/transition';
+	import type { streamMessage } from './+page.svelte';
 
 	// Connection
 	let intervalId: NodeJS.Timeout;
@@ -49,6 +51,16 @@
 			jumping = true;
 		});
 	}
+
+	// Reconnect timeout
+	let canReconnect = $state(true);
+	function reconnect() {
+		canReconnect = false;
+		sendEvent<streamMessage>('streamMessage', { type: 'reconnect' });
+		setTimeout(() => {
+			canReconnect = true;
+		}, 2000);
+	}
 </script>
 
 <div class="uptime-text is-size-7 px-2">
@@ -58,8 +70,6 @@
 			<span class="has-text-info has-text-weight-semibold">loading...</span>
 		{:else if appState.serverStatus === ServerStatus.DISCONNECTED || timeSinceLastUpdate >= 60}
 			<span class="has-text-danger has-text-weight-semibold">No</span>
-			<br />
-			<em>(reload the page!)</em>
 		{:else if timeSinceLastUpdate >= 30}
 			<span class="has-text-warning has-text-weight-semibold">uh oh</span>
 		{:else}
@@ -72,6 +82,15 @@
 		ago
 	</p>
 </div>
+{#if appState.serverStatus === ServerStatus.DISCONNECTED || timeSinceLastUpdate >= 60}
+	<div class="uptime-options pt-3 px-2" transition:fly={{ duration: 400, y: 5 }}>
+		<button
+			class="button is-primary is-small is-outlined"
+			onclick={reconnect}
+			disabled={!canReconnect}>Reconnect</button
+		>
+	</div>
+{/if}
 
 <style>
 	.uptime-text {
