@@ -16,7 +16,7 @@
 	// Spell Manifest
 	let spellManifestQuoteList = [
 		// From voice lines as an enemy and dialog
-		'Terrbily lonely....',
+		'Terribly lonely....',
 		'Are you... alone...?',
 		"You're alone....",
 		'Terribly, terribly lonely.....',
