@@ -13,7 +13,7 @@
 	import trueRandomIcon from '$lib/assets/stages/TrueRandom.png';
 	import chaoticRandomIcon from '$lib/assets/stages/ChaoticRandom.png';
 	import toyboxIcon from '$lib/assets/stages/Toybox.webp';
-	import unknownIcon from '$lib/assets/stages/Unknown.png';
+	import unknownIcon from '$lib/assets/Unknown Icon.png';
 
 	let { area, ...others }: { area: AreaName; class?: string } = $props();
 
