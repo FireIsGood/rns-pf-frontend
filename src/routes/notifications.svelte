@@ -1,16 +1,17 @@
 <script lang="ts">
 	import type { Lobby } from '$lib';
-	import { tracking } from '$lib/util.svelte';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 	import GearIcon from '$lib/assets/gear.svelte';
 	import XIcon from '$lib/assets/x.svelte';
 	import { toastManager } from '$lib/toastStore.svelte';
 	import { browser } from '$app/environment';
+	import { appSettings } from '$lib/util.svelte';
 
 	let { newLobbies }: { newLobbies: Lobby[] } = $props();
 
 	let trackingFormValue: string = $state('');
+	let trackingNames = appSettings.current.trackingNames;
 
 	async function addTracking(lobbyName: string) {
 		if (lobbyName === '') return;
@@ -21,40 +22,40 @@
 
 		trackingFormValue = '';
 
-		if (tracking.trackingNames.includes(lobbyName)) {
+		if (trackingNames.includes(lobbyName)) {
 			toastManager.addToast('Already tracking this lobby name!', 'warn');
 			return;
 		}
 
-		tracking.addTracking(lobbyName);
+		trackingNames.push(lobbyName);
 		toastManager.addToast(`Tracked ${lobbyName}`, 'success');
 	}
 
 	function removeTracking(lobbyName: string) {
-		tracking.removeTracking(lobbyName);
+		const index = trackingNames.indexOf(lobbyName);
+		if (index > -1) {
+			trackingNames.splice(index, 1);
+		} else {
+			console.error(`Tried to remove tracking of ${lobbyName} but it was not being tracked.`);
+		}
 		toastManager.addToast(`Untracked ${lobbyName}`, 'success');
 	}
 
 	// Watch for lobby changes
 	$effect(() => {
-		const notifyLobbies = newLobbies.filter((l) => tracking.trackingNames.includes(l.name));
+		const notifyLobbies = newLobbies.filter((l) => trackingNames.includes(l.name));
 		if (Notification.permission === 'granted') {
 			for (const lobby of notifyLobbies) {
 				new Notification('Rabbit and Steel Partyfinder', {
 					body: `Lobby: ${lobby.name} (${lobby.desc})`,
 					icon: `/favicon-96x96.png`,
-					silent: tracking.silentNotify
+					silent: appSettings.current.trackingNotifySilent
 				});
 			}
 		}
 	});
 
 	let notificationModalActive = $state(false);
-
-	// Has to be done outside of the module due to binding
-	$effect(() => {
-		localStorage.setItem('silentNotify', tracking.silentNotify.toString());
-	});
 </script>
 
 <div class="card">
@@ -69,8 +70,8 @@
 		</button>
 	</header>
 	<div class="card-content">
-		<div class="tags">
-			{#each tracking.trackingNames.toSorted((a, b) => a.localeCompare(b)) as name (name)}
+		<div class="tracking-tag-list tags" class:skeleton-block={!browser}>
+			{#each trackingNames.toSorted((a, b) => a.localeCompare(b)) as name (name)}
 				<span
 					class="tag tracking-tag has-background-info-soft"
 					transition:fly={{ duration: 200, x: 20 }}
@@ -117,7 +118,7 @@
 			</header>
 			<div class="card-content">
 				<label class="checkbox"
-					><input type="checkbox" bind:checked={tracking.silentNotify} /> Silent notifications</label
+					><input type="checkbox" bind:checked={appSettings.current.trackingNotifySilent} /> Silent notifications</label
 				>
 			</div>
 		</div>
@@ -135,5 +136,11 @@
 		font-size: 1.25em;
 		padding-inline: 0.25rem;
 		margin-inline: -0.25rem;
+	}
+
+	:where(.tracking-tag-list) {
+		--bulma-skeleton-block-min-height: 1.5em;
+		min-height: 0;
+		transition: min-height 400ms allow-discrete;
 	}
 </style>

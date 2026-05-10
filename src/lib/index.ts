@@ -77,14 +77,6 @@ export const difficultyMap: Record<number, Difficulty> = {
 	3: 'Lunar'
 };
 
-export function lobbySpectatorCount(lobby: Lobby): number {
-	let count = 0;
-	for (const character of [lobby.char0, lobby.char1, lobby.char2, lobby.char3]) {
-		if (character !== null) count += 1;
-	}
-	return count;
-}
-
 export type ClassName = [
 	'Wizard',
 	'Assassin',
@@ -118,7 +110,3 @@ export const classMap: Record<number, ClassName> = {
 	12: 'Grenadier',
 	13: 'Shadow'
 };
-
-export function pickRandom<T>(list: T[]): T {
-	return list[Math.floor(list.length * Math.random())];
-}

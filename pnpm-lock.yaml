@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      svelte-persisted-state:
+        specifier: ^1.4.0
+        version: 1.4.0(svelte@5.55.5)
     devDependencies:
       '@sveltejs/adapter-static':
         specifier: ^3.0.10
@@ -429,6 +433,11 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: '>=5.0.0'
 
+  svelte-persisted-state@1.4.0:
+    resolution: {integrity: sha512-xww7xmh9U+1WoBFPqMfXraZHADirggSm88KxB2pgw4rpMDwj7VPwXcGNeaxxPN3pw1+86EFqxF654S84G0yGfw==}
+    peerDependencies:
+      svelte: ^5.0.0-next.1
+
   svelte@5.55.5:
     resolution: {integrity: sha512-2uCs/LZ9us+AktdzYJM8OcxQ8qnPS1kpaO7syGT/MgO+6Qr1Ybl+TqPq+97u7PHqmmMlye5ZkoyXONy5mjjAbw==}
     engines: {node: '>=18'}
@@ -819,6 +828,10 @@ snapshots:
       typescript: 6.0.3
     transitivePeerDependencies:
       - picomatch
+
+  svelte-persisted-state@1.4.0(svelte@5.55.5):
+    dependencies:
+      svelte: 5.55.5
 
   svelte@5.55.5:
     dependencies:

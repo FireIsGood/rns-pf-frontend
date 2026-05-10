@@ -17,7 +17,6 @@ type StreamChunk = {
 	data: Lobby[];
 };
 
-// Connects a stream. Does not return until the stream breaks somehow.
 export function connectStream(callback: (chunk: StreamChunk | null) => void) {
 	const stream = fetch(
 		`${PUBLIC_API_ENDPOINT}/lobbies/stream?format=json&modified=true&uncensored=true`

@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { difficultyClassMap, difficultyMap, pickRandom, type Lobby } from '$lib';
+	import { difficultyClassMap, difficultyMap, type Lobby } from '$lib';
+	import { appSettings, appState, pickRandom } from '$lib/util.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
-	import { tracking, typewriter } from '$lib/util.svelte';
+	import { typewriter } from '$lib/util.svelte';
 	import StageIcon from './start-icon.svelte';
 	import CharacterIcon from './character-icon.svelte';
 	import CopyButton from './copy-button.svelte';
@@ -10,7 +11,7 @@
 	import spellManifestImage from '$lib/assets/spell_manifest.gif';
 	import { onMount } from 'svelte';
 
-	let { lobbies, totalLobbies }: { lobbies: Lobby[]; totalLobbies: number } = $props();
+	let trackingNames = appSettings.current.trackingNames;
 
 	// Spell Manifest
 	let spellManifestQuoteList = [
@@ -48,11 +49,11 @@
 	});
 
 	$effect(() => {
-		if (lobbies.length !== lastLobbyCount) {
+		if (appState.lobbies.length !== lastLobbyCount) {
 			spellManifestQuote = pickRandom(spellManifestQuoteList);
 			sayaQuote = pickRandom(sayaQuoteList);
 		}
-		lastLobbyCount = lobbies.length;
+		lastLobbyCount = appState.lobbies.length;
 	});
 </script>
 
@@ -66,12 +67,14 @@
 
 <div class="lobby-listing">
 	<p class="title is-4 has-text-centered">
-		Lobbies ({lobbies.length}{#if lobbies.length !== totalLobbies}/{totalLobbies}{/if})
+		Lobbies ({appState.lobbiesFiltered
+			.length}{#if appState.lobbiesFiltered.length !== appState.lobbies.length}/{appState.lobbies
+				.length}{/if})
 	</p>
 	<div class="overlap-children">
-		{#if lobbies.length === 0}
+		{#if appState.lobbiesFiltered.length === 0}
 			<div class="overlap-children" transition:fly={{ duration: 400 }}>
-				{#if totalLobbies === 0}
+				{#if appState.lobbies.length === 0}
 					<div class="py-4" transition:fly={{ duration: 600, x: 10 }}>
 						<div class="dialog-root" style="--character-color: #ff3651">
 							<div class="dialog-content">
@@ -104,8 +107,8 @@
 									</div>
 									<img src={sayaImage} alt="" class="image saya-image is-1by1" />
 								</div>
-								<div class="has-text-centered has-text-weight-medium">
-									<p class="pb-1">No lobbies matched all filters</p>
+								<div class="content has-text-centered has-text-weight-medium">
+									<p>No lobbies matched all filters</p>
 								</div>
 							</div>
 							{#if sayaQuote}
@@ -121,12 +124,12 @@
 			</div>
 		{/if}
 		<div class="lobby-list">
-			{#each lobbies as lobby (lobby.id)}
+			{#each appState.lobbiesFiltered as lobby (lobby.id)}
 				<div
 					class={[
 						'lobby-card card px-4 py-3 has-background-primary-soft',
 						difficultyClassMap[lobby.difficulty],
-						tracking.trackingNames.includes(lobby.name) && 'tracked'
+						trackingNames.includes(lobby.name) && 'tracked'
 					]}
 					transition:fly={{ duration: 400, x: 20 }}
 					animate:flip={{ duration: 400 }}

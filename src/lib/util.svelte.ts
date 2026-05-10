@@ -1,50 +1,36 @@
-class Tracking {
-	trackingNames = $state<string[]>([]);
-	silentNotify = $state<boolean>(false);
+import type { Lobby } from '$lib';
+import { persistedState } from 'svelte-persisted-state';
 
-	constructor() {
-		if (typeof localStorage === 'undefined') return;
-		const storedTracking = localStorage.getItem('tracking');
-		let newTracking = [];
-
-		// Copy from storage, checking that it is an array-like
-		if (storedTracking) {
-			const parsedTracking = JSON.parse(storedTracking);
-			if (Array.isArray(parsedTracking)) {
-				newTracking = parsedTracking;
-			}
-		}
-
-		this.trackingNames = newTracking;
-
-		// Sync silent notify
-		const storedNotify = localStorage.getItem('silentNotify') === 'true';
-		this.silentNotify = storedNotify ?? false;
-	}
-
-	async addTracking(lobbyName: string) {
-		this.trackingNames.push(lobbyName);
-
-		this.syncLocalstorage();
-	}
-
-	removeTracking(lobbyName: string) {
-		const index = this.trackingNames.indexOf(lobbyName);
-		if (index > -1) {
-			this.trackingNames.splice(index, 1);
-		} else {
-			console.error(`Tried to remove tracking of ${lobbyName} but it was not being tracked.`);
-		}
-
-		this.syncLocalstorage();
-	}
-
-	private syncLocalstorage() {
-		localStorage.setItem('tracking', JSON.stringify(this.trackingNames));
-	}
+interface AppSettings {
+	trackingNames: string[];
+	trackingNotifySilent: boolean;
 }
 
-export const tracking = new Tracking();
+export const appSettings = persistedState<AppSettings>(
+	'app',
+	{
+		trackingNames: [],
+		trackingNotifySilent: false
+	},
+	{
+		onWriteError: (err) => {
+			console.error('Failed to write preferences', err);
+		},
+		onParseError: (err) => {
+			console.error('Failed to parse preferences', err);
+		}
+	}
+);
+
+interface AppState {
+	lobbies: Lobby[];
+	lobbiesFiltered: Lobby[];
+}
+
+export const appState = $state<AppState>({
+	lobbies: [],
+	lobbiesFiltered: []
+});
 
 export function typewriter(node: HTMLElement, { speed = 1 }: { speed?: number }) {
 	const valid = node.childNodes.length === 1 && node.childNodes[0].nodeType === Node.TEXT_NODE;
@@ -72,4 +58,8 @@ export async function copyText(text: string) {
 	} else {
 		console.error('Copy to clipboard not supported');
 	}
+}
+
+export function pickRandom<T>(list: T[]): T {
+	return list[Math.floor(list.length * Math.random())];
 }

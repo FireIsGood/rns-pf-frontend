@@ -18,6 +18,7 @@
 	import { connectStream } from '$lib/stream-api';
 	import { toastManager } from '$lib/toastStore.svelte';
 	import { browser } from '$app/environment';
+	import { appState } from '$lib/util.svelte';
 
 	onMount(async () => {
 		initializeLobbies();
@@ -27,14 +28,14 @@
 	async function initializeLobbies() {
 		const res = await connectStream((chunk) => {
 			if (chunk !== null) {
-				const currentIds = new Set(lobbies.map((l) => l.id));
+				const currentIds = new Set(appState.lobbies.map((l) => l.id));
 				const updatedIds = new Set(chunk.data.map((l) => l.id));
 				const diffIds = updatedIds.difference(currentIds);
 				const diffLobbies = chunk.data.filter((l) => diffIds.has(l.id));
 
 				newLobbies = diffLobbies;
 
-				lobbies = chunk.data;
+				appState.lobbies = chunk.data;
 			} else {
 				// Heartbeat! Bunny for visual
 				jumpy();
@@ -51,12 +52,11 @@
 
 		// Handle a connection error
 		if (res instanceof TypeError) {
-			toastManager.addToast('Error connecting to RnS-PF', 'success');
+			toastManager.addToast('Error connecting to RnS-PF', 'warn');
 			serverStatus = 'disconnected';
 		}
 	}
 
-	let lobbies: Lobby[] = $state([]);
 	let newLobbies: Lobby[] = $state([]);
 
 	const allAreas: AreaName[] = [
@@ -113,15 +113,15 @@
 		localStorage.setItem('lobbyFilters', JSON.stringify(filters));
 	});
 
-	let lobbiesFiltered = $derived(
-		lobbies
+	$effect(() => {
+		appState.lobbiesFiltered = appState.lobbies
 			.filter(
 				(l) =>
 					(destinationFilter === 'Any' || destinationFilter === areaMap[l.stage_first]) &&
 					(difficultyFilter === 'Any' || difficultyFilter === difficultyMap[l.difficulty]) &&
 					(passwordFilter === 'Any' || passwordFilter === l.password_locked) &&
 					(modFilter === 'Any' || modFilter === l.modded) &&
-					(modClientShow === true || !isClientModified(l.online_version))
+					(modClientShow === true || isClientVanilla(l.online_version))
 			)
 			.toSorted(
 				(l1, l2) =>
@@ -129,17 +129,16 @@
 					(+l1.password_locked - +l2.password_locked) * 100 + // No password > Password
 					(+l1.modded - +l2.modded) * 10 + // No mod > Mod
 					(+(+l2.id < +l1.id) * 2 - 1) // Lower ID > Higher ID
-			)
-	);
+			);
+	});
 
-	function isClientModified(version: number): boolean {
+	function isClientVanilla(version: number): boolean {
 		const online_v1 = 300 <= version && version < 500;
 		const online_v2 = 500 <= version && version < 600;
-		return !(online_v1 || online_v2);
+		return online_v1 || online_v2;
 	}
 
-	let filterModalActive = $state(false);
-
+	// Connection
 	type ServerStatus = 'connected' | 'disconnected' | undefined;
 	let serverStatus: ServerStatus = $state();
 	let lastUpdate = $state(0);
@@ -165,6 +164,8 @@
 			jumping = true;
 		});
 	}
+
+	let filterModalActive = $state(false);
 </script>
 
 {#snippet filterButton(iconSrc: string, highlighted: boolean, callback: () => void)}
@@ -278,7 +279,7 @@
 		</div>
 	</div>
 	<div class="column">
-		<LobbyDisplay lobbies={lobbiesFiltered} totalLobbies={lobbies.length} />
+		<LobbyDisplay />
 	</div>
 </section>
 
