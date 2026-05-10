@@ -87,8 +87,8 @@
 		<div class="card-header-title is-gap-1">
 			<p>Notifications</p>
 			{#if notificationPermission === 'granted'}
-				<div in:fade={{ duration: 200 }}>
-					<div class="icon has-text-success is-size-6">
+				<div class="notification-icons" in:fade={{ duration: 200 }}>
+					<div class="notification-icon has-text-success is-size-6">
 						{#if appSettings.current.trackingNotifySilent}
 							<NotificationSilent />
 						{:else}
@@ -96,13 +96,13 @@
 						{/if}
 					</div>
 					{#if appSettings.current.trackingNotifyBackgroundOnly}
-						<div class="icon has-text-info">
+						<div class="notification-icon has-text-info">
 							<NotificationBackground />
 						</div>
 					{/if}
 				</div>
 			{:else if notificationPermission === 'denied'}
-				<div class="icon has-text-danger is-size-6" in:fade={{ duration: 200 }}>
+				<div class="notification-icon has-text-danger is-size-6" in:fade={{ duration: 200 }}>
 					<NotificationDisabled />
 				</div>
 			{/if}
@@ -184,10 +184,21 @@
 </Modal>
 
 <style>
+	.notification-icons {
+		display: flex;
+		gap: 0.25rem;
+	}
+
+	.notification-icon {
+		display: flex;
+		align-items: center;
+	}
+
 	.tracking-tag {
 		display: inline-flex;
 		gap: 0.5em;
 	}
+
 	.delete-button {
 		display: block;
 		line-height: 0.5;
