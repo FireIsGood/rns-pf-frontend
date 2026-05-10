@@ -200,6 +200,12 @@
 		padding-block: 1rem;
 	}
 
+	@media (max-width: 1024px) {
+		.lobby-listing {
+			padding-block: 1rem 4rem;
+		}
+	}
+
 	.lobby-card-glow {
 		pointer-events: none;
 		position: absolute;
