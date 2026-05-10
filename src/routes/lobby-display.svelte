@@ -451,7 +451,11 @@
 
 	.dialog-box {
 		--dialog-background: var(--bulma-scheme-main-ter);
-		--dialog-border: color-mix(in srgb, var(--character-color) 100%, #000 50%);
+		--dialog-border: color-mix(
+			in srgb,
+			var(--character-color) 100%,
+			var(--bulma-scheme-main-ter) 50%
+		);
 		position: absolute;
 		position-anchor: --dialog;
 		position-area: top;
