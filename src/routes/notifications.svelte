@@ -82,6 +82,7 @@
 
 	let notificationModalActive = $state(false);
 
+	let boxHidden = $state(true);
 	let collapsed = $state(true);
 </script>
 
@@ -118,7 +119,11 @@
 	{/snippet}
 </Modal>
 
-<div class="card card-collapsible" class:is-collapsed={collapsed}>
+<button class="button is-gap-1 mb-4 is-hidden-desktop" onclick={() => (boxHidden = !boxHidden)}>
+	<NotificationEnabled />Notifications</button
+>
+
+<div class="card card-collapsible" class:is-hidden-touch={boxHidden} class:is-collapsed={collapsed}>
 	<header class="card-header">
 		<div class="card-header-title is-gap-1">
 			<p>Notifications</p>

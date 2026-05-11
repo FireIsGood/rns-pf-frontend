@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { areaMap, difficultyMap, type AreaName, type Difficulty } from '$lib';
 	import Modal from './modal.svelte';
+	import FunnelIcon from '$lib/assets/funnel.svelte';
 	import AreaIcon from './area-icon.svelte';
 	import GearIcon from '$lib/assets/gear.svelte';
 	import CaretUp from '$lib/assets/caret-up.svelte';
@@ -79,6 +80,7 @@
 	}
 	let filterModalActive = $state(false);
 
+	let boxHidden = $state(true);
 	let collapsed = $state(true);
 </script>
 
@@ -150,7 +152,11 @@
 	{/snippet}
 </Modal>
 
-<div class="card card-collapsible" class:is-collapsed={collapsed}>
+<button class="button is-gap-1 mb-4 is-hidden-desktop" onclick={() => (boxHidden = !boxHidden)}
+	><FunnelIcon />Filters</button
+>
+
+<div class="card card-collapsible" class:is-hidden-touch={boxHidden} class:is-collapsed={collapsed}>
 	<header class="card-header">
 		<p class="card-header-title">Filter Lobbies</p>
 		<button
