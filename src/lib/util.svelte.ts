@@ -34,6 +34,8 @@ type LobbyFilterAny = 'Any';
 export type LobbyFilters = {
 	destination: AreaName | LobbyFilterAny;
 	difficulty: Difficulty | LobbyFilterAny;
+	minimumPlayers: number | LobbyFilterAny;
+	minimumOpenings: number | LobbyFilterAny;
 	password: boolean | LobbyFilterAny;
 	mods: boolean | LobbyFilterAny;
 };
@@ -41,6 +43,8 @@ export type LobbyFilters = {
 const defaultFilters: LobbyFilters = {
 	destination: 'Any',
 	difficulty: 'Any',
+	minimumPlayers: 'Any',
+	minimumOpenings: 'Any',
 	password: 'Any',
 	mods: 'Any'
 };
@@ -80,6 +84,11 @@ export const appState = $state<AppState>({
 	newLobbies: [],
 	serverStatus: ServerStatus.PENDING
 });
+
+export function playersInLobby(lobby: Lobby): number {
+	const playerSlots: Array<keyof Lobby> = ['char0', 'char1', 'char2', 'char3'];
+	return playerSlots.reduce<number>((c, a) => (c += +(lobby[a] !== null)), 0);
+}
 
 export function typewriter(node: HTMLElement, { speed = 1 }: { speed?: number }) {
 	const valid = node.childNodes.length === 1 && node.childNodes[0].nodeType === Node.TEXT_NODE;

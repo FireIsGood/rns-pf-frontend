@@ -4,6 +4,11 @@
 	import AreaIcon from './area-icon.svelte';
 	import GearIcon from '$lib/assets/gear.svelte';
 	import CaretUp from '$lib/assets/caret-up.svelte';
+	import numberZeroIcon from '$lib/assets/Number 0.png';
+	import numberOneIcon from '$lib/assets/Number 1.png';
+	import numberTwoIcon from '$lib/assets/Number 2.png';
+	import numberThreeIcon from '$lib/assets/Number 3.png';
+	import numberFourIcon from '$lib/assets/Number 4.png';
 	import lockIcon from '$lib/assets/Lock Icon.png';
 	import unlockIcon from '$lib/assets/Unlock Icon.png';
 	import modIcon from '$lib/assets/Mod Icon.png';
@@ -14,7 +19,7 @@
 	import hardIcon from '$lib/assets/difficulties/Hard.png';
 	import lunarIcon from '$lib/assets/difficulties/Lunar.png';
 	import { browser } from '$app/environment';
-	import { appSettings, appState, lobbyFilters, sendEvent } from '$lib/util.svelte';
+	import { appSettings, appState, lobbyFilters, playersInLobby, sendEvent } from '$lib/util.svelte';
 	import { type StreamMessage } from './+page.svelte';
 
 	const allAreas: AreaName[] = [
@@ -49,6 +54,10 @@
 						lobbyFilters.current.destination === areaMap[l.stage_first]) &&
 					(lobbyFilters.current.difficulty === 'Any' ||
 						lobbyFilters.current.difficulty === difficultyMap[l.difficulty]) &&
+					(lobbyFilters.current.minimumPlayers === 'Any' ||
+						lobbyFilters.current.minimumPlayers <= playersInLobby(l)) &&
+					(lobbyFilters.current.minimumOpenings === 'Any' ||
+						lobbyFilters.current.minimumOpenings <= l.max_players - playersInLobby(l)) &&
 					(lobbyFilters.current.password === 'Any' ||
 						lobbyFilters.current.password === l.password_locked) &&
 					(lobbyFilters.current.mods === 'Any' || lobbyFilters.current.mods === l.modded) &&
@@ -78,6 +87,45 @@
 		><img src={iconSrc} alt="" class="image is-1by1 is-24x24" /></button
 	>
 {/snippet}
+
+<Modal bind:active={filterModalActive}>
+	{#snippet header()}
+		<p class="card-header-title">Filter Options</p>
+	{/snippet}
+	{#snippet children()}
+		<div class="field">
+			<label class="checkbox pb-1"
+				><input type="checkbox" bind:checked={appSettings.current.showClientMods} /> Show modified clients</label
+			>
+			<p class="is-size-7">
+				Mostly <a href="https://github.com/NotNite/RNSReloaded" target="_blank">RnS Reloaded</a> or other
+				steam versions/betas.
+			</p>
+		</div>
+		<div class="field">
+			<label class="checkbox pb-1"
+				><input
+					type="checkbox"
+					bind:checked={appSettings.current.showUncensored}
+					onchange={() => {
+						sendEvent<StreamMessage>('streamMessage', { type: 'reconnect' });
+					}}
+				/> Show uncensored lobby names</label
+			>
+			<p class="is-size-7">
+				Example: <strong
+					>{appSettings.current.showUncensored ? 'Rabbit-chat' : 'Rab******at'}</strong
+				>
+			</p>
+		</div>
+		<div class="field">
+			<label class="checkbox pb-1"
+				><input type="checkbox" bind:checked={appSettings.current.saveFilters} /> Save lobby filter settings
+				between sessions</label
+			>
+		</div>
+	{/snippet}
+</Modal>
 
 <div class="card card-collapsible" class:is-collapsed={collapsed}>
 	<header class="card-header">
@@ -131,6 +179,42 @@
 				)}
 			{/each}
 		</fieldset>
+		<div class="mb-1 has-text-centered is-size-7">Minimum Players</div>
+		<fieldset class="filter-group">
+			{@render filterButton(numberZeroIcon, lobbyFilters.current.minimumPlayers === 'Any', () => {
+				lobbyFilters.current.minimumPlayers = 'Any';
+			})}
+			{@render filterButton(numberOneIcon, lobbyFilters.current.minimumPlayers === 1, () => {
+				lobbyFilters.current.minimumPlayers = 1;
+			})}
+			{@render filterButton(numberTwoIcon, lobbyFilters.current.minimumPlayers === 2, () => {
+				lobbyFilters.current.minimumPlayers = 2;
+			})}
+			{@render filterButton(numberThreeIcon, lobbyFilters.current.minimumPlayers === 3, () => {
+				lobbyFilters.current.minimumPlayers = 3;
+			})}
+			{@render filterButton(numberFourIcon, lobbyFilters.current.minimumPlayers === 4, () => {
+				lobbyFilters.current.minimumPlayers = 4;
+			})}
+		</fieldset>
+		<div class="mb-1 has-text-centered is-size-7">Minimum Openings</div>
+		<fieldset class="filter-group">
+			{@render filterButton(numberZeroIcon, lobbyFilters.current.minimumOpenings === 'Any', () => {
+				lobbyFilters.current.minimumOpenings = 'Any';
+			})}
+			{@render filterButton(numberOneIcon, lobbyFilters.current.minimumOpenings === 1, () => {
+				lobbyFilters.current.minimumOpenings = 1;
+			})}
+			{@render filterButton(numberTwoIcon, lobbyFilters.current.minimumOpenings === 2, () => {
+				lobbyFilters.current.minimumOpenings = 2;
+			})}
+			{@render filterButton(numberThreeIcon, lobbyFilters.current.minimumOpenings === 3, () => {
+				lobbyFilters.current.minimumOpenings = 3;
+			})}
+			{@render filterButton(numberFourIcon, lobbyFilters.current.minimumOpenings === 4, () => {
+				lobbyFilters.current.minimumOpenings = 4;
+			})}
+		</fieldset>
 		<div class="mb-1 has-text-centered is-size-7">Password Locked</div>
 		<fieldset class="filter-group">
 			{@render filterButton(unknownIcon, lobbyFilters.current.password === 'Any', () => {
@@ -162,45 +246,6 @@
 		>
 	</div>
 </div>
-
-<Modal bind:active={filterModalActive}>
-	{#snippet header()}
-		<p class="card-header-title">Filter Options</p>
-	{/snippet}
-	{#snippet children()}
-		<div class="field">
-			<label class="checkbox pb-1"
-				><input type="checkbox" bind:checked={appSettings.current.showClientMods} /> Show modified clients</label
-			>
-			<p class="is-size-7">
-				Mostly <a href="https://github.com/NotNite/RNSReloaded" target="_blank">RnS Reloaded</a> or other
-				steam versions/betas.
-			</p>
-		</div>
-		<div class="field">
-			<label class="checkbox pb-1"
-				><input
-					type="checkbox"
-					bind:checked={appSettings.current.showUncensored}
-					onchange={() => {
-						sendEvent<StreamMessage>('streamMessage', { type: 'reconnect' });
-					}}
-				/> Show uncensored lobby names</label
-			>
-			<p class="is-size-7">
-				Example: <strong
-					>{appSettings.current.showUncensored ? 'Rabbit-chat' : 'Rab******at'}</strong
-				>
-			</p>
-		</div>
-		<div class="field">
-			<label class="checkbox pb-1"
-				><input type="checkbox" bind:checked={appSettings.current.saveFilters} /> Save lobby filter settings
-				between sessions</label
-			>
-		</div>
-	{/snippet}
-</Modal>
 
 <style>
 	.filter-group {

@@ -46,6 +46,16 @@
 				>{areaReadableMap[lobbyFilters.current.destination]}</span
 			>
 		{/if}
+		{#if lobbyFilters.current.minimumPlayers !== 'Any'}
+			<span class={['tag filter-tag-players', 'count-' + lobbyFilters.current.minimumPlayers]}
+				>{lobbyFilters.current.minimumPlayers} player</span
+			>
+		{/if}
+		{#if lobbyFilters.current.minimumOpenings !== 'Any'}
+			<span class={['tag filter-tag-openings', 'count-' + lobbyFilters.current.minimumOpenings]}
+				>{lobbyFilters.current.minimumOpenings} opening</span
+			>
+		{/if}
 		{#if lobbyFilters.current.difficulty !== 'Any'}
 			<span class={['tag filter-tag-difficulty', lobbyFilters.current.difficulty.toLowerCase()]}
 				>{lobbyFilters.current.difficulty}</span
@@ -129,6 +139,23 @@
 		}
 	}
 
+	.filter-tag-players,
+	.filter-tag-openings {
+		background-color: hsl(var(--count-h), 20%, var(--bulma-soft-l));
+
+		&.count-1 {
+			--count-h: 206;
+		}
+		&.count-2 {
+			--count-h: 242;
+		}
+		&.count-3 {
+			--count-h: 289;
+		}
+		&.count-4 {
+			--count-h: 310;
+		}
+	}
 	.filter-tag-difficulty {
 		background-color: hsl(var(--difficulty-h), 20%, var(--bulma-soft-l));
 

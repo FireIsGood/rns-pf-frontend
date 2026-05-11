@@ -16,6 +16,7 @@
 
 	--bulma-duration: 100ms;
 	--bulma-body-overflow-y: auto;
+	--bulma-block-spacing: 1rem;
 }
 
 html,

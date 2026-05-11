@@ -85,6 +85,39 @@
 	let collapsed = $state(true);
 </script>
 
+<Modal bind:active={notificationModalActive}>
+	{#snippet header()}
+		<p class="card-header-title">Notification Options</p>
+	{/snippet}
+	{#snippet children()}
+		<div class="content">
+			<p>
+				Notifications permission status:
+				{#if notificationPermission === 'granted'}
+					<span class="has-text-success">Granted</span>
+				{:else if notificationPermission === 'default'}
+					<span class="has-text-warning">Default</span>
+				{:else if notificationPermission === 'denied'}
+					<span class="has-text-danger">Denied</span>
+				{/if}
+			</p>
+		</div>
+		<div class="field">
+			<label class="checkbox"
+				><input type="checkbox" bind:checked={appSettings.current.trackingNotifySilent} /> Silent notifications</label
+			>
+			<p class="is-size-7">Effects depend on your device.</p>
+		</div>
+		<div class="field">
+			<label class="checkbox"
+				><input type="checkbox" bind:checked={appSettings.current.trackingNotifyBackgroundOnly} /> Notify
+				in only background</label
+			>
+			<p class="is-size-7">Only send notifications if this window is not in focus.</p>
+		</div>
+	{/snippet}
+</Modal>
+
 <div class="card card-collapsible" class:is-collapsed={collapsed}>
 	<header class="card-header">
 		<div class="card-header-title is-gap-1">
@@ -167,39 +200,6 @@
 		>
 	</div>
 </div>
-
-<Modal bind:active={notificationModalActive}>
-	{#snippet header()}
-		<p class="card-header-title">Notification Options</p>
-	{/snippet}
-	{#snippet children()}
-		<div class="content">
-			<p>
-				Notifications permission status:
-				{#if notificationPermission === 'granted'}
-					<span class="has-text-success">Granted</span>
-				{:else if notificationPermission === 'default'}
-					<span class="has-text-warning">Default</span>
-				{:else if notificationPermission === 'denied'}
-					<span class="has-text-danger">Denied</span>
-				{/if}
-			</p>
-		</div>
-		<div class="field">
-			<label class="checkbox"
-				><input type="checkbox" bind:checked={appSettings.current.trackingNotifySilent} /> Silent notifications</label
-			>
-			<p class="is-size-7">Effects depend on your device.</p>
-		</div>
-		<div class="field">
-			<label class="checkbox"
-				><input type="checkbox" bind:checked={appSettings.current.trackingNotifyBackgroundOnly} /> Notify
-				in only background</label
-			>
-			<p class="is-size-7">Only send notifications if this window is not in focus.</p>
-		</div>
-	{/snippet}
-</Modal>
 
 <style>
 	.notification-icons {
