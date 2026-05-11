@@ -520,7 +520,6 @@
 			box-shadow: 2px 2px 0px var(--dialog-border);
 			transform: rotate(45deg);
 			border-width: 0;
-			scale: 0.5 0;
 			animation: dialog-line-in 200ms 100ms linear forwards;
 		}
 	}
