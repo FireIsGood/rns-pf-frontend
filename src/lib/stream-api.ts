@@ -34,10 +34,11 @@ export async function connectStream(
 	}
 
 	aborter = new AbortController();
-	const stream = await fetch(
-		`${PUBLIC_API_ENDPOINT}/lobbies/stream?format=json&modified=true&uncensored=${options.uncensored === true ? 'true' : 'false'}`,
-		{ signal: aborter.signal }
-	).then((response) => {
+	const url = new URL(
+		`/lobbies/stream?format=json&modified=true&unfiltered=${options.uncensored === true ? 'true' : 'false'}`,
+		PUBLIC_API_ENDPOINT
+	);
+	const stream = await fetch(url, { signal: aborter.signal }).then((response) => {
 		const reader = response.body?.getReader();
 		if (reader === undefined) {
 			console.error('Unable to get reader');
