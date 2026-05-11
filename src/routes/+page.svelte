@@ -51,6 +51,11 @@
 						}
 					}
 					sendEvent<UptimeMessage>('uptimeMessage', { type: 'synchronized' });
+				},
+				() => {
+					// Packet error, attempt to reconnect automatically
+					appState.lobbies = [];
+					sendEvent<StreamMessage>('streamMessage', { type: 'reconnect' });
 				}
 			);
 

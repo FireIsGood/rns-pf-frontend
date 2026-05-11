@@ -353,10 +353,11 @@ let aborter: AbortController | null = null;
 
 export async function connectStream(
 	options: StreamOptions,
-	callback: (chunk: StreamChunk | null) => void
+	onPacket: (chunk: StreamChunk | null) => void,
+	onPacketError: () => void
 ) {
 	if (currentStream) {
-		await currentStream.cancel('Change in settings');
+		await currentStream.cancel('Stream replaced');
 		currentStream = null;
 	}
 
@@ -384,9 +385,10 @@ export async function connectStream(
 							let size = bytesToInt(value.slice(4, 6));
 							let data = value.slice(6, 6 + size);
 
-							if (id > 5 || id - prev_id > 1) {
+							if (id - prev_id > 1) {
 								console.error('Missed a change, closing to reset data');
 								controller.close();
+								onPacketError();
 								return;
 							}
 
@@ -408,10 +410,10 @@ export async function connectStream(
 										data: parsedPayload
 									};
 
-									callback(chunk);
+									onPacket(chunk);
 								}
 							} else {
-								callback(null);
+								onPacket(null);
 							}
 						}
 
@@ -425,7 +427,7 @@ export async function connectStream(
 				}
 			},
 			cancel(reason) {
-				console.log('Closed stream. Reason:', reason);
+				console.log('Closed stream for reason:', reason);
 				aborter?.abort();
 			}
 		});
