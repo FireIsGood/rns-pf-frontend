@@ -140,7 +140,17 @@
 		{/if}
 		<fieldset class="field has-addons">
 			<div class="control is-flex-grow-1">
-				<input type="text" placeholder="Lobby name" class="input" bind:value={trackingFormValue} />
+				<input
+					type="text"
+					placeholder="Lobby name"
+					class="input"
+					bind:value={trackingFormValue}
+					onkeydown={(e) => {
+						if (e.key === 'Enter') {
+							addTracking(trackingFormValue);
+						}
+					}}
+				/>
 			</div>
 			<div class="control">
 				<button
