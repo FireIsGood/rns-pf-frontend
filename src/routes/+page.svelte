@@ -18,6 +18,7 @@
 	import type { Lobby } from '$lib';
 
 	async function initializeLobbies() {
+		appState.lobbies = [];
 		try {
 			const res = await connectStream(
 				{ uncensored: appSettings.current.showUncensored },
