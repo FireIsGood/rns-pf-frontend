@@ -124,6 +124,29 @@
 				between sessions</label
 			>
 		</div>
+		<p class="block"><strong>Visible Filters</strong></p>
+		<div class="checkboxes">
+			<label class="checkbox pb-1"
+				><input type="checkbox" bind:checked={appSettings.current.showFilterDestination} /> Destination</label
+			>
+			<label class="checkbox pb-1"
+				><input type="checkbox" bind:checked={appSettings.current.showFilterDifficulty} /> Difficulty</label
+			>
+			<label class="checkbox pb-1"
+				><input type="checkbox" bind:checked={appSettings.current.showFilterMinimumPlayers} /> Minimum
+				Players</label
+			>
+			<label class="checkbox pb-1"
+				><input type="checkbox" bind:checked={appSettings.current.showFilterMinimumOpenings} /> Minimum
+				Openings</label
+			>
+			<label class="checkbox pb-1"
+				><input type="checkbox" bind:checked={appSettings.current.showFilterPassword} /> Password Locked</label
+			>
+			<label class="checkbox pb-1"
+				><input type="checkbox" bind:checked={appSettings.current.showFilterMods} /> Using Mods</label
+			>
+		</div>
 	{/snippet}
 </Modal>
 
@@ -139,106 +162,122 @@
 		</button>
 	</header>
 	<div class="card-content">
-		<div class="mb-1 has-text-centered is-size-7">Destination</div>
-		<fieldset class="filter-group" style="--group-count: 14">
-			<button
-				class="button py-1 px-0 is-flex-grow-1"
-				class:highlighted={lobbyFilters.current.destination === 'Any'}
-				onclick={() => {
-					lobbyFilters.current.destination = 'Any';
-				}}
-				disabled={!browser}
-			>
-				<AreaIcon area="Unknown" class="image is-1by1 is-24x24" /></button
-			>
-			{#each allAreas as destination}
+		{#if appSettings.current.showFilterDestination}
+			<div class="mb-1 has-text-centered is-size-7">Destination</div>
+			<fieldset class="filter-group" style="--group-count: 14">
 				<button
 					class="button py-1 px-0 is-flex-grow-1"
-					class:highlighted={lobbyFilters.current.destination === destination}
+					class:highlighted={lobbyFilters.current.destination === 'Any'}
 					onclick={() => {
-						lobbyFilters.current.destination = destination;
+						lobbyFilters.current.destination = 'Any';
 					}}
 					disabled={!browser}
 				>
-					<AreaIcon area={destination} class="image is-1by1 is-24x24" /></button
+					<AreaIcon area="Unknown" class="image is-1by1 is-24x24" /></button
 				>
-			{/each}
-		</fieldset>
-		<div class="mb-1 has-text-centered is-size-7">Difficulty</div>
-		<fieldset class="filter-group">
-			{@render filterButton(unknownIcon, lobbyFilters.current.difficulty === 'Any', () => {
-				lobbyFilters.current.difficulty = 'Any';
-			})}
-			{#each allDifficulties as difficulty}
+				{#each allAreas as destination}
+					<button
+						class="button py-1 px-0 is-flex-grow-1"
+						class:highlighted={lobbyFilters.current.destination === destination}
+						onclick={() => {
+							lobbyFilters.current.destination = destination;
+						}}
+						disabled={!browser}
+					>
+						<AreaIcon area={destination} class="image is-1by1 is-24x24" /></button
+					>
+				{/each}
+			</fieldset>
+		{/if}
+		{#if appSettings.current.showFilterDifficulty}
+			<div class="mb-1 has-text-centered is-size-7">Difficulty</div>
+			<fieldset class="filter-group">
+				{@render filterButton(unknownIcon, lobbyFilters.current.difficulty === 'Any', () => {
+					lobbyFilters.current.difficulty = 'Any';
+				})}
+				{#each allDifficulties as difficulty}
+					{@render filterButton(
+						difficultyIconMap[difficulty],
+						lobbyFilters.current.difficulty === difficulty,
+						() => {
+							lobbyFilters.current.difficulty = difficulty;
+						}
+					)}
+				{/each}
+			</fieldset>
+		{/if}
+		{#if appSettings.current.showFilterMinimumPlayers}
+			<div class="mb-1 has-text-centered is-size-7">Minimum Players</div>
+			<fieldset class="filter-group">
+				{@render filterButton(numberZeroIcon, lobbyFilters.current.minimumPlayers === 'Any', () => {
+					lobbyFilters.current.minimumPlayers = 'Any';
+				})}
+				{@render filterButton(numberOneIcon, lobbyFilters.current.minimumPlayers === 1, () => {
+					lobbyFilters.current.minimumPlayers = 1;
+				})}
+				{@render filterButton(numberTwoIcon, lobbyFilters.current.minimumPlayers === 2, () => {
+					lobbyFilters.current.minimumPlayers = 2;
+				})}
+				{@render filterButton(numberThreeIcon, lobbyFilters.current.minimumPlayers === 3, () => {
+					lobbyFilters.current.minimumPlayers = 3;
+				})}
+				{@render filterButton(numberFourIcon, lobbyFilters.current.minimumPlayers === 4, () => {
+					lobbyFilters.current.minimumPlayers = 4;
+				})}
+			</fieldset>
+		{/if}
+		{#if appSettings.current.showFilterMinimumOpenings}
+			<div class="mb-1 has-text-centered is-size-7">Minimum Openings</div>
+			<fieldset class="filter-group">
 				{@render filterButton(
-					difficultyIconMap[difficulty],
-					lobbyFilters.current.difficulty === difficulty,
+					numberZeroIcon,
+					lobbyFilters.current.minimumOpenings === 'Any',
 					() => {
-						lobbyFilters.current.difficulty = difficulty;
+						lobbyFilters.current.minimumOpenings = 'Any';
 					}
 				)}
-			{/each}
-		</fieldset>
-		<div class="mb-1 has-text-centered is-size-7">Minimum Players</div>
-		<fieldset class="filter-group">
-			{@render filterButton(numberZeroIcon, lobbyFilters.current.minimumPlayers === 'Any', () => {
-				lobbyFilters.current.minimumPlayers = 'Any';
-			})}
-			{@render filterButton(numberOneIcon, lobbyFilters.current.minimumPlayers === 1, () => {
-				lobbyFilters.current.minimumPlayers = 1;
-			})}
-			{@render filterButton(numberTwoIcon, lobbyFilters.current.minimumPlayers === 2, () => {
-				lobbyFilters.current.minimumPlayers = 2;
-			})}
-			{@render filterButton(numberThreeIcon, lobbyFilters.current.minimumPlayers === 3, () => {
-				lobbyFilters.current.minimumPlayers = 3;
-			})}
-			{@render filterButton(numberFourIcon, lobbyFilters.current.minimumPlayers === 4, () => {
-				lobbyFilters.current.minimumPlayers = 4;
-			})}
-		</fieldset>
-		<div class="mb-1 has-text-centered is-size-7">Minimum Openings</div>
-		<fieldset class="filter-group">
-			{@render filterButton(numberZeroIcon, lobbyFilters.current.minimumOpenings === 'Any', () => {
-				lobbyFilters.current.minimumOpenings = 'Any';
-			})}
-			{@render filterButton(numberOneIcon, lobbyFilters.current.minimumOpenings === 1, () => {
-				lobbyFilters.current.minimumOpenings = 1;
-			})}
-			{@render filterButton(numberTwoIcon, lobbyFilters.current.minimumOpenings === 2, () => {
-				lobbyFilters.current.minimumOpenings = 2;
-			})}
-			{@render filterButton(numberThreeIcon, lobbyFilters.current.minimumOpenings === 3, () => {
-				lobbyFilters.current.minimumOpenings = 3;
-			})}
-			{@render filterButton(numberFourIcon, lobbyFilters.current.minimumOpenings === 4, () => {
-				lobbyFilters.current.minimumOpenings = 4;
-			})}
-		</fieldset>
-		<div class="mb-1 has-text-centered is-size-7">Password Locked</div>
-		<fieldset class="filter-group">
-			{@render filterButton(unknownIcon, lobbyFilters.current.password === 'Any', () => {
-				lobbyFilters.current.password = 'Any';
-			})}
-			{@render filterButton(lockIcon, lobbyFilters.current.password === true, () => {
-				lobbyFilters.current.password = true;
-			})}
-			{@render filterButton(unlockIcon, lobbyFilters.current.password === false, () => {
-				lobbyFilters.current.password = false;
-			})}
-		</fieldset>
-		<div class="mb-1 has-text-centered is-size-7">Using Mods</div>
-		<fieldset class="filter-group">
-			{@render filterButton(unknownIcon, lobbyFilters.current.mods === 'Any', () => {
-				lobbyFilters.current.mods = 'Any';
-			})}
-			{@render filterButton(modIcon, lobbyFilters.current.mods === true, () => {
-				lobbyFilters.current.mods = true;
-			})}
-			{@render filterButton(noModIcon, lobbyFilters.current.mods === false, () => {
-				lobbyFilters.current.mods = false;
-			})}
-		</fieldset>
+				{@render filterButton(numberOneIcon, lobbyFilters.current.minimumOpenings === 1, () => {
+					lobbyFilters.current.minimumOpenings = 1;
+				})}
+				{@render filterButton(numberTwoIcon, lobbyFilters.current.minimumOpenings === 2, () => {
+					lobbyFilters.current.minimumOpenings = 2;
+				})}
+				{@render filterButton(numberThreeIcon, lobbyFilters.current.minimumOpenings === 3, () => {
+					lobbyFilters.current.minimumOpenings = 3;
+				})}
+				{@render filterButton(numberFourIcon, lobbyFilters.current.minimumOpenings === 4, () => {
+					lobbyFilters.current.minimumOpenings = 4;
+				})}
+			</fieldset>
+		{/if}
+		{#if appSettings.current.showFilterPassword}
+			<div class="mb-1 has-text-centered is-size-7">Password Locked</div>
+			<fieldset class="filter-group">
+				{@render filterButton(unknownIcon, lobbyFilters.current.password === 'Any', () => {
+					lobbyFilters.current.password = 'Any';
+				})}
+				{@render filterButton(lockIcon, lobbyFilters.current.password === true, () => {
+					lobbyFilters.current.password = true;
+				})}
+				{@render filterButton(unlockIcon, lobbyFilters.current.password === false, () => {
+					lobbyFilters.current.password = false;
+				})}
+			</fieldset>
+		{/if}
+		{#if appSettings.current.showFilterMods}
+			<div class="mb-1 has-text-centered is-size-7">Using Mods</div>
+			<fieldset class="filter-group">
+				{@render filterButton(unknownIcon, lobbyFilters.current.mods === 'Any', () => {
+					lobbyFilters.current.mods = 'Any';
+				})}
+				{@render filterButton(modIcon, lobbyFilters.current.mods === true, () => {
+					lobbyFilters.current.mods = true;
+				})}
+				{@render filterButton(noModIcon, lobbyFilters.current.mods === false, () => {
+					lobbyFilters.current.mods = false;
+				})}
+			</fieldset>
+		{/if}
 	</div>
 	<div class="card-footer is-hidden-desktop">
 		<button class="card-footer-item collapse-button" onclick={() => (collapsed = !collapsed)}

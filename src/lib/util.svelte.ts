@@ -8,6 +8,12 @@ interface AppSettings {
 	showClientMods: boolean;
 	saveFilters: boolean;
 	showUncensored: boolean;
+	showFilterDestination: boolean;
+	showFilterDifficulty: boolean;
+	showFilterMinimumPlayers: boolean;
+	showFilterMinimumOpenings: boolean;
+	showFilterPassword: boolean;
+	showFilterMods: boolean;
 }
 
 const defaultSettings: AppSettings = {
@@ -16,7 +22,13 @@ const defaultSettings: AppSettings = {
 	trackingNotifyBackgroundOnly: false,
 	showClientMods: false,
 	saveFilters: false,
-	showUncensored: false
+	showUncensored: false,
+	showFilterDestination: true,
+	showFilterDifficulty: true,
+	showFilterMinimumPlayers: true,
+	showFilterMinimumOpenings: true,
+	showFilterPassword: true,
+	showFilterMods: true
 };
 
 export const appSettings = persistedState<AppSettings>('app', defaultSettings, {
