@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	export type uptimeMessage = {
+	export type UptimeMessage = {
 		type: 'synchronized' | 'heartbeat' | 'connected' | 'disconnected';
 	};
 </script>
@@ -8,7 +8,7 @@
 	import { appState, sendEvent, ServerStatus } from '$lib/util.svelte';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import type { streamMessage } from './+page.svelte';
+	import type { StreamMessage } from './+page.svelte';
 
 	// Connection
 	let intervalId: NodeJS.Timeout;
@@ -17,7 +17,7 @@
 	onMount(() => {
 		function handleMessage(e: Event) {
 			if (!(e instanceof CustomEvent)) return;
-			const event: CustomEvent<uptimeMessage> = e;
+			const event: CustomEvent<UptimeMessage> = e;
 			const eventType = event.detail.type;
 
 			switch (eventType) {
@@ -55,7 +55,7 @@
 	let canReconnect = $state(true);
 	function reconnect() {
 		canReconnect = false;
-		sendEvent<streamMessage>('streamMessage', { type: 'reconnect' });
+		sendEvent<StreamMessage>('streamMessage', { type: 'reconnect' });
 		setTimeout(() => {
 			canReconnect = true;
 		}, 2000);

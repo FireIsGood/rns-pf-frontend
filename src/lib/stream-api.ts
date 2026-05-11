@@ -87,6 +87,7 @@ export async function connectStream(
 				}
 			},
 			cancel(reason) {
+				console.log('Closed stream. Reason:', reason);
 				aborter?.abort();
 			}
 		});

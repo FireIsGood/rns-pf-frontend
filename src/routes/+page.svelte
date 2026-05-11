@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	export type streamMessage = {
+	export type StreamMessage = {
 		type: 'reconnect';
 	};
 </script>
@@ -11,7 +11,7 @@
 	import { connectStream } from '$lib/stream-api';
 	import { toastManager } from '$lib/toastStore.svelte';
 	import { appSettings, appState, sendEvent, ServerStatus } from '$lib/util.svelte';
-	import type { uptimeMessage } from './uptime.svelte';
+	import type { UptimeMessage } from './uptime.svelte';
 	import Filters from './filters.svelte';
 	import { onMount } from 'svelte';
 	import { PUBLIC_API_ENDPOINT } from '$env/static/public';
@@ -22,7 +22,7 @@
 				{ uncensored: appSettings.current.showUncensored },
 				(chunk) => {
 					if (chunk === null) {
-						sendEvent<uptimeMessage>('uptimeMessage', { type: 'heartbeat' });
+						sendEvent<UptimeMessage>('uptimeMessage', { type: 'heartbeat' });
 						return;
 					}
 					const currentIds = new Set(appState.lobbies.map((l) => l.id));
@@ -33,14 +33,14 @@
 					appState.newLobbies = diffLobbies;
 
 					appState.lobbies = chunk.data;
-					sendEvent<uptimeMessage>('uptimeMessage', { type: 'synchronized' });
+					sendEvent<UptimeMessage>('uptimeMessage', { type: 'synchronized' });
 				}
 			);
 
 			if (res instanceof ReadableStream) {
 				toastManager.addToast('Connected to RnS-PF', 'success');
 				appState.serverStatus = ServerStatus.CONNECTED;
-				sendEvent<uptimeMessage>('uptimeMessage', { type: 'connected' });
+				sendEvent<UptimeMessage>('uptimeMessage', { type: 'connected' });
 			} else {
 				console.error('How the hell did you get here? Please report this to the developers:', res);
 			}
@@ -53,7 +53,7 @@
 	onMount(() => {
 		function handleMessage(e: Event) {
 			if (!(e instanceof CustomEvent)) return;
-			const event: CustomEvent<streamMessage> = e;
+			const event: CustomEvent<StreamMessage> = e;
 			const eventType = event.detail.type;
 			switch (eventType) {
 				case 'reconnect':

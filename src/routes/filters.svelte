@@ -14,7 +14,8 @@
 	import hardIcon from '$lib/assets/difficulties/Hard.png';
 	import lunarIcon from '$lib/assets/difficulties/Lunar.png';
 	import { browser } from '$app/environment';
-	import { appSettings, appState, lobbyFilters } from '$lib/util.svelte';
+	import { appSettings, appState, lobbyFilters, sendEvent } from '$lib/util.svelte';
+	import { type StreamMessage } from './+page.svelte';
 
 	const allAreas: AreaName[] = [
 		'Random',
@@ -178,8 +179,13 @@
 		</div>
 		<div class="field">
 			<label class="checkbox pb-1"
-				><input type="checkbox" bind:checked={appSettings.current.showUncensored} /> Show uncensored lobby
-				names</label
+				><input
+					type="checkbox"
+					bind:checked={appSettings.current.showUncensored}
+					onchange={() => {
+						sendEvent<StreamMessage>('streamMessage', { type: 'reconnect' });
+					}}
+				/> Show uncensored lobby names</label
 			>
 			<p class="is-size-7">
 				Example: <strong
