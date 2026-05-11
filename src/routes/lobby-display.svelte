@@ -78,10 +78,13 @@
 <div class="lobby-listing">
 	<p class="lobby-title title is-4 has-text-centered">
 		<span class="lobby-title-text">Lobbies</span>
-		<span class="lobby-title-count"
-			>({appState.lobbiesFiltered
-				.length}{#if appState.lobbiesFiltered.length !== appState.lobbies.length}/{appState.lobbies
-					.length}{/if})</span
+		<span class="lobby-title-count has-text-weight-medium"
+			><span>&middot;</span>
+			<span
+				>{appState.lobbiesFiltered
+					.length}{#if appState.lobbiesFiltered.length !== appState.lobbies.length}/{appState
+						.lobbies.length}{/if}</span
+			></span
 		>
 	</p>
 	<FilterTags />
@@ -216,7 +219,7 @@
 			display: grid;
 			grid-template-columns: 1fr auto 1fr;
 			grid-template-areas: '. text count';
-			gap: 0.5ch;
+			gap: 0.25em;
 
 			.lobby-title-text {
 				grid-area: text;
@@ -224,6 +227,9 @@
 			.lobby-title-count {
 				grid-area: count;
 				justify-self: flex-start;
+				display: grid;
+				grid-template-columns: auto auto;
+				gap: 0.25em;
 			}
 		}
 	}
