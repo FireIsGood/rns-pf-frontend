@@ -15,24 +15,35 @@
 	import Filters from './filters.svelte';
 	import { onMount } from 'svelte';
 	import { PUBLIC_API_ENDPOINT } from '$env/static/public';
+	import type { Lobby } from '$lib';
 
 	async function initializeLobbies() {
 		try {
 			const res = await connectStream(
 				{ uncensored: appSettings.current.showUncensored },
-				(chunk) => {
-					if (chunk === null) {
+				(changes) => {
+					if (changes === null) {
 						sendEvent<UptimeMessage>('uptimeMessage', { type: 'heartbeat' });
 						return;
 					}
-					const currentIds = new Set(appState.lobbies.map((l) => l.id));
-					const updatedIds = new Set(chunk.data.map((l) => l.id));
-					const diffIds = updatedIds.difference(currentIds);
-					const diffLobbies = chunk.data.filter((l) => diffIds.has(l.id));
+					const diffIds = new Set(changes.data.filter((ch) => ch.kind == 0).map((ch) => ch.id));
+					appState.newLobbies = appState.lobbies.filter((l) => diffIds.has(l.id));
 
-					appState.newLobbies = diffLobbies;
-
-					appState.lobbies = chunk.data;
+					for (const change of changes.data) {
+						if (change.kind === 0) {
+							appState.lobbies.push(change as Lobby);
+						} else if (change.kind === 1) {
+							appState.lobbies = appState.lobbies.map((l) => {
+								if (l.id === change.id) {
+									return { ...l, ...change };
+								} else {
+									return l;
+								}
+							});
+						} else {
+							appState.lobbies = appState.lobbies.filter((l) => l.id !== change.id);
+						}
+					}
 					sendEvent<UptimeMessage>('uptimeMessage', { type: 'synchronized' });
 				}
 			);
