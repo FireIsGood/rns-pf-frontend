@@ -119,11 +119,20 @@
 	{/snippet}
 </Modal>
 
-<button class="button is-gap-1 mb-4 is-hidden-desktop" onclick={() => (boxHidden = !boxHidden)}>
+<button
+	class="notifications-toggle button is-gap-1 is-hidden-desktop is-soft"
+	class:mb-4={!boxHidden}
+	class:is-primary={!boxHidden}
+	onclick={() => (boxHidden = !boxHidden)}
+>
 	<NotificationEnabled />Notifications</button
 >
 
-<div class="card card-collapsible" class:is-hidden-touch={boxHidden} class:is-collapsed={collapsed}>
+<div
+	class="notifications-content card card-collapsible"
+	class:is-hidden-touch={boxHidden}
+	class:is-collapsed={collapsed}
+>
 	<header class="card-header">
 		<div class="card-header-title is-gap-1">
 			<p>Notifications</p>
@@ -207,6 +216,16 @@
 </div>
 
 <style>
+	.notifications-toggle {
+		grid-area: notification-toggle;
+		width: fit-content;
+		height: fit-content;
+	}
+
+	.notifications-content {
+		grid-area: notifications;
+	}
+
 	.notification-icons {
 		display: flex;
 		gap: 0.25rem;

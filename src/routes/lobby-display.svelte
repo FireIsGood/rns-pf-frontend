@@ -210,7 +210,7 @@
 
 	@media (max-width: 1024px) {
 		.lobby-listing {
-			padding-block: 1rem 4rem;
+			padding-block: 1.5rem 4rem;
 			min-height: 80lvh;
 		}
 	}

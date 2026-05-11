@@ -84,21 +84,58 @@
 	});
 </script>
 
-<section class="container section columns is-desktop">
-	<div class="sidebar-options column is-narrow">
-		<Filters />
-		<Notifications />
-		<Uptime />
-	</div>
-	<div class="column">
-		<LobbyDisplay />
-	</div>
+<section class="container section app-layout">
+	<div class="options"><Filters /><Notifications /></div>
+	<div class="uptime"><Uptime /></div>
+	<div class="lobbies"><LobbyDisplay /></div>
 </section>
 
 <style>
-	@media print, screen and (min-width: 1024px) {
-		.sidebar-options {
-			max-width: 28rem;
+	.app-layout {
+		display: grid;
+		grid-template-areas:
+			'options lobbies'
+			'uptime lobbies';
+
+		grid-template-columns: 28rem 1fr;
+		grid-template-rows: auto auto auto;
+		column-gap: 1.5rem;
+		row-gap: 1rem;
+	}
+
+	.options {
+		grid-area: options;
+	}
+
+	.uptime {
+		grid-area: uptime;
+	}
+
+	.lobbies {
+		grid-area: lobbies;
+	}
+
+	@media print, screen and (max-width: 1023px) {
+		.app-layout {
+			grid-template-areas:
+				'options'
+				'lobbies'
+				'uptime';
+
+			grid-template-columns: auto;
+			grid-template-rows: auto;
+			row-gap: 0;
+		}
+
+		.options {
+			display: grid;
+			grid-template-areas:
+				'filter-toggle notification-toggle'
+				'filters filters'
+				'notifications notifications';
+			grid-template-columns: min-content;
+			column-gap: 1rem;
+			row-gap: 0;
 		}
 	}
 </style>

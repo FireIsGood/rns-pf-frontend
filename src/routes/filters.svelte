@@ -152,11 +152,18 @@
 	{/snippet}
 </Modal>
 
-<button class="button is-gap-1 mb-4 is-hidden-desktop" onclick={() => (boxHidden = !boxHidden)}
-	><FunnelIcon />Filters</button
+<button
+	class="filters-toggle button is-gap-1 is-hidden-desktop is-soft"
+	class:mb-4={!boxHidden}
+	class:is-primary={!boxHidden}
+	onclick={() => (boxHidden = !boxHidden)}><FunnelIcon />Filters</button
 >
 
-<div class="card card-collapsible" class:is-hidden-touch={boxHidden} class:is-collapsed={collapsed}>
+<div
+	class="filters-content card card-collapsible"
+	class:is-hidden-touch={boxHidden}
+	class:is-collapsed={collapsed}
+>
 	<header class="card-header">
 		<p class="card-header-title">Filter Lobbies</p>
 		<button
@@ -293,6 +300,16 @@
 </div>
 
 <style>
+	.filters-toggle {
+		grid-area: filter-toggle;
+		width: fit-content;
+		height: fit-content;
+	}
+
+	.filters-content {
+		grid-area: filters;
+	}
+
 	.filter-group {
 		display: flex;
 		flex-wrap: wrap;
