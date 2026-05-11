@@ -150,7 +150,7 @@
 			{#each appState.lobbiesFiltered as lobby (lobby.id)}
 				<div
 					class={[
-						'lobby-card card px-4 py-3 has-background-primary-soft',
+						'lobby-card is-shadowless card px-4 py-3 has-background-primary-soft',
 						difficultyClassMap[lobby.difficulty],
 						trackingNames.includes(lobby.name) && 'tracked'
 					]}
