@@ -11,8 +11,14 @@ export function bytesToInt(bytes: Uint8Array<ArrayBuffer>) {
 	return value;
 }
 
+export enum ChangeKind {
+	ADD = 0,
+	UPDATE = 1,
+	REMOVE = 2
+}
+
 type LobbyChange = Partial<Lobby> & {
-	kind?: number;
+	kind?: ChangeKind;
 };
 
 function deserializeChunkChanges(bytes: Uint8Array<ArrayBuffer>): LobbyChange[] {
@@ -31,7 +37,7 @@ function deserializeChunkChanges(bytes: Uint8Array<ArrayBuffer>): LobbyChange[] 
 
 		if (op == 43) {
 			// + = 43
-			change.kind = 0;
+			change.kind = ChangeKind.ADD;
 
 			let name_size = bytesToInt(bytes.slice(0, 2));
 			bytes = bytes.slice(2);
@@ -151,7 +157,7 @@ function deserializeChunkChanges(bytes: Uint8Array<ArrayBuffer>): LobbyChange[] 
 			changes.push(change);
 		} else if (op == 42) {
 			// * = 42
-			change.kind = 1;
+			change.kind = ChangeKind.UPDATE;
 
 			while (bytes.length) {
 				let key = bytesToInt(bytes.slice(0, 1));
@@ -323,7 +329,7 @@ function deserializeChunkChanges(bytes: Uint8Array<ArrayBuffer>): LobbyChange[] 
 			}
 		} else {
 			// - = 45
-			change.kind = 2;
+			change.kind = ChangeKind.REMOVE;
 
 			changes.push(change);
 		}
@@ -379,8 +385,8 @@ export async function connectStream(
 							let data = value.slice(6, 6 + size);
 
 							if (id > 5 || id - prev_id > 1) {
+								console.error('Missed a change, closing to reset data');
 								controller.close();
-								console.error('Closed');
 								return;
 							}
 

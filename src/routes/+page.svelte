@@ -8,7 +8,7 @@
 	import LobbyDisplay from './lobby-display.svelte';
 	import Notifications from './notifications.svelte';
 	import Uptime from './uptime.svelte';
-	import { connectStream } from '$lib/stream-api';
+	import { ChangeKind, connectStream } from '$lib/stream-api';
 	import { toastManager } from '$lib/toastStore.svelte';
 	import { appSettings, appState, sendEvent, ServerStatus } from '$lib/util.svelte';
 	import type { UptimeMessage } from './uptime.svelte';
@@ -30,18 +30,24 @@
 					appState.newLobbies = appState.lobbies.filter((l) => diffIds.has(l.id));
 
 					for (const change of changes.data) {
-						if (change.kind === 0) {
-							appState.lobbies.push(change as Lobby);
-						} else if (change.kind === 1) {
-							appState.lobbies = appState.lobbies.map((l) => {
-								if (l.id === change.id) {
-									return { ...l, ...change };
-								} else {
-									return l;
-								}
-							});
-						} else {
-							appState.lobbies = appState.lobbies.filter((l) => l.id !== change.id);
+						switch (change.kind) {
+							case ChangeKind.ADD:
+								appState.lobbies.push(change as Lobby);
+								break;
+
+							case ChangeKind.UPDATE:
+								appState.lobbies = appState.lobbies.map((l) => {
+									if (l.id === change.id) {
+										return { ...l, ...change };
+									} else {
+										return l;
+									}
+								});
+								break;
+
+							case ChangeKind.REMOVE:
+								appState.lobbies = appState.lobbies.filter((l) => l.id !== change.id);
+								break;
 						}
 					}
 					sendEvent<UptimeMessage>('uptimeMessage', { type: 'synchronized' });
