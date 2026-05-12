@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { degToRad, turnToRad } from '$lib/util.svelte';
-	import { onMount, untrack } from 'svelte';
+	import { onMount } from 'svelte';
 	import { Canvas, Layer, type Render } from 'svelte-canvas';
 
 	let canvas: Canvas;
