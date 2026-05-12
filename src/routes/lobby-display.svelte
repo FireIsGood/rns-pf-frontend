@@ -191,9 +191,7 @@
 						</div>
 						<div class="lobby-description breakable">
 							<div class="lobby-text-label is-size-7 has-text-weight-medium">description</div>
-							<p class="lobby-description-text">
-								{lobby.desc}
-							</p>
+							<p class="lobby-description-text">{lobby.desc}</p>
 							<CopyButton text={lobby.desc} />
 						</div>
 					</div>
@@ -346,21 +344,29 @@
 		user-select: none;
 	}
 
+	.lobby-name,
+	.lobby-description {
+		display: grid;
+		grid-template-areas: 'text';
+		align-items: center;
+		position: relative;
+
+		.lobby-text-label,
+		.lobby-name-text,
+		.lobby-description-text {
+			grid-area: text;
+			min-height: 1.5em;
+		}
+	}
+
 	.lobby-name {
 		max-width: 16ch;
 	}
 
 	.lobby-description {
-		display: grid;
 		column-gap: 0.5rem;
 		grid-template-areas: 'text copy';
-		align-items: center;
-		position: relative;
-
-		.lobby-text-label,
-		.lobby-description-text {
-			grid-area: text;
-		}
+		grid-template-columns: 1fr auto;
 	}
 
 	.lobby-name-text,
