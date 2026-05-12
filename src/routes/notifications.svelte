@@ -11,7 +11,7 @@
 	import NotificationBackground from '$lib/assets/selection-background.svelte';
 	import { toastManager } from '$lib/toastStore.svelte';
 	import { browser } from '$app/environment';
-	import { appSettings, appState } from '$lib/util.svelte';
+	import { appSettings, appState, handleOptionsTab } from '$lib/util.svelte';
 	import { onMount } from 'svelte';
 
 	let trackingFormValue: string = $state('');
@@ -82,7 +82,7 @@
 
 	let notificationModalActive = $state(false);
 
-	let boxHidden = $state(true);
+	let boxActive = $derived(appState.optionsTabActive === 'notifications');
 </script>
 
 <Modal bind:active={notificationModalActive}>
@@ -120,14 +120,16 @@
 
 <button
 	class="notifications-toggle button is-gap-1 is-hidden-desktop is-soft"
-	class:mb-4={!boxHidden}
-	class:is-primary={!boxHidden}
-	onclick={() => (boxHidden = !boxHidden)}
+	class:mb-4={boxActive}
+	class:is-primary={boxActive}
+	onclick={() => {
+		handleOptionsTab('notifications');
+	}}
 >
 	<NotificationEnabled />Notifications</button
 >
 
-<div class="notifications-content card card-collapsible" class:is-hidden-touch={boxHidden}>
+<div class="notifications-content card card-collapsible" class:is-hidden-touch={!boxActive}>
 	<header class="card-header">
 		<div class="card-header-title is-gap-1">
 			<p>Notifications</p>

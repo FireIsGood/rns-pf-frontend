@@ -20,7 +20,14 @@
 	import hardIcon from '$lib/assets/difficulties/Hard.png';
 	import lunarIcon from '$lib/assets/difficulties/Lunar.png';
 	import { browser } from '$app/environment';
-	import { appSettings, appState, lobbyFilters, playersInLobby, sendEvent } from '$lib/util.svelte';
+	import {
+		appSettings,
+		appState,
+		handleOptionsTab,
+		lobbyFilters,
+		playersInLobby,
+		sendEvent
+	} from '$lib/util.svelte';
 	import { type StreamMessage } from './+page.svelte';
 
 	const allAreas: AreaName[] = [
@@ -80,7 +87,7 @@
 	}
 	let filterModalActive = $state(false);
 
-	let boxHidden = $state(true);
+	let boxActive = $derived(appState.optionsTabActive === 'filters');
 </script>
 
 {#snippet filterButton(iconSrc: string, highlighted: boolean, callback: () => void)}
@@ -158,12 +165,14 @@
 
 <button
 	class="filters-toggle button is-gap-1 is-hidden-desktop is-soft"
-	class:mb-4={!boxHidden}
-	class:is-primary={!boxHidden}
-	onclick={() => (boxHidden = !boxHidden)}><FunnelIcon />Filters</button
+	class:mb-4={boxActive}
+	class:is-primary={boxActive}
+	onclick={() => {
+		handleOptionsTab('filters');
+	}}><FunnelIcon />Filters</button
 >
 
-<div class="filters-content card card-collapsible" class:is-hidden-touch={boxHidden}>
+<div class="filters-content card card-collapsible" class:is-hidden-touch={!boxActive}>
 	<header class="card-header">
 		<p class="card-header-title">Filter Lobbies</p>
 		<button

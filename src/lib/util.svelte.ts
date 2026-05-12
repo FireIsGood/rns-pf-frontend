@@ -83,19 +83,31 @@ export enum ServerStatus {
 	PENDING
 }
 
+type OptionsTab = 'filters' | 'notifications' | null;
+
 interface AppState {
 	lobbies: Lobby[];
 	lobbiesFiltered: Lobby[];
 	newLobbies: Lobby[];
 	serverStatus: ServerStatus;
+	optionsTabActive: OptionsTab;
 }
 
 export const appState = $state<AppState>({
 	lobbies: [],
 	lobbiesFiltered: [],
 	newLobbies: [],
-	serverStatus: ServerStatus.PENDING
+	serverStatus: ServerStatus.PENDING,
+	optionsTabActive: null
 });
+
+export function handleOptionsTab(tab: OptionsTab) {
+	if (appState.optionsTabActive === tab) {
+		appState.optionsTabActive = null;
+	} else {
+		appState.optionsTabActive = tab;
+	}
+}
 
 export function playersInLobby(lobby: Lobby): number {
 	const playerSlots: Array<keyof Lobby> = ['char0', 'char1', 'char2', 'char3'];
