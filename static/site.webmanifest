@@ -1,6 +1,6 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "R&S Party Finder",
+  "short_name": "R&S PF",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
