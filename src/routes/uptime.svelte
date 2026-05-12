@@ -50,16 +50,6 @@
 			jumping = true;
 		});
 	}
-
-	// Reconnect timeout
-	let canReconnect = $state(true);
-	function reconnect() {
-		canReconnect = false;
-		sendEvent<StreamMessage>('streamMessage', { type: 'reconnect' });
-		setTimeout(() => {
-			canReconnect = true;
-		}, 2000);
-	}
 </script>
 
 <div class="uptime-text is-size-7 px-2">
@@ -81,15 +71,6 @@
 		ago
 	</p>
 </div>
-{#if appState.serverStatus === ServerStatus.DISCONNECTED || timeSinceLastUpdate >= 60}
-	<div class="uptime-options pt-3 px-2" transition:fly={{ duration: 400, y: 5 }}>
-		<button
-			class="button is-primary is-small is-outlined"
-			onclick={reconnect}
-			disabled={!canReconnect}>Reconnect</button
-		>
-	</div>
-{/if}
 
 <style>
 	.uptime-text {

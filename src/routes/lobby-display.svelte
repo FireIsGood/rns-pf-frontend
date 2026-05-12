@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { difficultyClassMap, difficultyMap } from '$lib';
-	import { appSettings, appState, lobbyFilters, pickRandom, ServerStatus } from '$lib/util.svelte';
+	import {
+		appSettings,
+		appState,
+		lobbyFilters,
+		pickRandom,
+		sendEvent,
+		ServerStatus
+	} from '$lib/util.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { typewriter } from '$lib/util.svelte';
@@ -11,6 +18,7 @@
 	import spellManifestImage from '$lib/assets/spell_manifest.gif';
 	import { onMount } from 'svelte';
 	import FilterTags from './filter-tags.svelte';
+	import type { StreamMessage } from './+page.svelte';
 
 	let trackingNames = appSettings.current.trackingNames;
 
@@ -50,7 +58,7 @@
 	});
 
 	$effect(() => {
-		if (appState.serverStatus === ServerStatus.CONNECTED) {
+		if (appState.serverStatus !== ServerStatus.PENDING) {
 			setTimeout(() => {
 				debouncedHydrationComplete = true;
 			}, 200);
@@ -65,6 +73,16 @@
 		}
 		lastLobbyCount = appState.lobbies.length;
 	});
+
+	// Reconnect timeout
+	let canReconnect = $state(true);
+	function reconnect() {
+		canReconnect = false;
+		sendEvent<StreamMessage>('streamMessage', { type: 'reconnect' });
+		setTimeout(() => {
+			canReconnect = true;
+		}, 2000);
+	}
 </script>
 
 {#snippet characterIcon(character: number | null, palette: number | null)}
@@ -91,7 +109,37 @@
 	<div class="overlap-children">
 		{#if debouncedHydrationComplete && appState.lobbiesFiltered.length === 0}
 			<div class="character-container overlap-children" transition:fly={{ duration: 400, x: -10 }}>
-				{#if appState.lobbies.length === 0}
+				{#if appState.serverStatus === ServerStatus.DISCONNECTED}
+					<div class="py-4" transition:fly={{ duration: 600, x: 10 }}>
+						<div class="dialog-root" style="--character-color: #ff3651">
+							<div class="dialog-content">
+								<div class="character-stack overlap-children mx-auto mt-6 mb-4">
+									<div class="flight-ring-root">
+										<div class="flight-ring"></div>
+									</div>
+									<img src={spellManifestImage} alt="" class="image spell-manifest-image is-1by1" />
+								</div>
+								<div class="has-text-centered has-text-weight-medium">
+									<p class="pb-1">Disconnected</p>
+									<div class="uptime-options pt-3 px-2" transition:fly={{ duration: 400, y: 5 }}>
+										<button
+											class="button is-danger is-small is-outlined"
+											onclick={reconnect}
+											disabled={!canReconnect}>Reconnect</button
+										>
+									</div>
+								</div>
+							</div>
+							{#if spellManifestQuote}
+								<div class="dialog-box" in:fade|global={{ duration: 200, delay: 200 }}>
+									<div class="dialog-text" in:typewriter|global={{ speed: 3 }}>
+										{spellManifestQuote}
+									</div>
+								</div>
+							{/if}
+						</div>
+					</div>
+				{:else if appState.lobbies.length === 0}
 					<div class="py-4" transition:fly={{ duration: 600, x: 10 }}>
 						<div class="dialog-root" style="--character-color: #ff3651">
 							<div class="dialog-content">
