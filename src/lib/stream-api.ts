@@ -374,82 +374,83 @@ export function connectStream(
 		`/lobbies/stream?format=chunk_changes&modified=true&unfiltered=${options.uncensored === true ? 'true' : 'false'}`,
 		PUBLIC_API_ENDPOINT
 	);
-	return Promise.all([fetch(url, { signal: aborter.signal }), cancelPromise]).then(
-		([response, _]) => {
-			const reader = response.body?.getReader();
-			if (reader === undefined) {
-				console.error('Unable to get reader');
-				return;
-			}
+	return Promise.all([
+		fetch(url, { cache: 'no-store', signal: aborter.signal }),
+		cancelPromise
+	]).then(([response, _]) => {
+		const reader = response.body?.getReader();
+		if (reader === undefined) {
+			console.error('Unable to get reader');
+			return;
+		}
 
-			let prev_id = 0;
+		let prev_id = 0;
 
-			const stream = new ReadableStream({
-				start(controller) {
-					return pump();
-					function pump(): Promise<void | Function | undefined> | undefined {
-						return reader
-							?.read()
-							.then(({ done, value }) => {
-								if (value) {
-									let id = bytesToInt(value.slice(0, 4));
-									let size = bytesToInt(value.slice(4, 6));
-									let data = value.slice(6, 6 + size);
+		const stream = new ReadableStream({
+			start(controller) {
+				return pump();
+				function pump(): Promise<void | Function | undefined> | undefined {
+					return reader
+						?.read()
+						.then(({ done, value }) => {
+							if (value) {
+								let id = bytesToInt(value.slice(0, 4));
+								let size = bytesToInt(value.slice(4, 6));
+								let data = value.slice(6, 6 + size);
 
-									if (id - prev_id > 1) {
-										console.error('Missed a change, closing to reset data');
-										controller.close();
-										onPacketError();
-										return;
-									}
-
-									prev_id = id;
-
-									// Heartbeats counted as a null payload
-									if (size !== 0) {
-										let parsedPayload = null;
-										try {
-											parsedPayload = deserializeChunkChanges(data);
-										} catch (error) {
-											console.error(error);
-										}
-
-										if (parsedPayload !== null) {
-											const chunk: StreamChunk = {
-												id: id,
-												size: size,
-												data: parsedPayload
-											};
-
-											onPacket(chunk);
-										}
-									} else {
-										onPacket(null);
-									}
-								}
-
-								if (done) {
+								if (id - prev_id > 1) {
+									console.error('Missed a change, closing to reset data');
 									controller.close();
+									onPacketError();
 									return;
 								}
 
-								return pump();
-							})
-							.catch((_err) => {
-								console.error('Stream disconnected.');
-								onPacketError();
-							});
-					}
-				},
-				cancel(reason) {
-					console.log('Closed stream for reason:', reason);
-					aborter?.abort();
+								prev_id = id;
+
+								// Heartbeats counted as a null payload
+								if (size !== 0) {
+									let parsedPayload = null;
+									try {
+										parsedPayload = deserializeChunkChanges(data);
+									} catch (error) {
+										console.error(error);
+									}
+
+									if (parsedPayload !== null) {
+										const chunk: StreamChunk = {
+											id: id,
+											size: size,
+											data: parsedPayload
+										};
+
+										onPacket(chunk);
+									}
+								} else {
+									onPacket(null);
+								}
+							}
+
+							if (done) {
+								controller.close();
+								return;
+							}
+
+							return pump();
+						})
+						.catch((_err) => {
+							console.error('Stream disconnected.');
+							onPacketError();
+						});
 				}
-			});
+			},
+			cancel(reason) {
+				console.log('Closed stream for reason:', reason);
+				aborter?.abort();
+			}
+		});
 
-			currentStream = stream;
+		currentStream = stream;
 
-			return currentStream;
-		}
-	);
+		return currentStream;
+	});
 }
