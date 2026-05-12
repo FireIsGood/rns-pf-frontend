@@ -16,14 +16,26 @@
 	import CopyButton from './copy-button.svelte';
 	import sayaImage from '$lib/assets/saya_shop.gif';
 	import spellManifestImage from '$lib/assets/spell_manifest.gif';
+	import tasshaImage from '$lib/assets/tassha_shop.gif';
 	import { onMount } from 'svelte';
 	import FilterTags from './filter-tags.svelte';
 	import type { StreamMessage } from './+page.svelte';
 
 	let trackingNames = appSettings.current.trackingNames;
 
+	// Tassha
+	const tasshaQuoteList = [
+		// From voice lines as enemy and shopkeeper and made up
+		'Tassha is error!',
+		'Hello again, rabbit!',
+		'Is rabbit alright?',
+		'Last stop, Tassha thinks! Yes!',
+		'Evil witch is behind connection error?'
+	];
+	let tasshaQuote = $state<string>();
+
 	// Spell Manifest
-	let spellManifestQuoteList = [
+	const spellManifestQuoteList = [
 		// From voice lines as an enemy and dialog
 		'Terribly lonely....',
 		'Are you... alone...?',
@@ -40,7 +52,7 @@
 	let spellManifestQuote = $state<string>();
 
 	// Saya
-	let sayaQuoteList = [
+	const sayaQuoteList = [
 		// From voice lines as enemy and shopkeeper
 		'...Hm...',
 		'Well, well...',
@@ -53,6 +65,7 @@
 
 	let debouncedHydrationComplete: boolean = $state(false);
 	onMount(() => {
+		tasshaQuote = pickRandom(tasshaQuoteList);
 		spellManifestQuote = pickRandom(spellManifestQuoteList);
 		sayaQuote = pickRandom(sayaQuoteList);
 	});
@@ -68,6 +81,7 @@
 	let lastLobbyCount = $state(0);
 	$effect(() => {
 		if (appState.lobbies.length !== lastLobbyCount) {
+			tasshaQuote = pickRandom(tasshaQuoteList);
 			spellManifestQuote = pickRandom(spellManifestQuoteList);
 			sayaQuote = pickRandom(sayaQuoteList);
 		}
@@ -111,29 +125,29 @@
 			<div class="character-container overlap-children" transition:fly={{ duration: 400, x: -10 }}>
 				{#if appState.serverStatus === ServerStatus.DISCONNECTED}
 					<div class="py-4" transition:fly={{ duration: 600, x: 10 }}>
-						<div class="dialog-root" style="--character-color: #ff3651">
+						<div class="dialog-root" style="--character-color: #6490f3">
 							<div class="dialog-content">
 								<div class="character-stack overlap-children mx-auto mt-6 mb-4">
 									<div class="flight-ring-root">
 										<div class="flight-ring"></div>
 									</div>
-									<img src={spellManifestImage} alt="" class="image spell-manifest-image is-1by1" />
+									<img src={tasshaImage} alt="" class="image tassha-image is-1by1" />
 								</div>
 								<div class="has-text-centered has-text-weight-medium">
 									<p class="pb-1">Disconnected</p>
 									<div class="uptime-options pt-3 px-2" transition:fly={{ duration: 400, y: 5 }}>
 										<button
-											class="button is-danger is-small is-outlined"
+											class="button is-info is-small is-outlined"
 											onclick={reconnect}
 											disabled={!canReconnect}>Reconnect</button
 										>
 									</div>
 								</div>
 							</div>
-							{#if spellManifestQuote}
+							{#if tasshaQuote}
 								<div class="dialog-box" in:fade|global={{ duration: 200, delay: 200 }}>
 									<div class="dialog-text" in:typewriter|global={{ speed: 3 }}>
-										{spellManifestQuote}
+										{tasshaQuote}
 									</div>
 								</div>
 							{/if}
@@ -512,6 +526,12 @@
 		width: 165px;
 		scale: -1 1;
 		translate: -0px -2px;
+	}
+
+	.tassha-image {
+		width: 200px;
+		scale: -1 1;
+		translate: -4px -20px;
 	}
 
 	.flight-ring-root {
