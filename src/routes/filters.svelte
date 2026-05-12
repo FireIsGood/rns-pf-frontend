@@ -85,7 +85,12 @@
 
 {#snippet filterButton(iconSrc: string, highlighted: boolean, callback: () => void)}
 	<button class="button p-1 is-flex-grow-1" class:highlighted onclick={callback} disabled={!browser}
-		><img src={iconSrc} alt="" class="image is-1by1 is-24x24" /></button
+		><img
+			src={iconSrc}
+			alt=""
+			class="filter-image image is-1by1 is-24x24"
+			draggable="false"
+		/></button
 	>
 {/snippet}
 
@@ -181,7 +186,11 @@
 					}}
 					disabled={!browser}
 				>
-					<AreaIcon area="Unknown" class="image is-1by1 is-24x24" /></button
+					<AreaIcon
+						area="Unknown"
+						class="filter-image image is-1by1 is-24x24"
+						draggable="false"
+					/></button
 				>
 				{#each allAreas as destination}
 					<button
@@ -192,7 +201,11 @@
 						}}
 						disabled={!browser}
 					>
-						<AreaIcon area={destination} class="image is-1by1 is-24x24" /></button
+						<AreaIcon
+							area={destination}
+							class="filter-image image is-1by1 is-24x24"
+							draggable="false"
+						/></button
 					>
 				{/each}
 			</fieldset>

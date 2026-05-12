@@ -15,7 +15,8 @@
 	import toyboxIcon from '$lib/assets/stages/Toybox.webp';
 	import unknownIcon from '$lib/assets/Unknown Icon.png';
 
-	let { area, ...others }: { area: AreaName; class?: string } = $props();
+	let { area, ...others }: { area: AreaName; class?: string; draggable?: 'true' | 'false' } =
+		$props();
 
 	const iconMap: Record<AreaName, string> = {
 		Random: randomIcon,
