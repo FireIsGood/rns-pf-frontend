@@ -28,14 +28,14 @@ body {
 html {
 	--gradient-saturated: hsl(
 		var(--bulma-primary-h),
-		calc(var(--bulma-primary-s) + 10%),
-		calc(var(--bulma-soft-l) + 20% * sign(var(--bulma-active-border-l-delta)))
+		50%,
+		calc(var(--bulma-soft-l) + 25% * sign(var(--bulma-active-border-l-delta)))
 	);
 	background-attachment: fixed;
 	background-image: radial-gradient(
-		circle at 80% 50%,
-		transparent 65%,
-		var(--gradient-saturated) 150%
+		circle at 65% 47.5%,
+		transparent 60%,
+		var(--gradient-saturated) 200%
 	);
 }
 

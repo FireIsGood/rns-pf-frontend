@@ -140,3 +140,11 @@ export function sendEvent<T>(type: string, eventData: T) {
 	});
 	document.dispatchEvent(customEvent);
 }
+
+export function degToRad(degree: number): number {
+	return (degree / 360) * Math.PI * 2;
+}
+
+export function turnToRad(turn: number): number {
+	return turn * Math.PI * 2;
+}

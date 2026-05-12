@@ -3,6 +3,7 @@
 	import DiscordIcon from '$lib/assets/Discord Logo.svelte';
 	import ThemeToggle from './theme-toggle.svelte';
 	import ToastManager from '$lib/ToastManager.svelte.svelte';
+	import Background from './background.svelte';
 
 	let { children } = $props();
 
@@ -20,6 +21,8 @@
 	<meta name="name" content="R&S Party Finder" />
 	<meta name="description" content="Look up R&S open lobbies from the browser." />
 </svelte:head>
+
+<Background />
 
 <header>
 	<nav class="navbar has-background-primary-soft">
@@ -89,11 +92,6 @@
 		</ul>
 	</div>
 </footer>
-<div class="looping-squares">
-	{#each [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as index}
-		<div class="square" style={`--offset-base: ${index}`}></div>
-	{/each}
-</div>
 
 <ToastManager />
 
@@ -186,64 +184,5 @@
 				content: unset;
 			}
 		}
-	}
-
-	.looping-squares {
-		position: fixed;
-		inset: 0;
-		overflow: clip;
-		z-index: -1;
-	}
-
-	.square {
-		--offset: calc(var(--offset-base));
-		--size: calc(240px * var(--offset));
-		--square-color: hsl(
-			var(--bulma-primary-h) calc(var(--bulma-primary-s) - 10%)
-				calc(var(--bulma-soft-l) + 15% * sign(var(--bulma-active-border-l-delta)))
-		);
-		--square-shadow-color: hsl(
-			var(--bulma-primary-h) calc(var(--bulma-primary-s) - 10%)
-				calc(var(--bulma-soft-l) + 50% * sign(var(--bulma-active-border-l-delta))) / 0.25
-		);
-
-		width: var(--size);
-		height: var(--size);
-		border: 4px solid var(--square-color);
-		opacity: min(calc(0.125 * (var(--offset) - 0.5)), 0.25);
-
-		position: absolute;
-		translate: 25% -45%;
-		right: 30%;
-		top: 45%;
-		z-index: 100;
-
-		--initial-rotation: 0.08turn;
-		rotate: var(--initial-rotation);
-		box-shadow:
-			0 0 12px -1px var(--square-shadow-color),
-			0 0 12px -1px var(--square-shadow-color) inset;
-
-		animation: zoom 24s linear infinite;
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.square {
-			animation: unset;
-		}
-	}
-
-	@keyframes zoom {
-		from {
-			--offset: calc(var(--offset-base));
-		}
-		to {
-			--offset: calc(var(--offset-base) + 1);
-		}
-	}
-
-	@property --offset {
-		syntax: '<number>';
-		initial-value: 0;
-		inherits: false;
 	}
 </style>
