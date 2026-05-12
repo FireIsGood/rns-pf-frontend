@@ -438,7 +438,8 @@ export function connectStream(
 							return pump();
 						})
 						.catch((_err) => {
-							console.error('Stream disconnected.');
+							console.log('Stream disconnected.');
+							controller.close();
 							onPacketError();
 						});
 				}
