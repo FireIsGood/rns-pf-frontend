@@ -349,7 +349,6 @@ type StreamOptions = {
 };
 
 let currentStream: ReadableStream | null = null;
-let aborter: AbortController | null = null;
 
 export function connectStream(
 	options: StreamOptions,
