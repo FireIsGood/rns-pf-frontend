@@ -90,7 +90,7 @@
 	<FilterTags />
 	<div class="overlap-children">
 		{#if debouncedHydrationComplete && appState.lobbiesFiltered.length === 0}
-			<div class="overlap-children" transition:fly={{ duration: 400, x: -10 }}>
+			<div class="character-container overlap-children" transition:fly={{ duration: 400, x: -10 }}>
 				{#if appState.lobbies.length === 0}
 					<div class="py-4" transition:fly={{ duration: 600, x: 10 }}>
 						<div class="dialog-root" style="--character-color: #ff3651">
@@ -206,6 +206,13 @@
 <style>
 	.lobby-listing {
 		padding-block: 1rem;
+		display: grid;
+		grid-template-rows: auto auto 1fr;
+		height: 100%;
+	}
+
+	.character-container {
+		align-self: center;
 	}
 
 	@media (max-width: 1024px) {
