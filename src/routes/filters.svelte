@@ -168,7 +168,7 @@
 		<p class="card-header-title">Filter Lobbies</p>
 		<button
 			class="button card-header-icon is-size-5"
-			aria-label="collapse"
+			aria-label="options"
 			onclick={() => (filterModalActive = true)}
 		>
 			<GearIcon />

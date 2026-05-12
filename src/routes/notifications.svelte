@@ -159,7 +159,7 @@
 		</div>
 		<button
 			class="button card-header-icon is-size-5"
-			aria-label="collapse"
+			aria-label="options"
 			onclick={() => (notificationModalActive = true)}
 		>
 			<GearIcon />
