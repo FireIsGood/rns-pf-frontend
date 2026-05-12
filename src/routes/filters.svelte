@@ -81,7 +81,6 @@
 	let filterModalActive = $state(false);
 
 	let boxHidden = $state(true);
-	let collapsed = $state(true);
 </script>
 
 {#snippet filterButton(iconSrc: string, highlighted: boolean, callback: () => void)}
@@ -159,11 +158,7 @@
 	onclick={() => (boxHidden = !boxHidden)}><FunnelIcon />Filters</button
 >
 
-<div
-	class="filters-content card card-collapsible"
-	class:is-hidden-touch={boxHidden}
-	class:is-collapsed={collapsed}
->
+<div class="filters-content card card-collapsible" class:is-hidden-touch={boxHidden}>
 	<header class="card-header">
 		<p class="card-header-title">Filter Lobbies</p>
 		<button
@@ -291,11 +286,6 @@
 				})}
 			</fieldset>
 		{/if}
-	</div>
-	<div class="card-footer is-hidden-desktop">
-		<button class="card-footer-item collapse-button" onclick={() => (collapsed = !collapsed)}
-			><span class="collapse-icon"><CaretUp /></span></button
-		>
 	</div>
 </div>
 
