@@ -351,91 +351,106 @@ type StreamOptions = {
 let currentStream: ReadableStream | null = null;
 let aborter: AbortController | null = null;
 
-export async function connectStream(
+export function connectStream(
 	options: StreamOptions,
 	onPacket: (chunk: StreamChunk | null) => void,
 	onPacketError: () => void
 ) {
-	if (currentStream) {
-		await currentStream.cancel('Stream replaced');
-		currentStream = null;
-	}
+	const cancelPromise = new Promise<void>((resolve, _reject) => {
+		if (currentStream) {
+			currentStream
+				.cancel('Stream replaced')
+				.then(resolve)
+				.catch(resolve)
+				.then(() => {
+					currentStream = null;
+				});
+		} else {
+			resolve();
+		}
+	});
 
-	aborter = new AbortController();
+	const aborter = new AbortController();
 	const url = new URL(
 		`/lobbies/stream?format=chunk_changes&modified=true&unfiltered=${options.uncensored === true ? 'true' : 'false'}`,
 		PUBLIC_API_ENDPOINT
 	);
-	const stream = await fetch(url, { signal: aborter.signal }).then((response) => {
-		const reader = response.body?.getReader();
-		if (reader === undefined) {
-			console.error('Unable to get reader');
-			return;
-		}
-
-		let prev_id = 0;
-
-		return new ReadableStream({
-			start(controller) {
-				return pump();
-				function pump(): Promise<Function | undefined> | undefined {
-					return reader?.read().then(({ done, value }) => {
-						if (value) {
-							let id = bytesToInt(value.slice(0, 4));
-							let size = bytesToInt(value.slice(4, 6));
-							let data = value.slice(6, 6 + size);
-
-							if (id - prev_id > 1) {
-								console.error('Missed a change, closing to reset data');
-								controller.close();
-								onPacketError();
-								return;
-							}
-
-							prev_id = id;
-
-							// Heartbeats counted as a null payload
-							if (size !== 0) {
-								let parsedPayload = null;
-								try {
-									parsedPayload = deserializeChunkChanges(data);
-								} catch (error) {
-									console.error(error);
-								}
-
-								if (parsedPayload !== null) {
-									const chunk: StreamChunk = {
-										id: id,
-										size: size,
-										data: parsedPayload
-									};
-
-									onPacket(chunk);
-								}
-							} else {
-								onPacket(null);
-							}
-						}
-
-						if (done) {
-							controller.close();
-							return;
-						}
-
-						return pump();
-					});
-				}
-			},
-			cancel(reason) {
-				console.log('Closed stream for reason:', reason);
-				aborter?.abort();
+	return Promise.all([fetch(url, { signal: aborter.signal }), cancelPromise]).then(
+		([response, _]) => {
+			const reader = response.body?.getReader();
+			if (reader === undefined) {
+				console.error('Unable to get reader');
+				return;
 			}
-		});
-	});
 
-	if (stream instanceof ReadableStream) {
-		currentStream = stream;
-	}
+			let prev_id = 0;
 
-	return stream;
+			const stream = new ReadableStream({
+				start(controller) {
+					return pump();
+					function pump(): Promise<void | Function | undefined> | undefined {
+						return reader
+							?.read()
+							.then(({ done, value }) => {
+								if (value) {
+									let id = bytesToInt(value.slice(0, 4));
+									let size = bytesToInt(value.slice(4, 6));
+									let data = value.slice(6, 6 + size);
+
+									if (id - prev_id > 1) {
+										console.error('Missed a change, closing to reset data');
+										controller.close();
+										onPacketError();
+										return;
+									}
+
+									prev_id = id;
+
+									// Heartbeats counted as a null payload
+									if (size !== 0) {
+										let parsedPayload = null;
+										try {
+											parsedPayload = deserializeChunkChanges(data);
+										} catch (error) {
+											console.error(error);
+										}
+
+										if (parsedPayload !== null) {
+											const chunk: StreamChunk = {
+												id: id,
+												size: size,
+												data: parsedPayload
+											};
+
+											onPacket(chunk);
+										}
+									} else {
+										onPacket(null);
+									}
+								}
+
+								if (done) {
+									controller.close();
+									return;
+								}
+
+								return pump();
+							})
+							.catch((_err) => {
+								console.error('Stream disconnected.');
+								onPacketError();
+							});
+					}
+				},
+				cancel(reason) {
+					console.log('Closed stream for reason:', reason);
+					aborter?.abort();
+				}
+			});
+
+			currentStream = stream;
+
+			return currentStream;
+		}
+	);
 }

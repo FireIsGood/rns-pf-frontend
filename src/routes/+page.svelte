@@ -14,66 +14,65 @@
 	import type { UptimeMessage } from './uptime.svelte';
 	import Filters from './filters.svelte';
 	import { onMount } from 'svelte';
-	import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 	import type { Lobby } from '$lib';
 
 	async function initializeLobbies() {
 		appState.lobbies = [];
-		try {
-			const res = await connectStream(
-				{ uncensored: appSettings.current.showUncensored },
-				(changes) => {
-					if (changes === null) {
-						sendEvent<UptimeMessage>('uptimeMessage', { type: 'heartbeat' });
-						return;
-					}
-					const diffIds = new Set(changes.data.filter((ch) => ch.kind == 0).map((ch) => ch.id));
-					appState.newLobbies = appState.lobbies.filter((l) => diffIds.has(l.id));
 
-					for (const change of changes.data) {
-						switch (change.kind) {
-							case ChangeKind.ADD:
-								appState.lobbies.push(change as Lobby);
-								break;
-
-							case ChangeKind.UPDATE:
-								appState.lobbies = appState.lobbies.map((l) => {
-									if (l.id === change.id) {
-										return { ...l, ...change };
-									} else {
-										return l;
-									}
-								});
-								break;
-
-							case ChangeKind.REMOVE:
-								appState.lobbies = appState.lobbies.filter((l) => l.id !== change.id);
-								break;
-						}
-					}
-					sendEvent<UptimeMessage>('uptimeMessage', { type: 'synchronized' });
-				},
-				() => {
-					// Packet error, attempt to reconnect automatically
-					appState.lobbies = [];
-					sendEvent<StreamMessage>('streamMessage', { type: 'reconnect' });
+		connectStream(
+			{ uncensored: appSettings.current.showUncensored },
+			(changes) => {
+				if (changes === null) {
+					sendEvent<UptimeMessage>('uptimeMessage', { type: 'heartbeat' });
+					return;
 				}
-			);
+				const diffIds = new Set(changes.data.filter((ch) => ch.kind == 0).map((ch) => ch.id));
+				appState.newLobbies = appState.lobbies.filter((l) => diffIds.has(l.id));
 
-			if (res instanceof ReadableStream) {
+				for (const change of changes.data) {
+					switch (change.kind) {
+						case ChangeKind.ADD:
+							appState.lobbies.push(change as Lobby);
+							break;
+
+						case ChangeKind.UPDATE:
+							appState.lobbies = appState.lobbies.map((l) => {
+								if (l.id === change.id) {
+									return { ...l, ...change };
+								} else {
+									return l;
+								}
+							});
+							break;
+
+						case ChangeKind.REMOVE:
+							appState.lobbies = appState.lobbies.filter((l) => l.id !== change.id);
+							break;
+					}
+				}
+				sendEvent<UptimeMessage>('uptimeMessage', { type: 'synchronized' });
+			},
+			() => {
+				// Packet error, attempt to reconnect automatically
+				appState.lobbies = [];
+				sendEvent<StreamMessage>('streamMessage', { type: 'reconnect' });
+			}
+		)
+			.then(() => {
 				toastManager.addToast('Connected to RnS-PF', 'success');
 				appState.serverStatus = ServerStatus.CONNECTED;
 				sendEvent<UptimeMessage>('uptimeMessage', { type: 'connected' });
-			} else {
-				console.error('How the hell did you get here? Please report this to the developers:', res);
-			}
-		} catch (_err) {
-			// It's all screwed up. Reload the page!!
-			location.reload();
-		}
+			})
+			.catch((err) => {
+				console.log('Unable to connect to the API', err);
+				appState.serverStatus = ServerStatus.DISCONNECTED;
+				toastManager.addToast('Disconnected from RnS-PF', 'warn');
+			});
 	}
 
 	onMount(() => {
+		initializeLobbies();
+
 		function handleMessage(e: Event) {
 			if (!(e instanceof CustomEvent)) return;
 			const event: CustomEvent<StreamMessage> = e;
@@ -88,21 +87,6 @@
 
 		return () => {
 			document.removeEventListener('streamMessage', handleMessage);
-		};
-	});
-
-	// Automatic restart for server issues
-	onMount(() => {
-		const heartbeat = new EventSource(`${PUBLIC_API_ENDPOINT}/events`);
-
-		heartbeat.onopen = () => {
-			initializeLobbies();
-		};
-
-		heartbeat.onerror = (err) => {
-			console.log('Unable to connect to the API', err);
-			appState.lobbies = [];
-			appState.serverStatus = ServerStatus.DISCONNECTED;
 		};
 	});
 </script>
