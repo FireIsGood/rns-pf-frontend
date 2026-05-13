@@ -73,8 +73,9 @@
 			})
 			.catch((err) => {
 				console.log('Unable to connect to the API', err);
-				appState.serverStatus = ServerStatus.DISCONNECTED;
 				toastManager.addToast('Disconnected from RnS-PF', 'warn');
+				appState.serverStatus = ServerStatus.DISCONNECTED;
+				sendEvent<UptimeMessage>('uptimeMessage', { type: 'disconnected' });
 			});
 	}
 
