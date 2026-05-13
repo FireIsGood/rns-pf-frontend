@@ -142,7 +142,6 @@ export function typewriter(
 export async function copyText(text: string) {
 	if ('clipboard' in navigator) {
 		await navigator.clipboard.writeText(text);
-		console.log('Copied to clipboard');
 	} else {
 		console.error('Copy to clipboard not supported');
 	}
