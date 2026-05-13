@@ -7,7 +7,7 @@
 		children,
 		header,
 		disableDismiss = false
-	}: { active: boolean; children: Snippet; header: Snippet; disableDismiss: boolean } = $props();
+	}: { active: boolean; children: Snippet; header: Snippet; disableDismiss?: boolean } = $props();
 </script>
 
 <div class="modal" class:is-active={active}>
