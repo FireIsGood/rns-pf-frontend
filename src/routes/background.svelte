@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { degToRad, turnToRad } from '$lib/util.svelte';
+	import { appSettings, appState, degToRad, turnToRad } from '$lib/util.svelte';
 	import { onMount } from 'svelte';
 	import { Canvas, Layer, type Render } from 'svelte-canvas';
 
@@ -64,7 +64,11 @@
 	});
 </script>
 
-<Canvas autoplay class={['background-canvas', loaded && 'loaded']} bind:this={canvas}>
+<Canvas
+	autoplay={appSettings.current.animateBackground}
+	class={['background-canvas', loaded && 'loaded']}
+	bind:this={canvas}
+>
 	<Layer render={renderSquares} />
 </Canvas>
 

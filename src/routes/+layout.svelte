@@ -4,10 +4,15 @@
 	import ThemeToggle from './theme-toggle.svelte';
 	import ToastManager from '$lib/ToastManager.svelte.svelte';
 	import Background from './background.svelte';
+	import GearIcon from '$lib/assets/gear.svelte';
+	import Modal from './modal.svelte';
+	import { appSettings } from '$lib/util.svelte';
 
 	let { children } = $props();
 
 	let navbarBurgerActive = $state(false);
+
+	let settingsModalActive = $state(false);
 </script>
 
 <svelte:head>
@@ -23,6 +28,22 @@
 </svelte:head>
 
 <Background />
+
+<Modal bind:active={settingsModalActive}>
+	{#snippet header()}
+		<p class="card-header-title">R&amp;S Party Finder Settings</p>
+	{/snippet}
+	{#snippet children()}
+		<div class="field">
+			<label class="checkbox"
+				><input type="checkbox" bind:checked={appSettings.current.animateBackground} /> Animate background</label
+			>
+			<p class="is-size-7">
+				The animated background may cause performance issues on lower end computers.
+			</p>
+		</div>
+	{/snippet}
+</Modal>
 
 <header>
 	<nav class="navbar has-background-primary-soft">
@@ -60,6 +81,14 @@
 				<div class="navbar-item is-flex is-align-items-center is-justify-content-center">
 					<div class="is-size-6 has-text-weight-medium is-hidden-desktop">Toggle theme</div>
 					<span class="is-size-4 is-flex"><ThemeToggle /></span>
+				</div>
+				<div class="navbar-item is-flex is-align-items-center is-justify-content-center">
+					<div class="is-size-6 has-text-weight-medium is-hidden-desktop">Settings</div>
+					<span class="is-size-4 is-flex"
+						><button class="icon has-larger-click-area" onclick={() => (settingsModalActive = true)}
+							><GearIcon />
+						</button></span
+					>
 				</div>
 			</div>
 		</div>

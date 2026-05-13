@@ -76,3 +76,13 @@ body {
 		opacity: 1;
 	}
 }
+
+button.has-larger-click-area {
+	position: relative;
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: -8px;
+	}
+}

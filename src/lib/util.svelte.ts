@@ -14,6 +14,7 @@ interface AppSettings {
 	showFilterMinimumOpenings: boolean;
 	showFilterPassword: boolean;
 	showFilterMods: boolean;
+	animateBackground: boolean;
 }
 
 const defaultSettings: AppSettings = {
@@ -28,7 +29,8 @@ const defaultSettings: AppSettings = {
 	showFilterMinimumPlayers: true,
 	showFilterMinimumOpenings: true,
 	showFilterPassword: true,
-	showFilterMods: true
+	showFilterMods: true,
+	animateBackground: true
 };
 
 export const appSettings = persistedState<AppSettings>('app', defaultSettings, {

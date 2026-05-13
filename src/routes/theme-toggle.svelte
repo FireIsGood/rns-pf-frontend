@@ -16,7 +16,12 @@
 	}
 </script>
 
-<button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+<button
+	class="theme-toggle has-larger-click-area"
+	title="Toggle theme"
+	aria-label="Toggle theme"
+	onclick={() => toggleMode()}
+>
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		aria-hidden="true"
@@ -25,7 +30,6 @@
 		width="1em"
 		viewBox="0 0 32 32"
 		fill="currentColor"
-		onclick={() => toggleMode()}
 	>
 		<clipPath id="theme-toggle__within__clip">
 			<path d="M0 0h32v32h-32ZM6 16A1 1 0 0026 16 1 1 0 006 16"></path>
