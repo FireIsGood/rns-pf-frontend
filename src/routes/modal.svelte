@@ -5,12 +5,21 @@
 	let {
 		active = $bindable(false),
 		children,
-		header
-	}: { active: boolean; children: Snippet; header: Snippet } = $props();
+		header,
+		disableDismiss = false
+	}: { active: boolean; children: Snippet; header: Snippet; disableDismiss: boolean } = $props();
 </script>
 
 <div class="modal" class:is-active={active}>
-	<div class="modal-background"></div>
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- Mouse users only: Allow clicking on the background to close -->
+	<div
+		class="modal-background"
+		onclick={() => {
+			active = false;
+		}}
+	></div>
 	<div class="modal-content">
 		<div class="card">
 			<header class="card-header">
@@ -18,7 +27,11 @@
 				<button
 					class="button card-header-icon is-size-5"
 					aria-label="close"
-					onclick={() => (active = false)}
+					onclick={() => {
+						if (!disableDismiss) {
+							active = false;
+						}
+					}}
 				>
 					<XIcon />
 				</button>
