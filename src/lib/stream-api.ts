@@ -348,36 +348,23 @@ type StreamOptions = {
 	uncensored: boolean;
 };
 
-let currentStream: ReadableStream | null = null;
+let prev_aborter: AbortController | null = null;
 
 export function connectStream(
 	options: StreamOptions,
 	onPacket: (chunk: StreamChunk | null) => void,
 	onPacketError: () => void
 ) {
-	const cancelPromise = new Promise<void>((resolve, _reject) => {
-		if (currentStream) {
-			currentStream
-				.cancel('Stream replaced')
-				.then(resolve)
-				.catch(resolve)
-				.then(() => {
-					currentStream = null;
-				});
-		} else {
-			resolve();
-		}
-	});
+	prev_aborter?.abort('Stream aborted');
 
 	const aborter = new AbortController();
+	prev_aborter = aborter;
+
 	const url = new URL(
 		`/lobbies/stream?format=chunk_changes&modified=true&unfiltered=${options.uncensored === true ? 'true' : 'false'}`,
 		PUBLIC_API_ENDPOINT
 	);
-	return Promise.all([
-		fetch(url, { cache: 'no-store', signal: aborter.signal }),
-		cancelPromise
-	]).then(([response, _]) => {
+	return fetch(url, { cache: 'no-store', signal: aborter.signal }).then((response) => {
 		const reader = response.body?.getReader();
 		if (reader === undefined) {
 			console.error('Unable to get reader');
@@ -386,13 +373,17 @@ export function connectStream(
 
 		let prev_id = 0;
 
-		const stream = new ReadableStream({
+		return new ReadableStream({
 			start(controller) {
 				return pump();
 				function pump(): Promise<void | Function | undefined> | undefined {
 					return reader
 						?.read()
 						.then(({ done, value }) => {
+							if (prev_aborter !== aborter) {
+								controller.close();
+							}
+
 							if (value) {
 								let id = bytesToInt(value.slice(0, 4));
 								let size = bytesToInt(value.slice(4, 6));
@@ -400,6 +391,7 @@ export function connectStream(
 
 								if (id - prev_id > 1) {
 									console.error('Missed a change, closing to reset data');
+									aborter.abort();
 									controller.close();
 									onPacketError();
 									return;
@@ -437,21 +429,17 @@ export function connectStream(
 
 							return pump();
 						})
-						.catch((_err) => {
-							console.log('Stream disconnected.');
-							controller.close();
-							onPacketError();
+						.catch((err) => {
+							if (err.name === 'AbortError') {
+								controller.close();
+							} else {
+								console.error('Stream disconnected.', err);
+								controller.error(err);
+								onPacketError();
+							}
 						});
 				}
-			},
-			cancel(reason) {
-				console.log('Closed stream for reason:', reason);
-				aborter?.abort();
 			}
 		});
-
-		currentStream = stream;
-
-		return currentStream;
 	});
 }
