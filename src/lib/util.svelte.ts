@@ -1,3 +1,4 @@
+import { browser } from '$app/environment';
 import type { AreaName, Difficulty, Lobby } from '$lib';
 import { persistedState } from 'svelte-persisted-state';
 
@@ -30,7 +31,7 @@ const defaultSettings: AppSettings = {
 	showFilterMinimumOpenings: true,
 	showFilterPassword: true,
 	showFilterMods: true,
-	animateBackground: true
+	animateBackground: browser && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 };
 
 export const appSettings = persistedState<AppSettings>('app', defaultSettings, {
