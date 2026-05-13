@@ -78,16 +78,6 @@
 		}
 	});
 
-	let lastLobbyCount = $state(0);
-	$effect(() => {
-		if (appState.lobbies.length !== lastLobbyCount) {
-			tasshaQuote = pickRandom(tasshaQuoteList);
-			spellManifestQuote = pickRandom(spellManifestQuoteList);
-			sayaQuote = pickRandom(sayaQuoteList);
-		}
-		lastLobbyCount = appState.lobbies.length;
-	});
-
 	// Reconnect timeout
 	let canReconnect = $state(true);
 	function reconnect() {
@@ -146,14 +136,20 @@
 							</div>
 							{#if tasshaQuote}
 								<div class="dialog-box" in:fade|global={{ duration: 200, delay: 200 }}>
-									<div class="dialog-text" in:typewriter|global={{ speed: 3 }}>
+									<div
+										class="dialog-text"
+										in:typewriter|global={{ speed: 3, forcedText: tasshaQuote }}
+										onintrostart={() => {
+											tasshaQuote = pickRandom(tasshaQuoteList);
+										}}
+									>
 										{tasshaQuote}
 									</div>
 								</div>
 							{/if}
 						</div>
 					</div>
-				{:else if appState.lobbies.length === 0}
+				{:else if appState.serverStatus === ServerStatus.CONNECTED && appState.lobbies.length === 0}
 					<div class="py-4" transition:fly={{ duration: 600, x: 10 }}>
 						<div class="dialog-root" style="--character-color: #ff3651">
 							<div class="dialog-content">
@@ -169,14 +165,20 @@
 							</div>
 							{#if spellManifestQuote}
 								<div class="dialog-box" in:fade|global={{ duration: 200, delay: 200 }}>
-									<div class="dialog-text" in:typewriter|global={{ speed: 3 }}>
+									<div
+										class="dialog-text"
+										in:typewriter|global={{ speed: 3, forcedText: spellManifestQuote }}
+										onintrostart={() => {
+											spellManifestQuote = pickRandom(spellManifestQuoteList);
+										}}
+									>
 										{spellManifestQuote}
 									</div>
 								</div>
 							{/if}
 						</div>
 					</div>
-				{:else}
+				{:else if appState.serverStatus === ServerStatus.CONNECTED}
 					<div class="py-4" transition:fly={{ duration: 600, x: -10 }}>
 						<div class="dialog-root" style="--character-color: #6d55ff">
 							<div class="dialog-content">
@@ -198,7 +200,13 @@
 							</div>
 							{#if sayaQuote}
 								<div class="dialog-box" in:fade|global={{ duration: 200, delay: 200 }}>
-									<div class="dialog-text" in:typewriter|global={{ speed: 3 }}>
+									<div
+										class="dialog-text"
+										in:typewriter|global={{ speed: 3, forcedText: sayaQuote }}
+										onintrostart={() => {
+											sayaQuote = pickRandom(sayaQuoteList);
+										}}
+									>
 										{sayaQuote}
 									</div>
 								</div>

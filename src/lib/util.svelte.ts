@@ -114,14 +114,19 @@ export function playersInLobby(lobby: Lobby): number {
 	return playerSlots.reduce<number>((c, a) => (c += +(lobby[a] !== null)), 0);
 }
 
-export function typewriter(node: HTMLElement, { speed = 1 }: { speed?: number }) {
+// If text changes rapidly such as by reading state, use forcedText
+export function typewriter(
+	node: HTMLElement,
+	{ speed = 1, forcedText = undefined }: { speed?: number; forcedText?: string }
+) {
 	const valid = node.childNodes.length === 1 && node.childNodes[0].nodeType === Node.TEXT_NODE;
 
 	if (!valid) {
-		throw new Error(`This transition only works on elements with a single text node child`);
+		console.error('Failed to use typewriter on node', node);
+		return { duration: 0 };
 	}
 
-	const text = node.textContent;
+	const text = forcedText ?? node.textContent;
 	const duration = text.length / (speed * 0.01);
 
 	return {
