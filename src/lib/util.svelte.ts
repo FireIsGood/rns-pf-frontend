@@ -126,7 +126,8 @@ export function typewriter(
 		return { duration: 0 };
 	}
 
-	const text = forcedText ?? node.textContent;
+	const text = forcedText ?? node.textContent ?? '';
+
 	const duration = text.length / (speed * 0.01);
 
 	return {
