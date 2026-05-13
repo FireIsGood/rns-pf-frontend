@@ -31,7 +31,7 @@ const defaultSettings: AppSettings = {
 	showFilterMinimumOpenings: true,
 	showFilterPassword: true,
 	showFilterMods: true,
-	animateBackground: browser && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+	animateBackground: browser && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
 };
 
 export const appSettings = persistedState<AppSettings>('app', defaultSettings, {
