@@ -14,7 +14,11 @@
 	const squareZoomLoopDuration = 20_000;
 	const squareSpinLoopDuration = 44_000 * 4;
 
-	const renderSquares: Render = ({ context: ctx, width, height, time }) => {
+	// Library has an issue sometimes
+
+	const renderSquares: Render = ({ context: ctx, time }) => {
+		const width = canvas.canvas.width;
+		const height = canvas.canvas.height;
 		const squareColor = getComputedStyle(ctx.canvas).getPropertyValue('--square-color');
 		const squareShadowColor = getComputedStyle(ctx.canvas).getPropertyValue(
 			'--square-shadow-color'
