@@ -27,11 +27,19 @@
 					return;
 				}
 				const diffIds = new Set(changes.data.filter((ch) => ch.kind == 0).map((ch) => ch.id));
+				const existingLobbies = new Set(appState.lobbies.map((l) => l.id));
 				appState.newLobbies = appState.lobbies.filter((l) => diffIds.has(l.id));
 
 				for (const change of changes.data) {
 					switch (change.kind) {
 						case ChangeKind.ADD:
+							// Prevent duplication
+							const duplicatedId = existingLobbies.has(change.id ?? '');
+							if (duplicatedId) {
+								console.error('Tried to add an existing ID, aborting!');
+								return;
+							}
+
 							appState.lobbies.push(change as Lobby);
 							break;
 
