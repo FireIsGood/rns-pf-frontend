@@ -65,6 +65,7 @@ const defaultFilters: LobbyFilters = {
 };
 
 export const lobbyFilters = persistedState<LobbyFilters>('lobbyFilters', defaultFilters, {
+	syncTabs: false,
 	beforeRead: (value) => {
 		if (appSettings.current.saveFilters === false) {
 			return defaultFilters;
