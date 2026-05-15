@@ -26,10 +26,14 @@
 					sendEvent<UptimeMessage>('uptimeMessage', { type: 'heartbeat' });
 					return;
 				}
-				const diffIds = new Set(changes.data.filter((ch) => ch.kind == 0).map((ch) => ch.id));
-				const existingLobbies = new Set(appState.lobbies.map((l) => l.id));
-				appState.newLobbies = appState.lobbies.filter((l) => diffIds.has(l.id));
 
+				// Find lobbies that exist already
+				const diffIds = new Set(
+					changes.data.filter((ch) => ch.kind == ChangeKind.ADD).map((ch) => ch.id)
+				);
+				const existingLobbies = new Set(appState.lobbies.map((l) => l.id));
+
+				// Parse all changes
 				for (const change of changes.data) {
 					switch (change.kind) {
 						case ChangeKind.ADD:
@@ -58,6 +62,10 @@
 							break;
 					}
 				}
+
+				// Update list of new lobbies for notifications
+				appState.newLobbies = appState.lobbies.filter((l) => diffIds.has(l.id));
+
 				sendEvent<UptimeMessage>('uptimeMessage', { type: 'synchronized' });
 			},
 			() => {
