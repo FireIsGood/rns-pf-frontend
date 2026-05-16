@@ -121,7 +121,7 @@
 		</ul>
 		<ul class="is-size-7 pt-3">
 			<li>commit <code>{__GIT_HASH__}</code></li>
-			<li>rebuilt <code>{__BUILD_DATE__}</code></li>
+			<li>version last built <code>{__BUILD_DATE__}</code></li>
 		</ul>
 	</div>
 </footer>
