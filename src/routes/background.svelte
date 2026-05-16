@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { appSettings, appState, degToRad, turnToRad } from '$lib/util.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { Canvas, Layer, type Render } from 'svelte-canvas';
 
 	let canvas: Canvas;
@@ -48,8 +48,11 @@
 			// Offset rotation
 			const off = { x: width * squareOrigin.x, y: height * squareOrigin.y };
 			ctx.translate(off.x, off.y);
+
 			ctx.rotate(squareAngle);
-			ctx.rotate(-turnToRad(time / squareSpinLoopDuration));
+			if (appSettings.current.animateBackground) {
+				ctx.rotate(-turnToRad(time / squareSpinLoopDuration));
+			}
 			ctx.translate(-off.x, -off.y);
 
 			// Draw
@@ -61,6 +64,15 @@
 	let loaded = $state(false);
 	onMount(() => {
 		loaded = true;
+	});
+
+	// Redraw colors when theme is changed
+	// (Any changes that are not effects must be listed here for manual dependency tracking)
+	$effect(() => {
+		appState.theme;
+		untrack(() => {
+			canvas.redraw();
+		});
 	});
 </script>
 

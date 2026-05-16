@@ -88,8 +88,10 @@ export enum ServerStatus {
 }
 
 type OptionsTab = 'filters' | 'notifications' | null;
+export type Theme = 'light' | 'dark';
 
 interface AppState {
+	theme: Theme;
 	lobbies: Lobby[];
 	lobbiesFiltered: Lobby[];
 	newLobbies: Lobby[];
@@ -98,6 +100,7 @@ interface AppState {
 }
 
 export const appState = $state<AppState>({
+	theme: 'dark',
 	lobbies: [],
 	lobbiesFiltered: [],
 	newLobbies: [],

@@ -1,18 +1,16 @@
 <script lang="ts">
+	import { appState, type Theme } from '$lib/util.svelte';
 	import { onMount } from 'svelte';
-
-	type Theme = 'light' | 'dark';
-	let theme: 'light' | 'dark' = $state('dark');
 
 	onMount(() => {
 		const fallback = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-		theme = (document.documentElement.getAttribute('data-theme') as Theme) ?? fallback;
+		appState.theme = (document.documentElement.getAttribute('data-theme') as Theme) ?? fallback;
 	});
 
 	function toggleMode() {
-		theme = theme === 'light' ? 'dark' : 'light';
-		document.documentElement.setAttribute('data-theme', theme);
-		localStorage.setItem('theme', theme);
+		appState.theme = appState.theme === 'light' ? 'dark' : 'light';
+		document.documentElement.setAttribute('data-theme', appState.theme);
+		localStorage.setItem('theme', appState.theme);
 	}
 </script>
 
