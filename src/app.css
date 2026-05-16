@@ -88,3 +88,8 @@ button.has-larger-click-area {
 		inset: -8px;
 	}
 }
+
+/* Extra utilities */
+.is-underlined-hover:hover {
+	text-decoration: underline !important;
+}

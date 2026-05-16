@@ -7,6 +7,7 @@
 	import GearIcon from '$lib/assets/gear.svelte';
 	import Modal from './modal.svelte';
 	import { appSettings } from '$lib/util.svelte';
+	import { GITHUB_REPO_URL } from '$lib';
 
 	let { children } = $props();
 
@@ -109,7 +110,7 @@
 				<strong class="has-text-weight-normal">Functional Lalafell</strong>.
 			</li>
 			<li>
-				<a href="https://github.com/FireIsGood/rns-pf-frontend" target="_blank">Source Code</a>
+				<a href={GITHUB_REPO_URL} target="_blank">Source Code</a>
 			</li>
 		</ul>
 		<ul>
@@ -120,7 +121,11 @@
 			<li>This project is unaffiliated with Rabbit & Steel's creators/distributors</li>
 		</ul>
 		<ul class="is-size-7 pt-3">
-			<li>commit <code>{__GIT_HASH__}</code></li>
+			<li>
+				commit <a href={`${GITHUB_REPO_URL}/commit/${__GIT_HASH__}`}
+					><code class="is-underlined-hover">{__GIT_HASH__}</code></a
+				>
+			</li>
 			<li>version last built <code>{__BUILD_DATE__}</code></li>
 		</ul>
 	</div>

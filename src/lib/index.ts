@@ -1,4 +1,5 @@
 // place files you want to import through the `$lib` alias in this folder.
+export const GITHUB_REPO_URL = 'https://github.com/FireIsGood/rns-pf-frontend';
 
 export type Lobby = {
 	id: string;
