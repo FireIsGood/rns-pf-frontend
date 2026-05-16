@@ -120,8 +120,8 @@
 			<li>This project is unaffiliated with Rabbit & Steel's creators/distributors</li>
 		</ul>
 		<ul class="is-size-7 pt-3">
-			<li>commit {__GIT_HASH__}</li>
-			<li>rebuilt {__BUILD_DATE__}</li>
+			<li>commit <code>{__GIT_HASH__}</code></li>
+			<li>rebuilt <code>{__BUILD_DATE__}</code></li>
 		</ul>
 	</div>
 </footer>
