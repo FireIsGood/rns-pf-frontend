@@ -119,6 +119,10 @@
 			</li>
 			<li>This project is unaffiliated with Rabbit & Steel's creators/distributors</li>
 		</ul>
+		<ul class="is-size-7 pt-3">
+			<li>commit {__GIT_HASH__}</li>
+			<li>rebuilt {__BUILD_DATE__}</li>
+		</ul>
 	</div>
 </footer>
 

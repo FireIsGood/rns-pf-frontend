@@ -8,6 +8,10 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+
+	// vite.config.js
+	declare const __GIT_HASH__: string;
+	declare const __BUILD_DATE__: string;
 }
 
 export {};
