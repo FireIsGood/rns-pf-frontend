@@ -22,6 +22,9 @@ const [gitHash, buildDate] = (
 
 export default defineConfig({
 	plugins: [sveltekit()],
+	preview: {
+		port: 2757 // For CORS reasons
+	},
 	server: {
 		port: 2757
 	},
