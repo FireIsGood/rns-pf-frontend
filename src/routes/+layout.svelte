@@ -8,6 +8,7 @@
 	import Modal from './modal.svelte';
 	import { appSettings } from '$lib/util.svelte';
 	import { GITHUB_REPO_URL } from '$lib';
+	import { dev } from '$app/environment';
 
 	let { children } = $props();
 
@@ -122,11 +123,12 @@
 		</ul>
 		<ul class="is-size-7 pt-3">
 			<li>
-				commit <a href={`${GITHUB_REPO_URL}/commit/${__GIT_HASH__}`}
+				{dev ? 'DEV' : 'PROD'} &ndash; commit
+				<a href={`${GITHUB_REPO_URL}/commit/${__GIT_HASH__}`}
 					><code class="is-underlined-hover">{__GIT_HASH__}</code></a
 				>
+				on <code>{__BUILD_DATE__}</code>
 			</li>
-			<li>version last built <code>{__BUILD_DATE__}</code></li>
 		</ul>
 	</div>
 </footer>
@@ -181,7 +183,7 @@
 	}
 
 	.footer {
-		--bulma-footer-padding: 2rem 1.5rem 2.5rem;
+		--bulma-footer-padding: 2rem 1.5rem 1.5rem;
 	}
 
 	footer ul {
