@@ -73,10 +73,10 @@
 			)
 			.toSorted(
 				(l1, l2) =>
-					(l2.difficulty - l1.difficulty) * 1000 + // Higher difficulty > Lower difficulty
-					(+l1.password_locked - +l2.password_locked) * 100 + // No password > Password
-					(+l1.modded - +l2.modded) * 10 + // No mod > Mod
-					(+(+l2.id < +l1.id) * 2 - 1) // Lower ID > Higher ID
+					l2.difficulty - l1.difficulty || // Higher difficulty > Lower difficulty
+					+l1.password_locked - +l2.password_locked || // No password > Password
+					+l1.modded - +l2.modded || // No mod > Mod
+					+l2.id - +l1.id // Lower ID > Higher ID
 			);
 	});
 
