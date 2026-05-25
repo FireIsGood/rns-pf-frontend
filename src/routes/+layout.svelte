@@ -123,7 +123,10 @@
 		</ul>
 		<ul class="is-size-7 pt-3">
 			<li>
-				{dev ? 'DEV' : 'PROD'} &ndash; commit
+				Env <code>{dev ? 'DEV' : 'PROD'}</code>
+			</li>
+			<li>
+				commit
 				<a href={`${GITHUB_REPO_URL}/commit/${__GIT_HASH__}`}
 					><code class="is-underlined-hover">{__GIT_HASH__}</code></a
 				>

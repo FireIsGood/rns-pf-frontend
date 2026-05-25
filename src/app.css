@@ -46,6 +46,10 @@ body {
 	flex-direction: column;
 }
 
+code {
+	border: 1px solid var(--bulma-border);
+}
+
 .navbar-burger {
 	--bulma-navbar-burger-color: var(--bulma-primary);
 }
