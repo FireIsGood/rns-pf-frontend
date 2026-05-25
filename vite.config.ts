@@ -13,8 +13,9 @@ function pexec(command: string) {
 	});
 }
 
-const [gitHash, buildDate] = (
+const [gitTag, gitHash, buildDate] = (
 	await Promise.all([
+		pexec('git describe --tags || echo "untagged"'),
 		pexec('git rev-parse --short HEAD'),
 		pexec('git log -1 --format=%cd --date=format:"%Y-%m-%d %H:%M"')
 	])
@@ -30,6 +31,7 @@ export default defineConfig({
 	},
 	define: {
 		// Must be JSON stringify as it is direct replacement
+		__GIT_TAG__: gitTag,
 		__GIT_HASH__: gitHash,
 		__BUILD_DATE__: buildDate
 	},

@@ -123,15 +123,20 @@
 		</ul>
 		<ul class="is-size-7 pt-3">
 			<li>
-				Env <code>{dev ? 'DEV' : 'PROD'}</code>
+				Version <strong>{__GIT_TAG__}</strong>
 			</li>
 			<li>
-				commit
+				Commit
 				<a href={`${GITHUB_REPO_URL}/commit/${__GIT_HASH__}`}
 					><code class="is-underlined-hover">{__GIT_HASH__}</code></a
 				>
-				written <code>{__BUILD_DATE__}</code>
+				written on <code>{__BUILD_DATE__}</code>
 			</li>
+			{#if dev}
+				<li>
+					<strong>DEVLOPMENT ENVIRONMENT</strong>
+				</li>
+			{/if}
 		</ul>
 	</div>
 </footer>
