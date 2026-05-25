@@ -127,7 +127,7 @@
 				<a href={`${GITHUB_REPO_URL}/commit/${__GIT_HASH__}`}
 					><code class="is-underlined-hover">{__GIT_HASH__}</code></a
 				>
-				on <code>{__BUILD_DATE__}</code>
+				written <code>{__BUILD_DATE__}</code>
 			</li>
 		</ul>
 	</div>
