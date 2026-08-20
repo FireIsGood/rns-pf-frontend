@@ -1,4 +1,3 @@
-import { browser } from '$app/environment';
 import type { AreaName, Difficulty, Lobby } from '$lib';
 import { persistedState } from 'svelte-persisted-state';
 
@@ -16,6 +15,7 @@ interface AppSettings {
 	showFilterPassword: boolean;
 	showFilterMods: boolean;
 	animateBackground: boolean;
+	showSidebar: boolean;
 }
 
 const defaultSettings: AppSettings = {
@@ -31,7 +31,8 @@ const defaultSettings: AppSettings = {
 	showFilterMinimumOpenings: true,
 	showFilterPassword: true,
 	showFilterMods: true,
-	animateBackground: false
+	animateBackground: false,
+	showSidebar: true
 };
 
 export const appSettings = persistedState<AppSettings>('app', defaultSettings, {

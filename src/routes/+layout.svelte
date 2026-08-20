@@ -38,11 +38,18 @@
 	{#snippet children()}
 		<div class="field">
 			<label class="checkbox"
-				><input type="checkbox" bind:checked={appSettings.current.animateBackground} /> Animate background</label
-			>
+				><input type="checkbox" bind:checked={appSettings.current.animateBackground} />
+				Animate background
+			</label>
 			<p class="is-size-7">
 				The animated background may cause performance issues on lower end computers.
 			</p>
+		</div>
+		<div class="field">
+			<label class="checkbox"
+				><input type="checkbox" bind:checked={appSettings.current.showSidebar} />
+				Show Sidebar
+			</label>
 		</div>
 	{/snippet}
 </Modal>
@@ -99,7 +106,7 @@
 <main>
 	{@render children()}
 </main>
-<footer class="footer mt-auto has-text-centered">
+<footer class="footer has-text-centered">
 	<div class="container footer-info">
 		<ul>
 			<li>
@@ -134,7 +141,7 @@
 			</li>
 			{#if dev}
 				<li>
-					<strong>DEVLOPMENT ENVIRONMENT</strong>
+					<strong>DEVELOPMENT ENVIRONMENT</strong>
 				</li>
 			{/if}
 		</ul>
@@ -188,6 +195,10 @@
 			var(--bulma-button-s),
 			calc(var(--bulma-scheme-main-l) + var(--bulma-active-border-l-delta))
 		);
+	}
+
+	main {
+		flex-grow: 1;
 	}
 
 	.footer {

@@ -108,7 +108,7 @@
 	});
 </script>
 
-<section class="container section app-layout">
+<section class="container section app-layout" class:show-sidebar={appSettings.current.showSidebar}>
 	<div class="options"><Filters /><Notifications /></div>
 	<div class="uptime"><Uptime /></div>
 	<div class="lobbies"><LobbyDisplay /></div>
@@ -116,23 +116,41 @@
 
 <style>
 	.app-layout {
+		height: 100%;
 		display: grid;
 		grid-template-areas:
-			'options lobbies'
-			'uptime lobbies';
-
-		grid-template-columns: 28rem 1fr;
+			'lobbies'
+			'uptime';
 		grid-template-rows: auto 1fr;
-		column-gap: 1.5rem;
-		row-gap: 1rem;
+
+		&.show-sidebar {
+			grid-template-areas:
+				'options lobbies'
+				'uptime lobbies';
+
+			grid-template-columns: 28rem 1fr;
+			grid-template-rows: auto 1fr;
+			column-gap: 1.5rem;
+			row-gap: 1rem;
+		}
 	}
 
 	.options {
 		grid-area: options;
+		display: none;
+
+		.show-sidebar > & {
+			display: block;
+		}
 	}
 
 	.uptime {
 		grid-area: uptime;
+		margin-top: auto;
+
+		.show-sidebar > & {
+			margin-top: unset;
+		}
 	}
 
 	.lobbies {
@@ -140,7 +158,7 @@
 	}
 
 	@media print, screen and (max-width: 1023px) {
-		.app-layout {
+		:root .app-layout {
 			grid-template-areas:
 				'options'
 				'lobbies'
@@ -151,7 +169,7 @@
 			row-gap: 0;
 		}
 
-		.options {
+		:root .options {
 			display: grid;
 			grid-template-areas:
 				'filter-toggle notification-toggle'
