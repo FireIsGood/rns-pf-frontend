@@ -261,7 +261,7 @@
 						</div>
 						<div class="lobby-description breakable">
 							<div class="lobby-text-label is-size-7 has-text-weight-medium">description</div>
-							<p class="lobby-description-text">{lobby.desc}</p>
+							<p class="lobby-description-text" title={lobby.desc}>{lobby.desc}</p>
 							<CopyButton text={lobby.desc} />
 						</div>
 					</div>
