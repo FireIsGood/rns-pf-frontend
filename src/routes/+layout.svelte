@@ -27,6 +27,7 @@
 	<title>R&amp;S Party Finder</title>
 	<meta name="name" content="R&S Party Finder" />
 	<meta name="description" content="Look up R&S open lobbies from the browser." />
+	<meta name="theme-color" content="#6c659f" />
 </svelte:head>
 
 <Background />
