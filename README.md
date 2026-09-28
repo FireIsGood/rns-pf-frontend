@@ -2,7 +2,7 @@
 
 > A web frontend to see lobbies in Rabbit and Steel.
 
-You may view the site at [rns-pf.xyz](rns-pf.xyz)
+You may view the site at [rns-pf.fireis.dev](https://rns-pf.fireis.dev)
 
 This is a static site written in Svelte using a custom rust backend by [Functional
 Lalafell](https://steamcommunity.com/profiles/76561198260481093) on the **mino_dev games** Discord
