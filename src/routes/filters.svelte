@@ -4,7 +4,6 @@
 	import FunnelIcon from '$lib/assets/funnel.svelte';
 	import AreaIcon from './area-icon.svelte';
 	import GearIcon from '$lib/assets/gear.svelte';
-	import CaretUp from '$lib/assets/caret-up.svelte';
 	import numberZeroIcon from '$lib/assets/Number 0.png';
 	import numberOneIcon from '$lib/assets/Number 1.png';
 	import numberTwoIcon from '$lib/assets/Number 2.png';
