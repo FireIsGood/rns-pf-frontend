@@ -94,6 +94,7 @@ export type Theme = 'light' | 'dark';
 interface AppState {
 	theme: Theme;
 	lobbies: Lobby[];
+	lobbiesCount: number; // Total lobbies given visible filters
 	lobbiesFiltered: Lobby[];
 	newLobbies: Lobby[];
 	serverStatus: ServerStatus;
@@ -103,6 +104,7 @@ interface AppState {
 export const appState = $state<AppState>({
 	theme: 'dark',
 	lobbies: [],
+	lobbiesCount: 0,
 	lobbiesFiltered: [],
 	newLobbies: [],
 	serverStatus: ServerStatus.PENDING,

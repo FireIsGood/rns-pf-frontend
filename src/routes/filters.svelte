@@ -84,6 +84,9 @@
 					+l1.modded - +l2.modded || // No mod > Mod
 					+l2.id - +l1.id // Lower ID > Higher ID
 			);
+		appState.lobbiesCount = appState.lobbies.filter(
+			(l) => appSettings.current.showClientMods || isClientVanilla(l.online_version)
+		).length;
 	});
 
 	function isClientVanilla(version: number): boolean {

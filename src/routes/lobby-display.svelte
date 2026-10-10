@@ -104,8 +104,8 @@
 			><span>&middot;</span>
 			<span
 				>{appState.lobbiesFiltered
-					.length}{#if appState.lobbiesFiltered.length !== appState.lobbies.length}/{appState
-						.lobbies.length}{/if}</span
+					.length}{#if appState.lobbiesFiltered.length !== appState.lobbiesCount}/{appState.lobbies
+						.length}{/if}</span
 			></span
 		>
 	</p>
