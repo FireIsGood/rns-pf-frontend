@@ -57,18 +57,25 @@
 		appState.lobbiesFiltered = appState.lobbies
 			.filter(
 				(l) =>
-					(lobbyFilters.current.destination === 'Any' ||
+					(!appSettings.current.showFilterDestination ||
+						lobbyFilters.current.destination === 'Any' ||
 						lobbyFilters.current.destination === areaMap[l.stage_first]) &&
-					(lobbyFilters.current.difficulty === 'Any' ||
+					(!appSettings.current.showFilterDifficulty ||
+						lobbyFilters.current.difficulty === 'Any' ||
 						lobbyFilters.current.difficulty === difficultyMap[l.difficulty]) &&
-					(lobbyFilters.current.minimumPlayers === 'Any' ||
+					(!appSettings.current.showFilterMinimumPlayers ||
+						lobbyFilters.current.minimumPlayers === 'Any' ||
 						lobbyFilters.current.minimumPlayers <= playersInLobby(l)) &&
-					(lobbyFilters.current.minimumOpenings === 'Any' ||
+					(!appSettings.current.showFilterMinimumOpenings ||
+						lobbyFilters.current.minimumOpenings === 'Any' ||
 						lobbyFilters.current.minimumOpenings <= l.max_players - playersInLobby(l)) &&
-					(lobbyFilters.current.password === 'Any' ||
+					(!appSettings.current.showFilterPassword ||
+						lobbyFilters.current.password === 'Any' ||
 						lobbyFilters.current.password === l.password_locked) &&
-					(lobbyFilters.current.mods === 'Any' || lobbyFilters.current.mods === l.modded) &&
-					(appSettings.current.showClientMods === true || isClientVanilla(l.online_version))
+					(!appSettings.current.showFilterMods ||
+						lobbyFilters.current.mods === 'Any' ||
+						lobbyFilters.current.mods === l.modded) &&
+					(appSettings.current.showClientMods || isClientVanilla(l.online_version))
 			)
 			.toSorted(
 				(l1, l2) =>
