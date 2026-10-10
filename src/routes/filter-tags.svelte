@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { type AreaName } from '$lib';
-	import { lobbyFilters } from '$lib/util.svelte';
+	import { appSettings, lobbyFilters } from '$lib/util.svelte';
 
 	const areaReadableMap: Record<AreaName, string> = {
 		Random: 'Random Kingdom',
@@ -41,27 +41,27 @@
 
 <div class="filter-tags tags is-justify-content-center" class:is-active={anyTags}>
 	{#if anyTags}
-		{#if lobbyFilters.current.destination !== 'Any'}
+		{#if appSettings.current.showFilterDestination && lobbyFilters.current.destination !== 'Any'}
 			<span class={['tag filter-tag-destination', areaClassMap[lobbyFilters.current.destination]]}
 				>{areaReadableMap[lobbyFilters.current.destination]}</span
 			>
 		{/if}
-		{#if lobbyFilters.current.minimumPlayers !== 'Any'}
+		{#if appSettings.current.showFilterMinimumPlayers && lobbyFilters.current.minimumPlayers !== 'Any'}
 			<span class={['tag filter-tag-players', 'count-' + lobbyFilters.current.minimumPlayers]}
 				>{lobbyFilters.current.minimumPlayers} player</span
 			>
 		{/if}
-		{#if lobbyFilters.current.minimumOpenings !== 'Any'}
+		{#if appSettings.current.showFilterMinimumOpenings && lobbyFilters.current.minimumOpenings !== 'Any'}
 			<span class={['tag filter-tag-openings', 'count-' + lobbyFilters.current.minimumOpenings]}
 				>{lobbyFilters.current.minimumOpenings} opening</span
 			>
 		{/if}
-		{#if lobbyFilters.current.difficulty !== 'Any'}
+		{#if appSettings.current.showFilterDifficulty && lobbyFilters.current.difficulty !== 'Any'}
 			<span class={['tag filter-tag-difficulty', lobbyFilters.current.difficulty.toLowerCase()]}
 				>{lobbyFilters.current.difficulty}</span
 			>
 		{/if}
-		{#if lobbyFilters.current.password !== 'Any'}
+		{#if appSettings.current.showFilterPassword && lobbyFilters.current.password !== 'Any'}
 			<span
 				class={[
 					'tag filter-tag-password',
@@ -69,7 +69,7 @@
 				]}>{lobbyFilters.current.password ? 'Password' : 'No Password'}</span
 			>
 		{/if}
-		{#if lobbyFilters.current.mods !== 'Any'}
+		{#if appSettings.current.showFilterMods && lobbyFilters.current.mods !== 'Any'}
 			<span class={['tag filter-tag-mods', lobbyFilters.current.mods ? 'has-mods' : 'has-no-mods']}
 				>{lobbyFilters.current.mods ? 'Modded' : 'Not Modded'}</span
 			>
