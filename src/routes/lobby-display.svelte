@@ -102,12 +102,16 @@
 		<span class="lobby-title-text">Lobbies</span>
 		<span class="lobby-title-count has-text-weight-medium"
 			><span>&middot;</span>
-			<span
-				>{appState.lobbiesFiltered
-					.length}{#if appState.lobbiesFiltered.length !== appState.lobbiesCount}/{appState.lobbies
-						.length}{/if}</span
-			></span
-		>
+			<span>
+				{#if appState.serverStatus !== ServerStatus.CONNECTED}
+					?
+				{:else}
+					{appState.lobbiesFiltered
+						.length}{#if appState.lobbiesFiltered.length !== appState.lobbiesCount}/{appState
+							.lobbies.length}{/if}
+				{/if}</span
+			>
+		</span>
 	</p>
 	<FilterTags />
 	<div class="overlap-children">
